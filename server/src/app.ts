@@ -70,7 +70,7 @@ app.get('/', async (req: Request, res: Response) => {
         success: true,
         message: 'Welcome to HelthNest Backend',
         env: config.node_env,
-        time: new Date().toISOString()
+        time: new Date().toLocaleTimeString()
     })
 })
 

@@ -21,6 +21,7 @@ dotenv.config({ path: path.join(process.cwd(), ".env") });
 export default {
     node_env: process.env.NODE_ENV,
     port: process.env.PORT,
+    google_client_id: process.env.GOOGLE_CLIENT_ID,
     log_level: process.env.LOG_LEVEL || "info",
     database_url: process.env.DATABASE_URL,
     bak_url: process.env.APP_URL,

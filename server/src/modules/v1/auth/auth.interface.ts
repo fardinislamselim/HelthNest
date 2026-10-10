@@ -36,3 +36,12 @@ export interface IRequestUser {
     name: string
     role: Role
 }
+
+/**
+ * Interface for Google Login Payload
+ */
+export interface IGoogleLoginPayload {
+    idToken: string
+}
+
+
