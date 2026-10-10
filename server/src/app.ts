@@ -17,7 +17,7 @@ import helmet from 'helmet'
  * Application Module
  */
 import config from '@/config'
-import router from '@/routes/routes'
+import router from '@/routes/v1/routes'
 import { globalErrorHandler } from '@/middleware/globalErrorHandler'
 import { notFound } from '@/middleware/notFound'
 

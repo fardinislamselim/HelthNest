@@ -7,6 +7,7 @@
 /**
  * Third-Party Modules
  */
+import { authRoutes } from "@/modules/v1/auth/auth.route";
 import { Router } from "express";
 
 /**
@@ -19,12 +20,12 @@ const router:Router = Router()
  */
 const moduleRoutes = [
     {
-        path:"/user",
-        // route:userRouter
-    }
+        path:"/auth",
+        route:authRoutes
+    },
 ]
 
-// moduleRoutes.forEach((route =>router.use(route.path, route.route) ))
+moduleRoutes.forEach((route =>router.use(route.path, route.route) ))
 
 /**
  * Export Router
