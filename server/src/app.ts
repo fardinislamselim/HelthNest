@@ -13,9 +13,9 @@ import cors from 'cors'
 import httpStatus from 'http-status'
 import helmet from 'helmet'
 
-/**
+/** 
  * Application Module
- */
+*/
 import config from '@/config'
 import router from '@/routes/v1/routes'
 import { globalErrorHandler } from '@/middleware/globalErrorHandler'

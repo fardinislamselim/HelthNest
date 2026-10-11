@@ -4,44 +4,47 @@
  * @license Apache-2.0
  */
 
-/**
- * Third-Party Modules
- */
-import { Role } from "../../../../generated/prisma/enums"
-
+import type { Role } from "../../../../generated/prisma/enums";
 
 /**
- * Interface for Login User Payload
- */
-export interface ILoginUserPayload {
-    email: string
-    password: string
-}
-
-/**
- * Interface for Register Patient Payload
+ * Register Patient Payload
  */
 export interface IRegisterPatientPayload {
-    name: string
-    email: string
-    password: string
+  name: string;
+  email: string;
+  password: string;
+  contactNumber?: string;
+  address?: string;
 }
 
 /**
- * Interface for Request User
+ * Login User Payload
  */
-export interface IRequestUser {
-    userId: string
-    email: string
-    name: string
-    role: Role
+export interface ILoginUserPayload {
+  email: string;
+  password: string;
 }
 
 /**
- * Interface for Google Login Payload
+ * Google Login Payload
  */
 export interface IGoogleLoginPayload {
-    idToken: string
+  idToken: string;
 }
 
+/**
+ * Refresh Token Payload
+ */
+export interface IRefreshTokenPayload {
+  refreshToken: string;
+}
 
+/**
+ * Authenticated Request User
+ */
+export interface IRequestUser {
+  userId: string;
+  email: string;
+  name: string;
+  role: Role;
+}

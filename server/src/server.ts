@@ -19,6 +19,7 @@ import colors from "colors";
  */
 import app from "@/app";
 import config from "@/config";
+import { logger } from "./lib/winston";
 
 /**
  * Server
@@ -30,7 +31,7 @@ let server: Server | undefined;
  */
 async function main (){
     server = app.listen(config.port, ()=>{
-        console.log(
+        logger.info(
             colors.italic.green.bold(`Server is running on http://localhost:${config.port}`)
         );
     })
@@ -40,7 +41,7 @@ async function main (){
  * Start Server
  */
 main().catch((err)=>{
-    console.error("Error starting server:", err);
+    logger.error("Error starting server:", err);
     process.exit(1);
 })
 
@@ -48,7 +49,7 @@ main().catch((err)=>{
  * Unhandled Rejection
  */
 process.on("unhandledRejection", err =>{
-    console.error("Unhandled rejection:", err);
+    logger.error("Unhandled rejection:", err);
     if(server){
         server.close(()=>{
             process.exit(1);
@@ -60,7 +61,7 @@ process.on("unhandledRejection", err =>{
  * Uncaught Exception
  */
 process.on("uncaughtException", err=>{
-    console.error("Uncaught exception:", err);
+    logger.error("Uncaught exception:", err);
     if(server){
         server.close(()=>{
             process.exit(1);

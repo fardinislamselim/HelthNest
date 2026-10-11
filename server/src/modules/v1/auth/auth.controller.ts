@@ -11,6 +11,11 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 
 /**
+ * Application Middleware
+ */
+import AppError from "@/middleware/AppError";
+
+/**
  * Application Utils
  */
 import catchAsync from "@/utils/catchAsync";
@@ -116,10 +121,11 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
  * Refresh Token Controller
  */
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
-  if (!req.cookies.refreshToken) {
-    throw new Error("Refresh token is missing");
+  const token = req.cookies?.refreshToken || req.body?.refreshToken;
+  if (!token) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Refresh token is missing");
   }
-  const result = await AuthService.refreshToken(req.cookies.refreshToken);
+  const result = await AuthService.refreshToken(token);
   const { accessToken, refreshToken: newRefreshToken } = result;
 
   res.cookie("accessToken", accessToken, {

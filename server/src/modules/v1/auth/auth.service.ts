@@ -59,7 +59,7 @@ import { AuthProvider, Role, UserStatus } from "../../../../generated/prisma/enu
  * Register Patient Service
  */
 const registerPatient = async (payload: IRegisterPatientPayload) => {
-  const { name, password } = payload;
+  const { name, password, contactNumber, address } = payload;
   const email = payload.email.trim().toLowerCase();
 
   const isUserExists = await prisma.user.findUnique({
@@ -84,7 +84,12 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
       status: UserStatus.ACTIVE,
       emailVerified: false,
       patient: {
-        create: { name, email },
+        create: {
+          name,
+          email,
+          ...(contactNumber ? { contactNumber } : {}),
+          ...(address ? { address } : {}),
+        },
       },
     },
     omit: { password: true },

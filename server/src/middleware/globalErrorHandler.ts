@@ -15,6 +15,8 @@ import httpStatus from "http-status";
  */
 import { Prisma } from '../../generated/prisma/client';
 import config from '@/config';
+import { logger } from '@/lib/winston';
+import AppError from '@/middleware/AppError';
 
 /**
  * Global Error Handler Middleware
@@ -26,7 +28,7 @@ export const globalErrorHandler = async (
     _next: NextFunction,
 ) => {
     if (config.node_env === 'development') {
-        console.log('Error from Global Error Handler', err)
+        logger.error('Error from Global Error Handler', err)
     }
 
     let statusCode : number = httpStatus.INTERNAL_SERVER_ERROR;
@@ -59,15 +61,19 @@ export const globalErrorHandler = async (
     } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
         statusCode = httpStatus.INTERNAL_SERVER_ERROR;
         errorMessage = "Error occurred during query execution"
+    } else if (err instanceof AppError) {
+        statusCode = err.statusCode;
+        errorMessage = err.message;
+        errorName = err.name || "AppError";
     } else if (err instanceof Error) {
         errorMessage = err.message
     }
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(statusCode).json({
         success: false,
         statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
-        name: config.node_env === 'development' ? errorName : "Internal Server Error",
-        message: config.node_env === 'development' ? errorMessage : "Internal Server Error",
-        error: config.node_env === 'development' ? err : undefined,
-        stack: config.node_env  === 'development' ? err.stack : undefined,
+        name: errorName,
+        message: errorMessage,
+        error: config.node_env === 'development' || config.node_env === 'devlopment' ? err : undefined,
+        stack: config.node_env === 'development' || config.node_env === 'devlopment' ? err.stack : undefined,
     })
 }

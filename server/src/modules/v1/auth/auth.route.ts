@@ -18,6 +18,7 @@ import { Role } from '../../../../generated/prisma/enums'
  * Middleware
  */
 import { auth } from '@/middleware/checkAuth'
+import validateRequest from '@/middleware/validateRequest'
 
 /**
  * Auth Controller
@@ -25,25 +26,73 @@ import { auth } from '@/middleware/checkAuth'
 import { AuthController } from './auth.controller'
 
 /**
+ * Auth Validation
+ */
+import { AuthValidation } from './auth.validation'
+
+/**
  * Auth Routes
  */
 const router = Router()
 
 /**
- * Register Patient Route
+ * Patient Registration Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/register
  */
-router.post('/register', AuthController.registerPatient)
+router.post(
+    '/register',
+    validateRequest(AuthValidation.registerPatientValidationSchema),
+    AuthController.registerPatient,
+)
 
 /**
- * Login User Route
+ * User Login Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/login
  */
-router.post('/login', AuthController.loginUser)
+router.post(
+    '/login',
+    validateRequest(AuthValidation.loginUserValidationSchema),
+    AuthController.loginUser,
+)
+
+/**
+ * Get My Profile Route
+ * @access - authenticated
+ * @method - POST
+ * @route - /api/v1/auth/login
+ */
 router.get(
     '/me',
     auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
     AuthController.getMe,
 )
-router.post('/refresh-token', AuthController.refreshToken)
-router.post('/google', AuthController.googleLogin)
+
+/**
+ * Refresh Token Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/refresh-token
+ */
+router.post(
+    '/refresh-token',
+    validateRequest(AuthValidation.refreshTokenValidationSchema),
+    AuthController.refreshToken,
+)
+
+/**
+ * Google Login Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/google
+ */
+router.post(
+    '/google',
+    validateRequest(AuthValidation.googleLoginValidationSchema),
+    AuthController.googleLogin,
+)
 
 export const authRoutes = router

@@ -7,6 +7,7 @@
 /**
  * Third-Party Modules
  */
+import { logger } from "@/lib/winston";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 
 /**
@@ -36,7 +37,7 @@ const verifyToken = (token: string, secret: string) => {
             data: verifiedToken
         };
     } catch (error: any) {
-        console.log("Token verification failed:", error);
+        logger.error("Token verification failed:", error);
         return {
             success: false,
             error: error.message
