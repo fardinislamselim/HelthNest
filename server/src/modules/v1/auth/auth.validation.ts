@@ -25,7 +25,7 @@ const registerPatientValidationSchema = z.object({
 
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
+      .min(6, "Password must be at least 6 characters")
       .max(128, "Password cannot exceed 128 characters"),
 
     contactNumber: z
@@ -56,7 +56,7 @@ const loginUserValidationSchema = z.object({
 
     password: z
       .string()
-      .min(1, "Password is required")
+      .min(6, "Password must be at least 6 characters")
       .max(128, "Password cannot exceed 128 characters"),
   }),
 });
@@ -76,11 +76,46 @@ const googleLoginValidationSchema = z.object({
  * Refresh Token Validation
  */
 const refreshTokenValidationSchema = z.object({
-  body: z.object({
+  cookies: z.object({
     refreshToken: z
       .string()
       .min(1, "Refresh token is required")
       .optional(),
+  }),
+});
+
+/**
+ * Forgot Password Validation
+ */
+const forgotPasswordValidationSchema = z.object({
+  body: z.object({
+    email: z
+      .string()
+      .trim()
+      .email("Please provide a valid email")
+      .transform((email) => email.toLowerCase()),
+  }),
+});
+
+/**
+ * Reset Password Validation
+ */
+const resetPasswordValidationSchema = z.object({
+  body: z.object({
+    email: z
+      .string()
+      .trim()
+      .email("Please provide a valid email")
+      .transform((email) => email.toLowerCase()),
+    otp: z
+      .string()
+      .trim()
+      .min(6, "OTP must be at least 6 digits")
+      .max(6, "OTP cannot exceed 6 digits"),
+    newPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .max(128, "Password cannot exceed 128 characters"),
   }),
 });
 
@@ -92,4 +127,6 @@ export const AuthValidation = {
   loginUserValidationSchema,
   googleLoginValidationSchema,
   refreshTokenValidationSchema,
+  forgotPasswordValidationSchema,
+  resetPasswordValidationSchema
 };

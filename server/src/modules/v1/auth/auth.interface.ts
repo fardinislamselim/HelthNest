@@ -40,6 +40,22 @@ export interface IRefreshTokenPayload {
 }
 
 /**
+ * Forgot Password Payload
+ */
+export interface IForgotPasswordPayload {
+  email: string;
+}
+
+/**
+ * Reset Password Payload
+ */
+export interface IResetPasswordPayload {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
+/**
  * Authenticated Request User
  */
 export interface IRequestUser {

@@ -95,4 +95,28 @@ router.post(
     AuthController.googleLogin,
 )
 
+/**
+ * Forgot Password Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/forgot-password
+ */
+router.post(
+    '/forgot-password',
+    validateRequest(AuthValidation.forgotPasswordValidationSchema),
+    AuthController.forgotPassword,
+)
+
+/**
+ * Reset Password Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/reset-password
+ */
+router.post(
+    '/reset-password',
+    validateRequest(AuthValidation.resetPasswordValidationSchema),
+    AuthController.resetPassword,
+)
+
 export const authRoutes = router

@@ -186,6 +186,28 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
+const forgotPassword = catchAsync(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  await AuthService.forgotPassword(email);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password reset code sent successfully",
+    data: null
+  });
+})
+
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const { email, otp, newPassword } = req.body;
+  await AuthService.resetPassword({ email, otp, newPassword });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password reset successfully",
+    data: null
+  });
+})
+
 /**
  * Export Auth Controller
  */
@@ -194,5 +216,7 @@ export const AuthController = {
   loginUser,
   getMe,
   refreshToken,
-  googleLogin
+  googleLogin,
+  forgotPassword,
+  resetPassword,
 };

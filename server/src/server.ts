@@ -22,6 +22,7 @@ import config from "@/config";
 import { logger } from "@/lib/winston";
 import { prisma } from "@/lib/prisma";
 import { seedSuperAdmin, seedTesterAdmin, seedTesterDoctor } from "@/utils/seed";
+import { redisClient } from "@/lib/redis";
 
 /**
  * Server
@@ -34,6 +35,9 @@ let server: Server | undefined;
 async function main (){
     await prisma.$connect()
     logger.info("Database Connected")
+
+    await redisClient.connect();
+    logger.info("Redis Connected");
 
     await seedSuperAdmin()
     await seedTesterAdmin()
