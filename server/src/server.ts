@@ -19,7 +19,9 @@ import colors from "colors";
  */
 import app from "@/app";
 import config from "@/config";
-import { logger } from "./lib/winston";
+import { logger } from "@/lib/winston";
+import { prisma } from "@/lib/prisma";
+import { seedSuperAdmin, seedTesterAdmin, seedTesterDoctor } from "@/utils/seed";
 
 /**
  * Server
@@ -30,6 +32,13 @@ let server: Server | undefined;
  * Main Function
  */
 async function main (){
+    await prisma.$connect()
+    logger.info("Database Connected")
+
+    await seedSuperAdmin()
+    await seedTesterAdmin()
+    await seedTesterDoctor()
+    
     server = app.listen(config.port, ()=>{
         logger.info(
             colors.italic.green.bold(`Server is running on http://localhost:${config.port}`)
@@ -42,6 +51,7 @@ async function main (){
  */
 main().catch((err)=>{
     logger.error("Error starting server:", err);
+    prisma.$disconnect();
     process.exit(1);
 })
 
