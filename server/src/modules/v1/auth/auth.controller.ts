@@ -186,6 +186,9 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
+/**
+ * Forgot Password Controller
+ */
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
   await AuthService.forgotPassword(email);
@@ -197,6 +200,9 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
+/**
+ * Reset Password Controller
+ */
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const { email, otp, newPassword } = req.body;
   await AuthService.resetPassword({ email, otp, newPassword });

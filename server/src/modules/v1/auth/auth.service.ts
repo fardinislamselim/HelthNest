@@ -423,6 +423,9 @@ const forgotPassword = async (email: string) => {
   });
 };
 
+/**
+ * Reset Password Service
+ */
 const resetPassword = async (payload: IResetPasswordPayload) => {
   const { email, otp, newPassword } = payload;
   const isUserExist = await prisma.user.findUniqueOrThrow({

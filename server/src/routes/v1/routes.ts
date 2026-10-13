@@ -7,8 +7,14 @@
 /**
  * Third-Party Modules
  */
-import { authRoutes } from "@/modules/v1/auth/auth.route";
 import { Router } from "express";
+
+
+/**
+ * Application Module
+ */
+import { authRoutes } from "@/modules/v1/auth/auth.route";
+import { userRoutes } from "@/modules/v1/user/user.route";
 
 /**
  * Router Initialization
@@ -22,6 +28,10 @@ const moduleRoutes = [
     {
         path:"/auth",
         route:authRoutes
+    },
+    {
+        path:"/user",
+        route:userRoutes
     },
 ]
 
