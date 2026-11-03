@@ -182,7 +182,6 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
 
 
 // Reset Password Controller
-
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const { email, otp, newPassword } = req.body;
   await AuthService.resetPassword({ email, otp, newPassword });
@@ -194,6 +193,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
+// Verify Email Controller
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   await AuthService.verifyEmail(req.body);
   sendResponse(res, {
@@ -204,6 +204,7 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Resend OTP Controller
 const resendOtp = catchAsync(async (req: Request, res: Response) => {
   await AuthService.resendOtp(req.body.email);
   sendResponse(res, {
@@ -214,8 +215,8 @@ const resendOtp = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Logout Controller
 const logout = catchAsync(async (req: Request, res: Response) => {
-  await AuthService.logout();
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   sendResponse(res, {
@@ -226,6 +227,7 @@ const logout = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Change Password Controller
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IRequestUser;
   await AuthService.changePassword(user.userId, req.body);
@@ -239,6 +241,7 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Set Password Controller
 const setPassword = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IRequestUser;
   await AuthService.setPassword(user.userId, req.body);
@@ -252,7 +255,6 @@ const setPassword = catchAsync(async (req: Request, res: Response) => {
 
 
 // Export Auth Controller
-
 export const AuthController = {
   registerPatient,
   loginUser,

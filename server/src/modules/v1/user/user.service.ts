@@ -1,25 +1,12 @@
-/**
- * @copyright 2026
- * @author Fardin Islam Selim
- * @license Apache-2.0
- */
-
-/**
- * Third-Party Module
- */
 import type { UploadApiResponse } from "cloudinary";
-
-/**
- * Application Module
- */
 import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import AppError from "@/middleware/AppError";
 import httpStatus from "http-status";
 
-/**
- * Update Profile Image Service
- */
+
+// Update Profile Image Service
+
 const updateProfileImage = async (buffer: Buffer, userId: string) => {
   const currentUser = await prisma.user.findUnique({
     where: {
@@ -74,6 +61,7 @@ const updateProfileImage = async (buffer: Buffer, userId: string) => {
   return updatedUser;
 };
 
+// Get My Profile Service
 const getMyProfile = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -88,6 +76,7 @@ const getMyProfile = async (userId: string) => {
   return user;
 };
 
+// Update My Profile Service
 const updateMyProfile = async (
   userId: string,
   payload: {
@@ -154,6 +143,7 @@ const updateMyProfile = async (
   return getMyProfile(user.id);
 };
 
+// Get User By ID Service
 const getUserById = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -168,6 +158,7 @@ const getUserById = async (userId: string) => {
   return user;
 };
 
+// Export User Service
 export default {
   updateProfileImage,
   getMyProfile,

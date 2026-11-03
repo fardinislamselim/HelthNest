@@ -25,6 +25,7 @@ import {
 } from "@/modules/v1/auth/auth.interface";
 import {
   AuthProvider,
+  DoctorVerificationStatus,
   Role,
   UserStatus,
 } from "../../../../generated/prisma/enums";
@@ -181,6 +182,7 @@ const loginUser = async (payload: ILoginUserPayload) => {
 
   const user = await prisma.user.findUnique({
     where: { email },
+    include: { doctor: true },
   });
 
   if (!user) {
@@ -202,6 +204,25 @@ const loginUser = async (payload: ILoginUserPayload) => {
 
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+  }
+
+  // Doctor approval check
+  if (user.role === Role.DOCTOR) {
+    if (!user.emailVerified) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Doctor application email is not verified. Please verify your email first.",
+      );
+    }
+
+    if (!user.doctor || user.doctor.verificationStatus !== DoctorVerificationStatus.APPROVED) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        user.doctor?.verificationStatus === DoctorVerificationStatus.REJECTED
+          ? `Your doctor application has been rejected.${user.doctor.rejectionReason ? ` Reason: ${user.doctor.rejectionReason}` : ""}`
+          : "Your doctor application is pending approval. An unapproved doctor cannot log in.",
+      );
+    }
   }
 
   const jwtPayload = {

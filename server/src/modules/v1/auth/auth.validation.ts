@@ -119,6 +119,7 @@ const resetPasswordValidationSchema = z.object({
   }),
 });
 
+// Verify Email Validation
 const verifyEmailValidationSchema = z.object({
   body: z.object({
     email: z.string().trim().email().transform((email) => email.toLowerCase()),
@@ -126,12 +127,14 @@ const verifyEmailValidationSchema = z.object({
   }),
 });
 
+// Resend OTP Validation
 const resendOtpValidationSchema = z.object({
   body: z.object({
     email: z.string().trim().email().transform((email) => email.toLowerCase()),
   }),
 });
 
+// Change Password Validation
 const changePasswordValidationSchema = z.object({
   body: z.object({
     currentPassword: z.string().min(6),
@@ -139,6 +142,7 @@ const changePasswordValidationSchema = z.object({
   }),
 });
 
+// Set Password Validation
 const setPasswordValidationSchema = z.object({
   body: z.object({
     newPassword: z.string().min(6).max(128),

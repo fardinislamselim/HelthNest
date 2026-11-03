@@ -10,12 +10,10 @@ import { redisClient } from "@/lib/redis";
 
 
 // Server
-
 let server: Server | undefined;
 
 
 // Main Function
-
 async function main (){
     await prisma.$connect()
     logger.info("Database Connected")
@@ -36,7 +34,6 @@ async function main (){
 
 
 // Start Server
-
 main().catch((err)=>{
     logger.error("Error starting server:", err);
     prisma.$disconnect();

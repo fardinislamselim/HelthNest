@@ -9,7 +9,6 @@
  */
 import { Router } from "express";
 
-
 /**
  * Application Module
  */
@@ -20,33 +19,37 @@ import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
 /**
  * Router Initialization
  */
-const router:Router = Router()
+const router: Router = Router();
 
 /**
  * Module Routes
  */
 const moduleRoutes = [
-    {
-        path:"/auth",
-        route:authRoutes
-    },
-    {
-        path:"/users",
-        route:userRoutes
-    },
-    {
-        path:"/user",
-        route:userRoutes
-    },
-    {
-        path:"/doctor",
-        route:doctorRoutes
-    }
-]
+  {
+    path: "/auth",
+    route: authRoutes,
+  },
+  {
+    path: "/users",
+    route: userRoutes,
+  },
+  {
+    path: "/user",
+    route: userRoutes,
+  },
+  {
+    path: "/doctors",
+    route: doctorRoutes,
+  },
+  {
+    path: "/doctor",
+    route: doctorRoutes,
+  },
+];
 
-moduleRoutes.forEach((route =>router.use(route.path, route.route) ))
+moduleRoutes.forEach((route) => router.use(route.path, route.route));
 
 /**
  * Export Router
  */
-export default router
+export default router;
