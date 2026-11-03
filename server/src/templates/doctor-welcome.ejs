@@ -1,8 +1,158 @@
-<!doctype html>
-<html>
-  <body>
-    <h2>Welcome to HealthNest, <%= name %>!</h2>
-    <p>Your doctor application has been approved.</p>
-    <p>You can now sign in to your HealthNest doctor account and begin setting up your profile.</p>
-  </body>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Application Approved - HealthNest</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f1f5f9; font-family:Arial, Helvetica, sans-serif; color:#1e293b;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0"
+    style="background-color:#f1f5f9; padding:40px 15px;">
+    <tr>
+      <td align="center">
+
+        <table width="600" cellpadding="0" cellspacing="0" border="0"
+          style="max-width:600px; width:100%; background:#ffffff; border-radius:16px; overflow:hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background:#0f766e; padding:35px 25px;">
+              <h1 style="margin:0; color:#ffffff; font-size:30px; letter-spacing:-1px;">
+                Health<span style="color:#99f6e4;">Nest</span>
+              </h1>
+              <p style="margin:10px 0 0; color:#ccfbf1; font-size:13px; letter-spacing:1px;">
+                HEALTHCARE MANAGEMENT PLATFORM
+              </p>
+            </td>
+          </tr>
+
+          <!-- Approval Icon -->
+          <tr>
+            <td align="center" style="padding:35px 25px 15px;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" valign="middle"
+                    style="width:65px; height:65px; background:#d1fae5; border-radius:50%;">
+                    <span style="font-size:32px; color:#059669; line-height:65px;">&#10003;</span>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:18px 0 0; color:#059669; font-size:13px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">
+                Application Approved
+              </p>
+            </td>
+          </tr>
+
+          <!-- Welcome Message -->
+          <tr>
+            <td style="padding:15px 35px 20px;">
+              <h2 style="margin:0 0 15px; color:#0f172a; font-size:26px; text-align:center; line-height:1.4;">
+                Congratulations, Dr. <%= name %>!
+              </h2>
+
+              <p style="margin:0; color:#64748b; font-size:15px; line-height:1.8; text-align:center;">
+                Great news! Your doctor application has been successfully reviewed and approved by the HealthNest administration team.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Success Card -->
+          <tr>
+            <td style="padding:10px 35px 25px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                style="background:#f0fdfa; border:1px solid #ccfbf1; border-radius:12px;">
+                <tr>
+                  <td style="padding:22px;">
+                    <h3 style="margin:0 0 10px; color:#115e59; font-size:17px;">
+                      You're officially part of HealthNest!
+                    </h3>
+                    <p style="margin:0; color:#475569; font-size:14px; line-height:1.8;">
+                      You can now sign in to your HealthNest doctor account and start setting up your professional profile.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Next Steps -->
+          <tr>
+            <td style="padding:0 35px 25px;">
+              <h3 style="margin:0 0 15px; color:#0f172a; font-size:17px;">
+                What's Next?
+              </h3>
+
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="35" valign="top" style="padding:8px 0;">
+                    <span style="color:#0f766e; font-size:17px; font-weight:bold;">01.</span>
+                  </td>
+                  <td style="padding:8px 0; color:#64748b; font-size:14px; line-height:1.6;">
+                    <strong style="color:#334155;">Sign in</strong><br />
+                    Access your HealthNest doctor account.
+                  </td>
+                </tr>
+                <tr>
+                  <td width="35" valign="top" style="padding:8px 0;">
+                    <span style="color:#0f766e; font-size:17px; font-weight:bold;">02.</span>
+                  </td>
+                  <td style="padding:8px 0; color:#64748b; font-size:14px; line-height:1.6;">
+                    <strong style="color:#334155;">Complete your profile</strong><br />
+                    Add your professional information and qualifications.
+                  </td>
+                </tr>
+                <tr>
+                  <td width="35" valign="top" style="padding:8px 0;">
+                    <span style="color:#0f766e; font-size:17px; font-weight:bold;">03.</span>
+                  </td>
+                  <td style="padding:8px 0; color:#64748b; font-size:14px; line-height:1.6;">
+                    <strong style="color:#334155;">Set up your schedule</strong><br />
+                    Configure your availability and consultation slots.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Encouragement -->
+          <tr>
+            <td align="center" style="padding:15px 35px 30px;">
+              <p style="margin:0; color:#334155; font-size:15px; font-weight:bold;">
+                Together, let's make healthcare better!
+              </p>
+              <p style="margin:8px 0 0; color:#94a3b8; font-size:13px; line-height:1.7;">
+                Thank you for joining HealthNest. We look forward to supporting your journey.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center"
+              style="background:#f8fafc; padding:25px 20px; border-top:1px solid #e2e8f0;">
+              <p style="margin:0 0 7px; color:#0f766e; font-size:17px; font-weight:bold;">
+                HealthNest
+              </p>
+              <p style="margin:0 0 12px; color:#94a3b8; font-size:12px;">
+                Smart Healthcare Management System
+              </p>
+              <p style="margin:0; color:#94a3b8; font-size:11px;">
+                &copy; <%= new Date().getFullYear() %> HealthNest. All rights reserved.
+              </p>
+              <p style="margin:8px 0 0; color:#94a3b8; font-size:11px;">
+                This is an automated notification. Please do not reply.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
 </html>

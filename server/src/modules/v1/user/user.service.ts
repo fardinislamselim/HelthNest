@@ -5,7 +5,7 @@ import AppError from "@/middleware/AppError";
 import httpStatus from "http-status";
 
 
-// Update Profile Image Service
+// Upload a profile image and remove the previous Cloudinary asset.
 
 const updateProfileImage = async (buffer: Buffer, userId: string) => {
   const currentUser = await prisma.user.findUnique({
@@ -61,7 +61,7 @@ const updateProfileImage = async (buffer: Buffer, userId: string) => {
   return updatedUser;
 };
 
-// Get My Profile Service
+// Load the authenticated user's profile without exposing the password.
 const getMyProfile = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -76,7 +76,7 @@ const getMyProfile = async (userId: string) => {
   return user;
 };
 
-// Update My Profile Service
+// Update user data and keep the linked patient or doctor record synchronized.
 const updateMyProfile = async (
   userId: string,
   payload: {
@@ -143,7 +143,7 @@ const updateMyProfile = async (
   return getMyProfile(user.id);
 };
 
-// Get User By ID Service
+// Load one user account for administrative inspection.
 const getUserById = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },

@@ -15,7 +15,7 @@ import { Router } from "express";
 import { authRoutes } from "@/modules/v1/auth/auth.route";
 import { userRoutes } from "@/modules/v1/user/user.route";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
-import { adminDoctorRoutes } from "@/modules/v1/doctor/admin-doctor.route";
+import { adminDoctorRoutes } from "@/modules/v1/admin/admin-doctor.route";
 import { adminRoutes } from "@/modules/v1/admin/admin.route";
 
 /**
@@ -28,30 +28,37 @@ const router: Router = Router();
  */
 const moduleRoutes = [
   {
+    // Public and authenticated account flows.
     path: "/auth",
     route: authRoutes,
   },
   {
+    // Authenticated profile operations.
     path: "/users",
     route: userRoutes,
   },
   {
+    // Backward-compatible singular profile alias.
     path: "/user",
     route: userRoutes,
   },
   {
+    // Administrator account management.
     path: "/admin/users",
     route: adminRoutes,
   },
   {
+    // Doctor application and account management.
     path: "/admin/doctors",
     route: adminDoctorRoutes,
   },
   {
+    // Public doctor application and applicant-status flows.
     path: "/doctors",
     route: doctorRoutes,
   },
   {
+    // Backward-compatible singular doctor alias.
     path: "/doctor",
     route: doctorRoutes,
   },

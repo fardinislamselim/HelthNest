@@ -21,7 +21,7 @@ router.get(
 );
 
 /**
- * Update Profile
+ * Update My Profile Route
  * @access - authenticated
  * @method - PATCH
  * @route - /api/v1/user/me
@@ -34,7 +34,7 @@ router.patch(
 );
 
 /**
- * Update Profile Image Route
+ * Update My Profile Image Route
  * @access - authenticated
  * @method - PATCH
  * @route - /api/v1/user/me
@@ -43,7 +43,6 @@ router.patch(
     "/me/profile-image",
     auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
     upload.single("profileImage"),
-    validateRequest(UserValidation.updateProfileImageValidationSchema),
     UserController.updateProfileImage
 );
 
@@ -61,7 +60,7 @@ router.get(
 );
 
 /**
- * Update Profile Image Route
+ * Legacy Profile Image Alias
  * @access - authenticated
  * @method - PATCH
  * @route - /api/v1/user/profile-image

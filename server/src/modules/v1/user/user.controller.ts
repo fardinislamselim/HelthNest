@@ -7,12 +7,18 @@ import { IRequestUser } from "@/modules/v1/auth/auth.interface";
 import userService from "@/modules/v1/user/user.service";
 
 
-//  Upload Profile Image Controller
+// Upload and replace the authenticated user's profile image.
 const updateProfileImage = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IRequestUser;
 
   if (!req.file) {
     throw new AppError(httpStatus.BAD_REQUEST, "Profile image is required");
+  }
+  if (req.file.size >= 5 * 1024 * 1024) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Profile image size must be less than 5MB",
+    );
   }
 
   const result = await userService.updateProfileImage(
@@ -28,7 +34,7 @@ const updateProfileImage = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// Get My Profile Controller
+// Return the authenticated user's profile and linked domain record.
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IRequestUser;
   const result = await userService.getMyProfile(user.userId);
@@ -41,7 +47,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// Update My Profile Controller
+// Update the authenticated user's editable profile fields.
 const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IRequestUser;
   const result = await userService.updateMyProfile(user.userId, req.body);
@@ -54,7 +60,7 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// Get User By ID Controller
+// Return a user account for an authorized administrator.
 const getUserById = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.getUserById(String(req.params.userId));
 

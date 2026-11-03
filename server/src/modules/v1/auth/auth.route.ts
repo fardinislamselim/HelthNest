@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller'
 import { AuthValidation } from './auth.validation'
 
 
-// Auth Routes
+// Authentication and account-security routes.
 const router = Router()
 
 /**

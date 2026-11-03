@@ -23,7 +23,7 @@ import AppError from '@/middleware/AppError';
  */
 export const globalErrorHandler = async (
     err: any,
-    _req: Request,
+    req: Request,
     res: Response,
     _next: NextFunction,
 ) => {

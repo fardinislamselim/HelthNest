@@ -1,0 +1,514 @@
+openapi: 3.0.3
+info:
+  title: HelthNest API
+  description: Authentication, profile, doctor application, and administrator management API.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local development
+tags:
+  - name: Authentication
+  - name: Users
+  - name: Doctor Applications
+  - name: Admin Users
+  - name: Admin Doctors
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPatient'
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Log in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /auth/verify-email:
+    post:
+      tags: [Authentication]
+      summary: Verify an email address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/resend-otp:
+    post:
+      tags: [Authentication]
+      summary: Resend email verification OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/me:
+    get:
+      tags: [Authentication]
+      security: [{ bearerAuth: [] }]
+      summary: Get the authenticated user's profile
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /auth/refresh-token:
+    post:
+      tags: [Authentication]
+      summary: Refresh access and refresh tokens
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/google-login:
+    post:
+      tags: [Authentication]
+      summary: Log in with Google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties:
+                idToken: { type: string }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Request a password reset OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/reset-password:
+    patch:
+      tags: [Authentication]
+      summary: Reset a password using an OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, otp, newPassword]
+              properties:
+                email: { type: string, format: email }
+                otp: { type: string, minLength: 6, maxLength: 6 }
+                newPassword: { type: string, minLength: 6, maxLength: 128 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      security: [{ bearerAuth: [] }]
+      summary: Log out
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/change-password:
+    patch:
+      tags: [Authentication]
+      security: [{ bearerAuth: [] }]
+      summary: Change the authenticated user's password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword]
+              properties:
+                currentPassword: { type: string, minLength: 6 }
+                newPassword: { type: string, minLength: 6, maxLength: 128 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /auth/set-password:
+    patch:
+      tags: [Authentication]
+      security: [{ bearerAuth: [] }]
+      summary: Set a password for a Google patient account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [newPassword]
+              properties:
+                newPassword: { type: string, minLength: 6, maxLength: 128 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /users/me:
+    get:
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      summary: Get my profile
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+    patch:
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      summary: Update my profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdate'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /users/me/profile-image:
+    patch:
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      summary: Upload my profile image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [profileImage]
+              properties:
+                profileImage:
+                  type: string
+                  format: binary
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /users/{userId}:
+    get:
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      summary: Get a user by ID
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /doctors/apply:
+    post:
+      tags: [Doctor Applications]
+      summary: Submit a doctor application
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DoctorApplication'
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+  /doctors/verify-email:
+    post:
+      tags: [Doctor Applications]
+      summary: Verify a doctor application email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /doctors/apply/email-verify:
+    post:
+      tags: [Doctor Applications]
+      summary: Legacy doctor email verification endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /doctors/resend-otp:
+    post:
+      tags: [Doctor Applications]
+      summary: Resend doctor application OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /doctors/application-status:
+    get:
+      tags: [Doctor Applications]
+      security: [{ bearerAuth: [] }]
+      summary: Get doctor application status
+      parameters:
+        - in: query
+          name: email
+          schema: { type: string, format: email }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/admins:
+    post:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Create an admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdministrator'
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+    get:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: List admins
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/super-admins:
+    post:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Create a super admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdministrator'
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+    get:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: List super admins
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/{userId}:
+    get:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Get an account by ID
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/admins/{userId}/block:
+    patch:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Block an admin
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/admins/{userId}/unblock:
+    patch:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Unblock an admin
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/super-admins/{userId}/block:
+    patch:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Block a super admin
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/users/super-admins/{userId}/unblock:
+    patch:
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      summary: Unblock a super admin
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors:
+    get:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: List all doctors
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors/pending:
+    get:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: List pending doctor applications
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors/{doctorId}:
+    get:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: Get doctor details
+      parameters:
+        - $ref: '#/components/parameters/DoctorId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors/{doctorId}/approve:
+    patch:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: Approve a doctor application
+      parameters:
+        - $ref: '#/components/parameters/DoctorId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors/{doctorId}/reject:
+    patch:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: Reject a doctor application
+      parameters:
+        - $ref: '#/components/parameters/DoctorId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejectionReason: { type: string, maxLength: 1000 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors/{doctorId}/block:
+    patch:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: Block a doctor
+      parameters:
+        - $ref: '#/components/parameters/DoctorId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /admin/doctors/{doctorId}/unblock:
+    patch:
+      tags: [Admin Doctors]
+      security: [{ bearerAuth: [] }]
+      summary: Unblock a doctor
+      parameters:
+        - $ref: '#/components/parameters/DoctorId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token. The API also accepts the accessToken cookie.
+  parameters:
+    UserId:
+      in: path
+      name: userId
+      required: true
+      schema: { type: string, format: uuid }
+    DoctorId:
+      in: path
+      name: doctorId
+      required: true
+      schema: { type: string, format: uuid }
+  schemas:
+    Email:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+    VerifyEmail:
+      type: object
+      required: [email, otp]
+      properties:
+        email: { type: string, format: email }
+        otp: { type: string, pattern: '^[0-9]{6}$' }
+    Login:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 6, maxLength: 128 }
+    RegisterPatient:
+      allOf:
+        - $ref: '#/components/schemas/Login'
+        - type: object
+          required: [name]
+          properties:
+            name: { type: string, minLength: 2, maxLength: 100 }
+            contactNumber: { type: string, minLength: 7, maxLength: 20 }
+            address: { type: string, maxLength: 300 }
+    ProfileUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100 }
+        email: { type: string, format: email }
+        contactNumber: { type: string, minLength: 7, maxLength: 20 }
+        address: { type: string, maxLength: 300 }
+    CreateAdministrator:
+      type: object
+      required: [organizationEmail, personalEmail]
+      properties:
+        organizationEmail: { type: string, format: email }
+        personalEmail: { type: string, format: email }
+        name: { type: string, minLength: 2, maxLength: 100 }
+    DoctorApplication:
+      type: object
+      required: [name, email, specialization, licenseNumber, qualifications, experienceYears]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 6 }
+        address: { type: string }
+        specialization: { type: string }
+        licenseNumber: { type: string }
+        qualifications: { type: string }
+        experienceYears: { type: integer, minimum: 0 }
+        bio: { type: string }
+        consultationFee: { type: number, minimum: 0 }
+        contactNumber: { type: string }
+        resume: { type: string, format: binary }
+        additionalFiles:
+          type: array
+          items: { type: string, format: binary }
+  responses:
+    Success:
+      description: Successful request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success: { type: boolean }
+              message: { type: string }
+              data: {}
+    BadRequest:
+      description: Invalid request
+    Unauthorized:
+      description: Authentication required or invalid credentials
+    NotFound:
+      description: Resource not found

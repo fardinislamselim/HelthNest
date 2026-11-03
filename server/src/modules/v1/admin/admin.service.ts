@@ -24,12 +24,15 @@ const publicUserSelect = {
   updatedAt: true,
 } as const;
 
+// Derive a readable fallback display name when the creator omits one.
 const getNameFromEmail = (email: string) =>
   email.split("@")[0].replace(/[._-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
+// Generate a password that is only delivered to the administrator's personal email.
 const generateTemporaryPassword = () =>
   `${crypto.randomBytes(9).toString("base64url")}A1!`;
 
+// Render and send the administrator's initial login credentials.
 const sendCredentialsEmail = async (user: {
   name: string;
   email: string;
@@ -52,6 +55,7 @@ const sendCredentialsEmail = async (user: {
   });
 };
 
+// Create an administrator with a forced first-login password change.
 const createAdmin = async (payload: TCreateAdmin, role: Role.ADMIN | Role.SUPER_ADMIN) => {
   if (payload.organizationEmail === payload.personalEmail) {
     throw new AppError(httpStatus.BAD_REQUEST, "Organization and personal emails must be different");
@@ -96,6 +100,7 @@ const createAdmin = async (payload: TCreateAdmin, role: Role.ADMIN | Role.SUPER_
   return user;
 };
 
+// Return non-sensitive administrator account data.
 const listAdmins = async (role: Role.ADMIN | Role.SUPER_ADMIN) =>
   prisma.user.findMany({
     where: { role, isDeleted: false },
@@ -103,6 +108,7 @@ const listAdmins = async (role: Role.ADMIN | Role.SUPER_ADMIN) =>
     orderBy: { createdAt: "desc" },
   });
 
+// Find one non-deleted user account by ID.
 const getUserById = async (userId: string) => {
   const user = await prisma.user.findFirst({
     where: { id: userId, isDeleted: false },
@@ -112,6 +118,7 @@ const getUserById = async (userId: string) => {
   return user;
 };
 
+// Change status only when the account currently has the expected administrator role.
 const setAdminBlocked = async (
   userId: string,
   role: Role.ADMIN | Role.SUPER_ADMIN,

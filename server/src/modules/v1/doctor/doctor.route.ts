@@ -6,7 +6,7 @@ import validateRequest from "@/middleware/validateRequest";
 import { DoctorValidation } from "@/modules/v1/doctor/doctor.validation";
 import { doctorApplicantAuth } from "@/middleware/doctorApplicantAuth";
 
-// Router Initialization
+// Public doctor application routes.
 const router = Router();
 
 /**

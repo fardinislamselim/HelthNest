@@ -86,7 +86,8 @@ const getApplicationStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllDoctors = catchAsync(async (_req: Request, res: Response) => {
+// List all active doctor records for administrator screens.
+const getAllDoctors = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.getAllDoctors();
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -96,7 +97,8 @@ const getAllDoctors = catchAsync(async (_req: Request, res: Response) => {
   });
 });
 
-const getPendingDoctors = catchAsync(async (_req: Request, res: Response) => {
+// List verified applications waiting for administrative review.
+const getPendingDoctors = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.getPendingDoctors();
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -106,6 +108,7 @@ const getPendingDoctors = catchAsync(async (_req: Request, res: Response) => {
   });
 });
 
+// Return the complete doctor record for administrative review.
 const getDoctorById = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.getDoctorById(String(req.params.doctorId));
   sendResponse(res, {
@@ -116,6 +119,7 @@ const getDoctorById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Approve an application, activate its user account, and send the welcome email.
 const approveDoctor = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.approveDoctor(
     String(req.params.doctorId),
@@ -129,6 +133,7 @@ const approveDoctor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Reject an application and persist the optional review reason.
 const rejectDoctor = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.rejectDoctor(
     String(req.params.doctorId),
@@ -143,6 +148,7 @@ const rejectDoctor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Block a doctor's user account while retaining the doctor record.
 const blockDoctor = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.setDoctorBlocked(
     String(req.params.doctorId),
@@ -156,6 +162,7 @@ const blockDoctor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Restore a blocked doctor's user account.
 const unblockDoctor = catchAsync(async (req: Request, res: Response) => {
   const result = await doctorService.setDoctorBlocked(
     String(req.params.doctorId),
