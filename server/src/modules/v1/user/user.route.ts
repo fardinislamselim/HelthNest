@@ -22,8 +22,6 @@ import { auth } from "@/middleware/checkAuth";
  */
 import { UserController } from "@/modules/v1/user/user.controller";
 
-
-
 /**
  * Router Initialization
  */

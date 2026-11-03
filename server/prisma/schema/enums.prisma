@@ -21,3 +21,9 @@ enum AuthProvider {
   GOOGLE
   CREDENTIAL
 }
+
+enum DoctorVerificationStatus{
+  PENDING
+  APPROVED
+  REJECTED
+}

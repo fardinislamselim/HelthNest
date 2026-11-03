@@ -1,22 +1,6 @@
-/**
- * @copyright 2026
- * @author Fardin Islam Selim
- * @license Apache-2.0
- */
-
-/**
- * Node.js Built-in Modules
- */
 import type { Server } from "http";
-
-/**
- * Third-Party Modules
- */
 import colors from "colors";
 
-/**
- * Application Module
- */
 import app from "@/app";
 import config from "@/config";
 import { logger } from "@/lib/winston";
@@ -24,14 +8,14 @@ import { prisma } from "@/lib/prisma";
 import { seedSuperAdmin, seedTesterAdmin, seedTesterDoctor } from "@/utils/seed";
 import { redisClient } from "@/lib/redis";
 
-/**
- * Server
- */
+
+// Server
+
 let server: Server | undefined;
 
-/**
- * Main Function
- */
+
+// Main Function
+
 async function main (){
     await prisma.$connect()
     logger.info("Database Connected")
@@ -50,18 +34,18 @@ async function main (){
     })
 }
 
-/**
- * Start Server
- */
+
+// Start Server
+
 main().catch((err)=>{
     logger.error("Error starting server:", err);
     prisma.$disconnect();
     process.exit(1);
 })
 
-/**
- * Unhandled Rejection
- */
+
+// Unhandled Rejection
+
 process.on("unhandledRejection", err =>{
     logger.error("Unhandled rejection:", err);
     if(server){
@@ -71,9 +55,9 @@ process.on("unhandledRejection", err =>{
     }
 })
 
-/**
- * Uncaught Exception
- */
+
+// Uncaught Exception
+
 process.on("uncaughtException", err=>{
     logger.error("Uncaught exception:", err);
     if(server){

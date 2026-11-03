@@ -1,18 +1,7 @@
-/**
- * @copyright 2026
- * @author Fardin Islam Selim
- * @license Apache-2.0
- */
-
-/**
- * Third-Party Modules
- */
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 
-/**
- * Application Middleware
- */
+
 import AppError from "@/middleware/AppError";
 
 /**
@@ -31,9 +20,8 @@ import { IRequestUser } from "@/modules/v1/auth/auth.interface";
  */
 import { AuthService } from "@/modules/v1/auth/auth.service";
 
-/**
- * Register Patient Controller
- */
+
+// Register Patient Controller
 const registerPatient = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.registerPatient(payload);
@@ -66,9 +54,7 @@ const registerPatient = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/**
- * Login User Controller
- */
+// Login User Controller
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.loginUser(payload);
@@ -98,9 +84,9 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/**
- * Get My Profile Controller
- */
+
+// Get My Profile Controller
+ 
 const getMe = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as unknown as IRequestUser;
 
@@ -117,9 +103,7 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/**
- * Refresh Token Controller
- */
+// Refresh Token Controller
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies?.refreshToken || req.body?.refreshToken;
   if (!token) {
@@ -152,9 +136,7 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/**
- * Google Login Controller
- */
+// Google Login Controller
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.googleLogin(payload);
@@ -186,9 +168,7 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
-/**
- * Forgot Password Controller
- */
+// Forgot Password Controller
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
   await AuthService.forgotPassword(email);
@@ -200,9 +180,9 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
-/**
- * Reset Password Controller
- */
+
+// Reset Password Controller
+
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const { email, otp, newPassword } = req.body;
   await AuthService.resetPassword({ email, otp, newPassword });
@@ -214,9 +194,65 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 })
 
-/**
- * Export Auth Controller
- */
+const verifyEmail = catchAsync(async (req: Request, res: Response) => {
+  await AuthService.verifyEmail(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Email verified successfully",
+    data: null,
+  });
+});
+
+const resendOtp = catchAsync(async (req: Request, res: Response) => {
+  await AuthService.resendOtp(req.body.email);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Verification OTP sent successfully",
+    data: null,
+  });
+});
+
+const logout = catchAsync(async (req: Request, res: Response) => {
+  await AuthService.logout();
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Logged out successfully",
+    data: null,
+  });
+});
+
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IRequestUser;
+  await AuthService.changePassword(user.userId, req.body);
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password changed successfully",
+    data: null,
+  });
+});
+
+const setPassword = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IRequestUser;
+  await AuthService.setPassword(user.userId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password set successfully",
+    data: null,
+  });
+});
+
+
+// Export Auth Controller
+
 export const AuthController = {
   registerPatient,
   loginUser,
@@ -225,4 +261,9 @@ export const AuthController = {
   googleLogin,
   forgotPassword,
   resetPassword,
+  verifyEmail,
+  resendOtp,
+  logout,
+  changePassword,
+  setPassword,
 };

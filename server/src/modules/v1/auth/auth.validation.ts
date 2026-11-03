@@ -119,6 +119,32 @@ const resetPasswordValidationSchema = z.object({
   }),
 });
 
+const verifyEmailValidationSchema = z.object({
+  body: z.object({
+    email: z.string().trim().email().transform((email) => email.toLowerCase()),
+    otp: z.string().trim().regex(/^\d{6}$/, "OTP must be 6 digits"),
+  }),
+});
+
+const resendOtpValidationSchema = z.object({
+  body: z.object({
+    email: z.string().trim().email().transform((email) => email.toLowerCase()),
+  }),
+});
+
+const changePasswordValidationSchema = z.object({
+  body: z.object({
+    currentPassword: z.string().min(6),
+    newPassword: z.string().min(6).max(128),
+  }),
+});
+
+const setPasswordValidationSchema = z.object({
+  body: z.object({
+    newPassword: z.string().min(6).max(128),
+  }),
+});
+
 /**
  * Export Auth Validation
  */
@@ -128,5 +154,9 @@ export const AuthValidation = {
   googleLoginValidationSchema,
   refreshTokenValidationSchema,
   forgotPasswordValidationSchema,
-  resetPasswordValidationSchema
+  resetPasswordValidationSchema,
+  verifyEmailValidationSchema,
+  resendOtpValidationSchema,
+  changePasswordValidationSchema,
+  setPasswordValidationSchema,
 };

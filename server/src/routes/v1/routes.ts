@@ -15,6 +15,7 @@ import { Router } from "express";
  */
 import { authRoutes } from "@/modules/v1/auth/auth.route";
 import { userRoutes } from "@/modules/v1/user/user.route";
+import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
 
 /**
  * Router Initialization
@@ -33,6 +34,10 @@ const moduleRoutes = [
         path:"/user",
         route:userRoutes
     },
+    {
+        path:"/doctor",
+        route:doctorRoutes
+    }
 ]
 
 moduleRoutes.forEach((route =>router.use(route.path, route.route) ))

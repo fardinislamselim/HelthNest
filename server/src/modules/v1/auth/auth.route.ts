@@ -1,38 +1,12 @@
-/**
- * @copyright 2026
- * @author Fardin Islam Selim
- * @license Apache-2.0
- */
-
-/**
- * Third-Party Modules
- */
 import { Router } from 'express'
-
-/**
- * Prisma Module
- */
 import { Role } from '../../../../generated/prisma/enums'
-
-/**
- * Middleware
- */
 import { auth } from '@/middleware/checkAuth'
 import validateRequest from '@/middleware/validateRequest'
-
-/**
- * Auth Controller
- */
 import { AuthController } from './auth.controller'
-
-/**
- * Auth Validation
- */
 import { AuthValidation } from './auth.validation'
 
-/**
- * Auth Routes
- */
+
+// Auth Routes
 const router = Router()
 
 /**
@@ -57,6 +31,30 @@ router.post(
     '/login',
     validateRequest(AuthValidation.loginUserValidationSchema),
     AuthController.loginUser,
+)
+
+/**
+ * Verify Email Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/verify-email
+ */
+router.post(
+    '/verify-email',
+    validateRequest(AuthValidation.verifyEmailValidationSchema),
+    AuthController.verifyEmail,
+)
+
+/**
+ * Resend OTP Route
+ * @access - public
+ * @method - POST
+ * @route - /api/v1/auth/resend-otp
+ */
+router.post(
+    '/resend-otp',
+    validateRequest(AuthValidation.resendOtpValidationSchema),
+    AuthController.resendOtp,
 )
 
 /**
@@ -90,10 +88,11 @@ router.post(
  * @route - /api/v1/auth/google
  */
 router.post(
-    '/google',
+    '/google-login',
     validateRequest(AuthValidation.googleLoginValidationSchema),
     AuthController.googleLogin,
 )
+
 
 /**
  * Forgot Password Route
@@ -113,10 +112,48 @@ router.post(
  * @method - POST
  * @route - /api/v1/auth/reset-password
  */
-router.post(
+router.patch(
     '/reset-password',
     validateRequest(AuthValidation.resetPasswordValidationSchema),
     AuthController.resetPassword,
+)
+
+/**
+ * Logout Route
+ * @access - authenticated
+ * @method - POST
+ * @route - /api/v1/auth/logout
+ */
+router.post(
+    '/logout',
+    auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
+    AuthController.logout,
+)
+
+/**
+ * Change Password Route
+ * @access - authenticated
+ * @method - PATCH
+ * @route - /api/v1/auth/change-password
+ */
+router.patch(
+    '/change-password',
+    auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
+    validateRequest(AuthValidation.changePasswordValidationSchema),
+    AuthController.changePassword,
+)
+
+/**
+ * Set Password Route
+ * @access - authenticated
+ * @method - PATCH
+ * @route - /api/v1/auth/set-password
+ */
+router.patch(
+    '/set-password',
+    auth(Role.PATIENT),
+    validateRequest(AuthValidation.setPasswordValidationSchema),
+    AuthController.setPassword,
 )
 
 export const authRoutes = router

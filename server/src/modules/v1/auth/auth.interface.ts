@@ -1,14 +1,6 @@
-/**
- * @copyright 2026
- * @author Fardin Islam Selim
- * @license Apache-2.0
- */
-
 import type { Role } from "../../../../generated/prisma/enums";
 
-/**
- * Register Patient Payload
- */
+// Register Patient Payload
 export interface IRegisterPatientPayload {
   name: string;
   email: string;
@@ -17,47 +9,49 @@ export interface IRegisterPatientPayload {
   address?: string;
 }
 
-/**
- * Login User Payload
- */
+// Login User Payload
 export interface ILoginUserPayload {
   email: string;
   password: string;
 }
 
-/**
- * Google Login Payload
- */
+// Google Login Payload
 export interface IGoogleLoginPayload {
   idToken: string;
 }
 
-/**
- * Refresh Token Payload
- */
+// Refresh Token Payload
 export interface IRefreshTokenPayload {
   refreshToken: string;
 }
 
-/**
- * Forgot Password Payload
- */
+// Forgot Password Payload
 export interface IForgotPasswordPayload {
   email: string;
 }
 
-/**
- * Reset Password Payload
- */
+// Reset Password Payload
 export interface IResetPasswordPayload {
   email: string;
   otp: string;
   newPassword: string;
 }
 
-/**
- * Authenticated Request User
- */
+export interface IVerifyEmailPayload {
+  email: string;
+  otp: string;
+}
+
+export interface IChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ISetPasswordPayload {
+  newPassword: string;
+}
+
+// Request User Interface
 export interface IRequestUser {
   userId: string;
   email: string;
