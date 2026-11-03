@@ -1,34 +1,64 @@
-/**
- * @copyright 2026
- * @author Fardin Islam Selim
- * @license Apache-2.0
- */
-
-/**
- * Third-Party Module
- */
 import { Router } from "express";
-
-
-/**
- * Application Module
- */
 import { Role } from "../../../../generated/prisma/enums";
 import { upload } from "@/lib/multer";
 import { auth } from "@/middleware/checkAuth";
-
-/**
- * Application Controller
- */
+import validateRequest from "@/middleware/validateRequest";
 import { UserController } from "@/modules/v1/user/user.controller";
+import { UserValidation } from "@/modules/v1/user/user.validation";
 
-/**
- * Router Initialization
- */
 const router = Router();
 
+/**
+ * Get My Profile Route
+ * @access - authenticated
+ * @method - GET
+ * @route - /api/v1/user/me
+ */
+router.get(
+    "/me",
+    auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
+    UserController.getMyProfile
+);
 
+/**
+ * Update Profile
+ * @access - authenticated
+ * @method - PATCH
+ * @route - /api/v1/user/me
+ */
+router.patch(
+    "/me",
+    auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
+    validateRequest(UserValidation.updateMyProfileValidationSchema),
+    UserController.updateMyProfile
+);
 
+/**
+ * Update Profile Image Route
+ * @access - authenticated
+ * @method - PATCH
+ * @route - /api/v1/user/me
+ */
+router.patch(
+    "/me/profile-image",
+    auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
+    upload.single("profileImage"),
+    validateRequest(UserValidation.updateProfileImageValidationSchema),
+    UserController.updateProfileImage
+);
+
+/**
+ * Get User By ID Route
+ * @access - authenticated
+ * @method - GET
+ * @route - /api/v1/user/:userId
+ */
+router.get(
+    "/:userId",
+    auth(Role.ADMIN, Role.SUPER_ADMIN),
+    validateRequest(UserValidation.getUserByIdValidationSchema),
+    UserController.getUserById
+);
 
 /**
  * Update Profile Image Route

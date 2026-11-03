@@ -45,7 +45,6 @@ main().catch((err)=>{
 
 
 // Unhandled Rejection
-
 process.on("unhandledRejection", err =>{
     logger.error("Unhandled rejection:", err);
     if(server){
@@ -57,7 +56,6 @@ process.on("unhandledRejection", err =>{
 
 
 // Uncaught Exception
-
 process.on("uncaughtException", err=>{
     logger.error("Uncaught exception:", err);
     if(server){

@@ -60,8 +60,8 @@ router.post(
 /**
  * Get My Profile Route
  * @access - authenticated
- * @method - POST
- * @route - /api/v1/auth/login
+ * @method - GET
+ * @route - /api/v1/auth/me
  */
 router.get(
     '/me',

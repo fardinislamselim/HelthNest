@@ -14,6 +14,8 @@ import type { UploadApiResponse } from "cloudinary";
  */
 import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
+import AppError from "@/middleware/AppError";
+import httpStatus from "http-status";
 
 /**
  * Update Profile Image Service
@@ -72,6 +74,103 @@ const updateProfileImage = async (buffer: Buffer, userId: string) => {
   return updatedUser;
 };
 
+const getMyProfile = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { patient: true, doctor: true },
+    omit: { password: true },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
+
+const updateMyProfile = async (
+  userId: string,
+  payload: {
+    name?: string;
+    email?: string;
+    contactNumber?: string;
+    address?: string;
+  },
+) => {
+  const currentUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { patient: true, doctor: true },
+  });
+
+  if (!currentUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (payload.email && payload.email !== currentUser.email) {
+    const emailExists = await prisma.user.findUnique({
+      where: { email: payload.email },
+    });
+    if (emailExists) {
+      throw new AppError(httpStatus.CONFLICT, "Email is already in use");
+    }
+  }
+
+  const user = await prisma.$transaction(async (tx) => {
+    const updatedUser = await tx.user.update({
+      where: { id: userId },
+      data: {
+        ...(payload.name !== undefined ? { name: payload.name } : {}),
+        ...(payload.email !== undefined ? { email: payload.email, emailVerified: false } : {}),
+      },
+    });
+
+    if (currentUser.patient) {
+      await tx.patient.update({
+        where: { userId },
+        data: {
+          ...(payload.name !== undefined ? { name: payload.name } : {}),
+          ...(payload.email !== undefined ? { email: payload.email } : {}),
+          ...(payload.contactNumber !== undefined ? { contactNumber: payload.contactNumber } : {}),
+          ...(payload.address !== undefined ? { address: payload.address } : {}),
+        },
+      });
+    }
+
+    if (currentUser.doctor) {
+      await tx.doctor.update({
+        where: { userId },
+        data: {
+          ...(payload.name !== undefined ? { name: payload.name } : {}),
+          ...(payload.email !== undefined ? { email: payload.email } : {}),
+          ...(payload.contactNumber !== undefined ? { contactNumber: payload.contactNumber } : {}),
+          ...(payload.address !== undefined ? { address: payload.address } : {}),
+        },
+      });
+    }
+
+    return updatedUser;
+  });
+
+  return getMyProfile(user.id);
+};
+
+const getUserById = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { patient: true, doctor: true },
+    omit: { password: true },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
+
 export default {
   updateProfileImage,
+  getMyProfile,
+  updateMyProfile,
+  getUserById,
 };
