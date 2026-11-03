@@ -2,6 +2,7 @@ model User {
   id                   String       @id @default(uuid())
   name                 String
   email                String
+  personalEmail        String?
   password             String?
   googleId             String?
   authProvider         AuthProvider @default(CREDENTIAL)

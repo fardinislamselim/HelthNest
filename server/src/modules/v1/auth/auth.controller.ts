@@ -58,7 +58,7 @@ const registerPatient = catchAsync(async (req: Request, res: Response) => {
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.loginUser(payload);
-  const { accessToken, refreshToken } = result;
+  const { accessToken, refreshToken, needPasswordChange } = result;
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
@@ -80,6 +80,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     data: {
       accessToken,
       refreshToken,
+      needPasswordChange,
     },
   });
 });

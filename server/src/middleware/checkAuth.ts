@@ -101,6 +101,13 @@ export const auth = (...requiredRoles: Role[]) => {
       );
     }
 
+    if (user.needPasswordChange && req.path !== "/change-password") {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You must change your temporary password before accessing this resource.",
+      );
+    }
+
     req.user = {
       email,
       name,

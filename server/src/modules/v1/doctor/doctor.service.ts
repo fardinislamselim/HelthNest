@@ -24,11 +24,13 @@ import { jwtUtils } from "@/utils/jwt";
 import {
   Role,
   DoctorVerificationStatus,
+  UserStatus,
 } from "../../../../generated/prisma/enums";
 import {
   TApplyAsDoctor,
   TVerifyDoctorEmail,
   TGetApplicationStatusQuery,
+  TRejectDoctorApplication,
 } from "./doctor.interface";
 
 const getTemplatePath = (templateName: string) => {
@@ -404,9 +406,178 @@ const getApplicationStatus = async (query: TGetApplicationStatusQuery) => {
   };
 };
 
+const doctorSelection = {
+  id: true,
+  name: true,
+  email: true,
+  address: true,
+  specialization: true,
+  licenseNumber: true,
+  qualifications: true,
+  experienceYears: true,
+  bio: true,
+  consultationFee: true,
+  contactNumber: true,
+  verificationStatus: true,
+  rejectionReason: true,
+  reviewedBy: true,
+  reviewedAt: true,
+  resume: true,
+  additionalFiles: true,
+  isDeleted: true,
+  createdAt: true,
+  updatedAt: true,
+  user: {
+    select: {
+      id: true,
+      emailVerified: true,
+      status: true,
+      role: true,
+    },
+  },
+} as const;
+
+const getAllDoctors = async () =>
+  prisma.doctor.findMany({
+    where: { isDeleted: false },
+    select: doctorSelection,
+    orderBy: { createdAt: "desc" },
+  });
+
+const getPendingDoctors = async () =>
+  prisma.doctor.findMany({
+    where: {
+      isDeleted: false,
+      verificationStatus: DoctorVerificationStatus.PENDING,
+      user: { emailVerified: true },
+    },
+    select: doctorSelection,
+    orderBy: { createdAt: "asc" },
+  });
+
+const getDoctorById = async (doctorId: string) => {
+  const doctor = await prisma.doctor.findFirst({
+    where: { id: doctorId, isDeleted: false },
+    select: doctorSelection,
+  });
+
+  if (!doctor) {
+    throw new AppError(httpStatus.NOT_FOUND, "Doctor not found");
+  }
+
+  return doctor;
+};
+
+const sendDoctorWelcomeEmail = async (doctor: { name: string; email: string }) => {
+  const templatePath = getTemplatePath("doctor-welcome.ejs");
+  const html = await ejs.renderFile(templatePath, { name: doctor.name });
+
+  await transporter.sendMail({
+    from: config.email_sender,
+    to: doctor.email,
+    subject: "Welcome to HealthNest - Your doctor application is approved",
+    html,
+  });
+};
+
+const approveDoctor = async (doctorId: string, reviewerId: string) => {
+  const doctor = await prisma.$transaction(async (tx) => {
+    const existingDoctor = await tx.doctor.findFirst({
+      where: { id: doctorId, isDeleted: false },
+      include: { user: true },
+    });
+
+    if (!existingDoctor) {
+      throw new AppError(httpStatus.NOT_FOUND, "Doctor not found");
+    }
+
+    if (existingDoctor.verificationStatus === DoctorVerificationStatus.APPROVED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Doctor is already approved");
+    }
+    if (!existingDoctor.user.emailVerified) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Doctor email must be verified before approval",
+      );
+    }
+
+    return tx.doctor.update({
+      where: { id: doctorId },
+      data: {
+        verificationStatus: DoctorVerificationStatus.APPROVED,
+        rejectionReason: null,
+        reviewedBy: reviewerId,
+        reviewedAt: new Date(),
+        user: { update: { status: "ACTIVE" } },
+      },
+      select: doctorSelection,
+    });
+  });
+
+  try {
+    await sendDoctorWelcomeEmail(doctor);
+  } catch (error) {
+    logger.error("Doctor approved but welcome email could not be sent:", error);
+  }
+
+  return doctor;
+};
+
+const rejectDoctor = async (
+  doctorId: string,
+  reviewerId: string,
+  payload: TRejectDoctorApplication,
+) => {
+  const existingDoctor = await prisma.doctor.findFirst({
+    where: { id: doctorId, isDeleted: false },
+  });
+
+  if (!existingDoctor) {
+    throw new AppError(httpStatus.NOT_FOUND, "Doctor not found");
+  }
+  if (existingDoctor.verificationStatus === DoctorVerificationStatus.APPROVED) {
+    throw new AppError(httpStatus.BAD_REQUEST, "An approved doctor cannot be rejected");
+  }
+
+  return prisma.doctor.update({
+    where: { id: doctorId },
+    data: {
+      verificationStatus: DoctorVerificationStatus.REJECTED,
+      rejectionReason: payload.rejectionReason ?? null,
+      reviewedBy: reviewerId,
+      reviewedAt: new Date(),
+    },
+    select: doctorSelection,
+  });
+};
+
+const setDoctorBlocked = async (doctorId: string, status: UserStatus) => {
+  const doctor = await prisma.doctor.findFirst({
+    where: { id: doctorId, isDeleted: false },
+    select: { userId: true },
+  });
+
+  if (!doctor) {
+    throw new AppError(httpStatus.NOT_FOUND, "Doctor not found");
+  }
+
+  await prisma.user.update({
+    where: { id: doctor.userId },
+    data: { status },
+  });
+
+  return getDoctorById(doctorId);
+};
+
 export const doctorService = {
   applyAsDoctor,
   verifyDoctorEmail,
   resendDoctorOtp,
   getApplicationStatus,
+  getAllDoctors,
+  getPendingDoctors,
+  getDoctorById,
+  approveDoctor,
+  rejectDoctor,
+  setDoctorBlocked,
 };

@@ -247,6 +247,7 @@ const loginUser = async (payload: ILoginUserPayload) => {
   return {
     accessToken,
     refreshToken,
+    needPasswordChange: user.needPasswordChange,
   };
 };
 
@@ -540,7 +541,10 @@ const changePassword = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { password: await bcrypt.hash(payload.newPassword, 10) },
+    data: {
+      password: await bcrypt.hash(payload.newPassword, 10),
+      needPasswordChange: false,
+    },
   });
 };
 

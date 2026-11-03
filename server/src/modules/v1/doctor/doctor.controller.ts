@@ -4,6 +4,7 @@ import httpStatus from "http-status";
 import catchAsync from "@/utils/catchAsync";
 import sendResponse from "@/utils/sendResponse";
 import { doctorService } from "./doctor.service";
+import { UserStatus } from "../../../../generated/prisma/enums";
 
 // Apply as Doctor Controller
 const applyAsDoctor = catchAsync(async (req: Request, res: Response) => {
@@ -85,9 +86,99 @@ const getApplicationStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllDoctors = catchAsync(async (_req: Request, res: Response) => {
+  const result = await doctorService.getAllDoctors();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctors retrieved successfully",
+    data: result,
+  });
+});
+
+const getPendingDoctors = catchAsync(async (_req: Request, res: Response) => {
+  const result = await doctorService.getPendingDoctors();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Pending doctors retrieved successfully",
+    data: result,
+  });
+});
+
+const getDoctorById = catchAsync(async (req: Request, res: Response) => {
+  const result = await doctorService.getDoctorById(String(req.params.doctorId));
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor details retrieved successfully",
+    data: result,
+  });
+});
+
+const approveDoctor = catchAsync(async (req: Request, res: Response) => {
+  const result = await doctorService.approveDoctor(
+    String(req.params.doctorId),
+    req.user!.userId,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor approved successfully",
+    data: result,
+  });
+});
+
+const rejectDoctor = catchAsync(async (req: Request, res: Response) => {
+  const result = await doctorService.rejectDoctor(
+    String(req.params.doctorId),
+    req.user!.userId,
+    req.body,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor application rejected successfully",
+    data: result,
+  });
+});
+
+const blockDoctor = catchAsync(async (req: Request, res: Response) => {
+  const result = await doctorService.setDoctorBlocked(
+    String(req.params.doctorId),
+    UserStatus.BLOCKED,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor blocked successfully",
+    data: result,
+  });
+});
+
+const unblockDoctor = catchAsync(async (req: Request, res: Response) => {
+  const result = await doctorService.setDoctorBlocked(
+    String(req.params.doctorId),
+    UserStatus.ACTIVE,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor unblocked successfully",
+    data: result,
+  });
+});
+
 export const doctorController = {
   applyAsDoctor,
   verifyDoctorEmail,
   resendDoctorOtp,
   getApplicationStatus,
+  getAllDoctors,
+  getPendingDoctors,
+  getDoctorById,
+  approveDoctor,
+  rejectDoctor,
+  blockDoctor,
+  unblockDoctor,
 };

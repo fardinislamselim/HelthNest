@@ -15,6 +15,8 @@ import { Router } from "express";
 import { authRoutes } from "@/modules/v1/auth/auth.route";
 import { userRoutes } from "@/modules/v1/user/user.route";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
+import { adminDoctorRoutes } from "@/modules/v1/doctor/admin-doctor.route";
+import { adminRoutes } from "@/modules/v1/admin/admin.route";
 
 /**
  * Router Initialization
@@ -36,6 +38,14 @@ const moduleRoutes = [
   {
     path: "/user",
     route: userRoutes,
+  },
+  {
+    path: "/admin/users",
+    route: adminRoutes,
+  },
+  {
+    path: "/admin/doctors",
+    route: adminDoctorRoutes,
   },
   {
     path: "/doctors",
