@@ -5,15 +5,15 @@
  */
 
 import { Router } from "express";
+
 import { authRoutes } from "@/modules/v1/auth/auth.route";
 import { userRoutes } from "@/modules/v1/user/user.route";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
 import { adminRoutes } from "@/modules/v1/admin/admin.route";
+import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 
 // Router Initialization
-
 const router: Router = Router();
-
 
 const moduleRoutes = [
   {
@@ -46,11 +46,19 @@ const moduleRoutes = [
     path: "/doctor",
     route: doctorRoutes,
   },
+  {
+    // Doctor schedule management.
+    path: "/schedules",
+    route: scheduleRoutes,
+  },
+  {
+    // Backward-compatible singular schedule alias.
+    path: "/schedule",
+    route: scheduleRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 
-/**
- * Export Router
- */
+// Export Router
 export default router;

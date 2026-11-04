@@ -1,0 +1,79 @@
+model Schedule {
+  id String @id @default(uuid())
+
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  date      String // Format: YYYY-MM-DD
+  startTime String // Format: HH:mm
+  endTime   String // Format: HH:mm
+  meetLink  String
+
+  status     ScheduleStatus @default(DRAFT)
+  totalSlots Int            @default(0)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slots        Slot[]
+  appointments Appointment[]
+
+  @@unique([doctorId, date], name: "unique_doctor_schedule_date")
+  @@index([doctorId], name: "idx_schedule_doctor")
+  @@index([date], name: "idx_schedule_date")
+  @@index([status], name: "idx_schedule_status")
+  @@map("schedules")
+}
+
+model Slot {
+  id String @id @default(uuid())
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  serialNumber Int
+  startTime    String // Format: HH:mm
+  endTime      String // Format: HH:mm
+
+  isBooked Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointment Appointment?
+
+  @@unique([scheduleId, serialNumber], name: "unique_schedule_slot_serial")
+  @@unique([scheduleId, startTime], name: "unique_schedule_slot_start_time")
+  @@index([scheduleId], name: "idx_slot_schedule")
+  @@map("slots")
+}
+
+model Appointment {
+  id String @id @default(uuid())
+
+  slotId String @unique
+  slot   Slot   @relation(fields: [slotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  patientId String?
+  patient   Patient? @relation(fields: [patientId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  doctorId String?
+  doctor   Doctor? @relation(fields: [doctorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  status AppointmentStatus @default(CONFIRMED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([scheduleId], name: "idx_appointment_schedule")
+  @@index([patientId], name: "idx_appointment_patient")
+  @@index([doctorId], name: "idx_appointment_doctor")
+  @@map("appointments")
+}
+

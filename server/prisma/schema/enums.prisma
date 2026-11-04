@@ -22,8 +22,21 @@ enum AuthProvider {
   CREDENTIAL
 }
 
-enum DoctorVerificationStatus{
+enum DoctorVerificationStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum ScheduleStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }

@@ -17,6 +17,7 @@ import config from "@/config";
 import { globalErrorHandler } from "@/middleware/globalErrorHandler";
 import { notFound } from "@/middleware/notFound";
 import router from "@/routes/v1/routes";
+import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 
 
 // Initialize Express Application
@@ -72,6 +73,8 @@ app.use(
 
 // API Routes
 app.use("/api/v1", router);
+app.use("/schedules", scheduleRoutes);
+app.use("/schedule", scheduleRoutes);
 
 // Root Route
 app.get("/", async (req: Request, res: Response) => {

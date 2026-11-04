@@ -13,6 +13,7 @@ tags:
   - name: Admin Users
   - name: Admin Doctors
   - name: Admin Patients
+  - name: Doctor Schedules
 paths:
   /auth/register:
     post:
@@ -494,6 +495,116 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  /schedules:
+    post:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Create a consultation schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, startTime, endTime, meetLink]
+              properties:
+                date: { type: string, example: "2026-11-10" }
+                startTime: { type: string, example: "09:00" }
+                endTime: { type: string, example: "12:00" }
+                meetLink: { type: string, format: uri, example: "https://meet.google.com/abc-defg-hij" }
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Conflict }
+  /schedules/me:
+    get:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve all schedules belonging to the authenticated doctor
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: status
+          schema: { type: string, enum: [DRAFT, PUBLISHED, UNPUBLISHED] }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /schedules/{scheduleId}:
+    get:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve a specific schedule
+      parameters:
+        - $ref: '#/components/parameters/ScheduleId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Update an existing schedule
+      parameters:
+        - $ref: '#/components/parameters/ScheduleId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date: { type: string }
+                startTime: { type: string }
+                endTime: { type: string }
+                meetLink: { type: string, format: uri }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Conflict }
+    delete:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Delete an eligible schedule
+      parameters:
+        - $ref: '#/components/parameters/ScheduleId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Conflict }
+  /schedules/{scheduleId}/publish:
+    patch:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Publish a draft or unpublished schedule
+      parameters:
+        - $ref: '#/components/parameters/ScheduleId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Conflict }
+  /schedules/{scheduleId}/unpublish:
+    patch:
+      tags: [Doctor Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Unpublish an existing published schedule
+      parameters:
+        - $ref: '#/components/parameters/ScheduleId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Conflict }
+
   # Backward-compatible singular route aliases mounted by the v1 router.
   /user/me:
     get: { $ref: '#/paths/~1users~1me/get' }
@@ -535,6 +646,11 @@ components:
     PatientId:
       in: path
       name: patientId
+      required: true
+      schema: { type: string, format: uuid }
+    ScheduleId:
+      in: path
+      name: scheduleId
       required: true
       schema: { type: string, format: uuid }
   schemas:
