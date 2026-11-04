@@ -11,6 +11,7 @@ import { userRoutes } from "@/modules/v1/user/user.route";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
 import { adminRoutes } from "@/modules/v1/admin/admin.route";
 import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
+import { appointmentRoutes } from "@/modules/v1/appointment/appointment.routes";
 
 // Router Initialization
 const router: Router = Router();
@@ -55,6 +56,10 @@ const moduleRoutes = [
     // Backward-compatible singular schedule alias.
     path: "/schedule",
     route: scheduleRoutes,
+  },
+  {
+    path: "/appointments",
+    route: appointmentRoutes,
   },
 ];
 

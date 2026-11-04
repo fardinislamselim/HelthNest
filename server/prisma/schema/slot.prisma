@@ -13,7 +13,7 @@ model Slot {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  appointment Appointment?
+  appointments Appointment[]
 
   @@unique([scheduleId, serialNumber], name: "unique_schedule_slot_serial")
   @@unique([scheduleId, startTime], name: "unique_schedule_slot_start_time")

@@ -73,10 +73,6 @@ app.use(
 
 // API Routes
 app.use("/api/v1", router);
-app.use("/schedules", scheduleRoutes);
-app.use("/schedule", scheduleRoutes);
-app.use("/doctors", doctorRoutes);
-app.use("/doctor", doctorRoutes);
 
 // Root Route
 app.get("/", async (req: Request, res: Response) => {

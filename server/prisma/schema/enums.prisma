@@ -36,7 +36,8 @@ enum ScheduleStatus {
 
 enum AppointmentStatus {
   PENDING
-  CONFIRMED
+  BOOKED
+  ONGOING
   CANCELLED
   COMPLETED
 }

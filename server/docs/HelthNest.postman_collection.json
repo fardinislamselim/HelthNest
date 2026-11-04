@@ -34,6 +34,14 @@
       "value": "00000000-0000-0000-0000-000000000000"
     },
     {
+      "key": "slotId",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "key": "appointmentId",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
       "key": "scheduleId",
       "value": "00000000-0000-0000-0000-000000000000"
     },
@@ -6794,6 +6802,168 @@
                   "value": "{{accessToken}}",
                   "type": "string"
                 }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create booking request",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduleId\": \"{{scheduleId}}\",\n  \"slotId\": \"{{slotId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.appointment?.id) pm.collectionVariables.set('appointmentId', json.data.appointment.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get my appointments (patient)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/my-appointments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments", "my-appointments"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "PENDING", "disabled": true },
+                { "key": "date", "value": "2026-11-05", "disabled": true }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get my appointments (doctor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/doctor/my-appointments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments", "doctor", "my-appointments"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "BOOKED", "disabled": true },
+                { "key": "date", "value": "2026-11-05", "disabled": true }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get appointment details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments", "{{appointmentId}}"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Start consultation",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments", "{{appointmentId}}", "start"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete consultation",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments", "{{appointmentId}}", "complete"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "appointments", "{{appointmentId}}", "cancel"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
               ]
             }
           }

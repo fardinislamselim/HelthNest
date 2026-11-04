@@ -53,9 +53,11 @@ export const getZonedTime = (
 export const isSlotAvailable = (slot: {
   isBooked: boolean;
   appointment?: { status: AppointmentStatus } | null;
+  appointments?: { status: AppointmentStatus }[];
 }): boolean => {
   if (slot.isBooked) return false;
-  if (slot.appointment && slot.appointment.status !== AppointmentStatus.CANCELLED) {
+  const appointments = slot.appointments ?? (slot.appointment ? [slot.appointment] : []);
+  if (appointments.some(({ status }) => status !== AppointmentStatus.CANCELLED)) {
     return false;
   }
   return true;
@@ -73,6 +75,7 @@ export const isScheduleVisibleForPatient = (
     slots?: {
       isBooked: boolean;
       appointment?: { status: AppointmentStatus } | null;
+      appointments?: { status: AppointmentStatus }[];
     }[];
   },
   referenceDate: Date = new Date(),
@@ -96,4 +99,3 @@ export const isScheduleVisibleForPatient = (
 
   return true;
 };
-

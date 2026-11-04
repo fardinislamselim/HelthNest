@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: HelthNest API
-  description: Authentication, profile, doctor application, and administrator management API.
+  description: Authentication, profile, doctor application, schedule, and appointment management API.
   version: 1.0.0
 servers:
   - url: http://localhost:5000/api/v1
@@ -15,6 +15,7 @@ tags:
   - name: Admin Patients
   - name: Doctor Schedules
   - name: Patient Schedules
+  - name: Appointments
 paths:
   /auth/register:
     post:
@@ -647,6 +648,116 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { description: Forbidden }
 
+  /appointments:
+    post:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Create a pending appointment booking request
+      description: Creates a PENDING appointment for an available slot. Payment confirmation is not implemented by the current server and this operation does not assign a serial number or mark the appointment BOOKED.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppointment'
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Schedule or slot is unavailable }
+
+  /appointments/my-appointments:
+    get:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve the authenticated patient's appointments
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/AppointmentStatus'
+        - $ref: '#/components/parameters/AppointmentDate'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+
+  /appointments/doctor/my-appointments:
+    get:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve the authenticated doctor's appointments
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/AppointmentStatus'
+        - $ref: '#/components/parameters/AppointmentDate'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+
+  /appointments/{appointmentId}:
+    get:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve an appointment owned by the authenticated patient or doctor
+      parameters:
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /appointments/{appointmentId}/start:
+    patch:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Start a booked consultation
+      parameters:
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Appointment is not BOOKED }
+
+  /appointments/{appointmentId}/complete:
+    patch:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Complete an ongoing consultation
+      parameters:
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Appointment is not ONGOING }
+
+  /appointments/{appointmentId}/cancel:
+    patch:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Cancel a pending or booked appointment
+      description: Preserves the appointment record and releases its slot. Refund behavior is not performed because no payment module is currently present.
+      parameters:
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Appointment cannot be cancelled in its current state }
+
   # Backward-compatible singular route aliases mounted by the v1 router.
   /user/me:
     get: { $ref: '#/paths/~1users~1me/get' }
@@ -695,6 +806,31 @@ components:
       name: scheduleId
       required: true
       schema: { type: string, format: uuid }
+    AppointmentId:
+      in: path
+      name: appointmentId
+      required: true
+      schema: { type: string, format: uuid }
+    Page:
+      in: query
+      name: page
+      schema: { type: integer, minimum: 1, default: 1 }
+    Limit:
+      in: query
+      name: limit
+      schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+    AppointmentStatus:
+      in: query
+      name: status
+      schema:
+        type: string
+        enum: [PENDING, BOOKED, ONGOING, COMPLETED, CANCELLED]
+    AppointmentDate:
+      in: query
+      name: date
+      schema:
+        type: string
+        pattern: '^\d{4}-\d{2}-\d{2}$'
   schemas:
     Email:
       type: object
@@ -756,6 +892,13 @@ components:
         additionalFiles:
           type: array
           items: { type: string, format: binary }
+    CreateAppointment:
+      type: object
+      additionalProperties: false
+      required: [scheduleId, slotId]
+      properties:
+        scheduleId: { type: string, format: uuid }
+        slotId: { type: string, format: uuid }
   responses:
     Success:
       description: Successful request

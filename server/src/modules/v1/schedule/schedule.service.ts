@@ -73,7 +73,7 @@ const scheduleInclude = {
   slots: {
     orderBy: { serialNumber: "asc" as const },
     include: {
-      appointment: {
+      appointments: {
         select: {
           id: true,
           status: true,
@@ -528,8 +528,7 @@ const getTodayAvailableSchedules = async (
       some: {
         isBooked: false,
         OR: [
-          { appointment: null },
-          { appointment: { status: AppointmentStatus.CANCELLED } },
+          { appointments: { none: { status: { not: AppointmentStatus.CANCELLED } } } },
         ],
       },
     },
@@ -558,7 +557,7 @@ const getTodayAvailableSchedules = async (
           select: {
             id: true,
             isBooked: true,
-            appointment: {
+            appointments: {
               select: {
                 status: true,
               },
@@ -626,7 +625,7 @@ const getScheduleAvailableSlots = async (
       slots: {
         orderBy: { serialNumber: "asc" },
         include: {
-          appointment: {
+          appointments: {
             select: {
               id: true,
               status: true,
@@ -691,8 +690,7 @@ const getDoctorsAvailableToday = async (): Promise<IPatientAvailableDoctorItem[]
         some: {
           isBooked: false,
           OR: [
-            { appointment: null },
-            { appointment: { status: AppointmentStatus.CANCELLED } },
+            { appointments: { none: { status: { not: AppointmentStatus.CANCELLED } } } },
           ],
         },
       },
@@ -716,7 +714,7 @@ const getDoctorsAvailableToday = async (): Promise<IPatientAvailableDoctorItem[]
         select: {
           id: true,
           isBooked: true,
-          appointment: {
+          appointments: {
             select: {
               status: true,
             },
@@ -775,4 +773,3 @@ export const scheduleService = {
   getScheduleAvailableSlots,
   getDoctorsAvailableToday,
 };
-
