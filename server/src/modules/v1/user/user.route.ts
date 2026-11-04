@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import { Router } from "express";
 import { Role } from "../../../../generated/prisma/enums";
 import { upload } from "@/lib/multer";

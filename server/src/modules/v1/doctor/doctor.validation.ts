@@ -55,22 +55,10 @@ const resendDoctorOtpValidationSchema = z.object({
   }),
 });
 
-const doctorIdParamsValidationSchema = z.object({
-  params: z.object({
-    doctorId: z.string().uuid("Doctor ID must be a valid UUID"),
-  }),
-});
 
-const rejectDoctorValidationSchema = doctorIdParamsValidationSchema.extend({
-  body: z.object({
-    rejectionReason: z.string().trim().min(1).max(1000).optional(),
-  }),
-});
 
 export const DoctorValidation = {
   applyAsDoctorValidationSchema,
   verifyDoctorEmailValidationSchema,
   resendDoctorOtpValidationSchema,
-  doctorIdParamsValidationSchema,
-  rejectDoctorValidationSchema,
 };

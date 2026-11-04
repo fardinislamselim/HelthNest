@@ -71,7 +71,16 @@ const validateRequest = (zodSchema: ZodType) => {
 				req.cookies = data.cookies;
 			}
 			if ("query" in data) {
-				req.query = data.query;
+				try {
+					req.query = data.query;
+				} catch {
+					Object.defineProperty(req, "query", {
+						value: data.query,
+						writable: true,
+						enumerable: true,
+						configurable: true,
+					});
+				}
 			}
 			if ("params" in data) {
 				req.params = data.params;

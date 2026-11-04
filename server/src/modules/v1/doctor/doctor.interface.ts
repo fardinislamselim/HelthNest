@@ -1,7 +1,13 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 export interface TApplyAsDoctor {
   name: string;
   email: string;
-  password?: string;
+  password: string;
   address?: string;
   specialization: string;
   licenseNumber: string;
@@ -20,8 +26,4 @@ export interface TVerifyDoctorEmail {
 export interface TGetApplicationStatusQuery {
   userId?: string;
   email?: string;
-}
-
-export interface TRejectDoctorApplication {
-  rejectionReason?: string;
 }

@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import httpStatus from "http-status";
 import { Request, Response } from "express";
 import catchAsync from "@/utils/catchAsync";

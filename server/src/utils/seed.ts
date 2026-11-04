@@ -4,14 +4,7 @@
  * @license Apache-2.0
  */
 
-/**
- * Third-Party Module
- */
 import bcrypt from "bcryptjs";
-
-/**
- * Internal Module
- */
 import config from "@/config";
 import { prisma } from "@/lib/prisma";
 import { Role } from "../../generated/prisma/enums";

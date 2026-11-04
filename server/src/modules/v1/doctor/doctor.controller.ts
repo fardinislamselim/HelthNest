@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 
@@ -86,106 +92,10 @@ const getApplicationStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// List all active doctor records for administrator screens.
-const getAllDoctors = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.getAllDoctors();
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Doctors retrieved successfully",
-    data: result,
-  });
-});
-
-// List verified applications waiting for administrative review.
-const getPendingDoctors = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.getPendingDoctors();
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Pending doctors retrieved successfully",
-    data: result,
-  });
-});
-
-// Return the complete doctor record for administrative review.
-const getDoctorById = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.getDoctorById(String(req.params.doctorId));
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Doctor details retrieved successfully",
-    data: result,
-  });
-});
-
-// Approve an application, activate its user account, and send the welcome email.
-const approveDoctor = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.approveDoctor(
-    String(req.params.doctorId),
-    req.user!.userId,
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Doctor approved successfully",
-    data: result,
-  });
-});
-
-// Reject an application and persist the optional review reason.
-const rejectDoctor = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.rejectDoctor(
-    String(req.params.doctorId),
-    req.user!.userId,
-    req.body,
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Doctor application rejected successfully",
-    data: result,
-  });
-});
-
-// Block a doctor's user account while retaining the doctor record.
-const blockDoctor = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.setDoctorBlocked(
-    String(req.params.doctorId),
-    UserStatus.BLOCKED,
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Doctor blocked successfully",
-    data: result,
-  });
-});
-
-// Restore a blocked doctor's user account.
-const unblockDoctor = catchAsync(async (req: Request, res: Response) => {
-  const result = await doctorService.setDoctorBlocked(
-    String(req.params.doctorId),
-    UserStatus.ACTIVE,
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Doctor unblocked successfully",
-    data: result,
-  });
-});
-
 export const doctorController = {
   applyAsDoctor,
   verifyDoctorEmail,
   resendDoctorOtp,
   getApplicationStatus,
-  getAllDoctors,
-  getPendingDoctors,
-  getDoctorById,
-  approveDoctor,
-  rejectDoctor,
-  blockDoctor,
-  unblockDoctor,
+
 };

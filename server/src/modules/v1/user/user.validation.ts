@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import { z } from "zod";
 
 // Update My Profile Validation Schema

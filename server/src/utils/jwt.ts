@@ -3,16 +3,10 @@
  * @author Fardin Islam Selim
  * @license Apache-2.0
  */
-
-/**
- * Third-Party Modules
- */
 import { logger } from "@/lib/winston";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 
-/**
- * Create Token
- */
+// Create Token
 const createToken = (payload: JwtPayload, secret: string, expiresIn: SignOptions) => {
     const token = jwt.sign(
         payload,
@@ -26,9 +20,7 @@ const createToken = (payload: JwtPayload, secret: string, expiresIn: SignOptions
 }
 
 
-/**
- * Verify Token
- */
+// Verify Token
 const verifyToken = (token: string, secret: string) => {
     try {
         const verifiedToken = jwt.verify(token, secret);
@@ -45,9 +37,7 @@ const verifyToken = (token: string, secret: string) => {
     }
 }
 
-/**
- * Export JWT Utils
- */
+//  Export JWT Utils
 export const jwtUtils = {
     createToken,
     verifyToken

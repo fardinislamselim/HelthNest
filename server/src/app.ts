@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import express, { Request, Response, type Application } from "express";
 import fs from "fs";
 import path from "path";
@@ -84,5 +90,4 @@ app.use(globalErrorHandler);
 app.use(notFound);
 
 // Export Application
-
 export default app;

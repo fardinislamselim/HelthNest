@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";

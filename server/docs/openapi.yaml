@@ -12,6 +12,7 @@ tags:
   - name: Doctor Applications
   - name: Admin Users
   - name: Admin Doctors
+  - name: Admin Patients
 paths:
   /auth/register:
     post:
@@ -75,6 +76,10 @@ paths:
     post:
       tags: [Authentication]
       summary: Refresh access and refresh tokens
+      parameters:
+        - in: cookie
+          name: refreshToken
+          schema: { type: string }
       responses:
         '200': { $ref: '#/components/responses/Success' }
   /auth/google-login:
@@ -185,6 +190,24 @@ paths:
       tags: [Users]
       security: [{ bearerAuth: [] }]
       summary: Upload my profile image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [profileImage]
+              properties:
+                profileImage:
+                  type: string
+                  format: binary
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+  /users/profile-image:
+    patch:
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      summary: Legacy upload-my-profile-image alias
       requestBody:
         required: true
         content:
@@ -416,6 +439,81 @@ paths:
         - $ref: '#/components/parameters/DoctorId'
       responses:
         '200': { $ref: '#/components/responses/Success' }
+  /admin/patients:
+    get:
+      tags: [Admin Patients]
+      security: [{ bearerAuth: [] }]
+      summary: List all patients
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [ACTIVE, BLOCKED, DELETED] }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /admin/patients/{patientId}:
+    get:
+      tags: [Admin Patients]
+      security: [{ bearerAuth: [] }]
+      summary: Get patient details
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/patients/{patientId}/block:
+    patch:
+      tags: [Admin Patients]
+      security: [{ bearerAuth: [] }]
+      summary: Block a patient
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/patients/{patientId}/unblock:
+    patch:
+      tags: [Admin Patients]
+      security: [{ bearerAuth: [] }]
+      summary: Unblock a patient
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # Backward-compatible singular route aliases mounted by the v1 router.
+  /user/me:
+    get: { $ref: '#/paths/~1users~1me/get' }
+    patch: { $ref: '#/paths/~1users~1me/patch' }
+  /user/me/profile-image:
+    patch: { $ref: '#/paths/~1users~1me~1profile-image/patch' }
+  /user/{userId}:
+    get: { $ref: '#/paths/~1users~1{userId}/get' }
+  /user/profile-image:
+    patch: { $ref: '#/paths/~1users~1profile-image/patch' }
+  /doctor/apply:
+    post: { $ref: '#/paths/~1doctors~1apply/post' }
+  /doctor/verify-email:
+    post: { $ref: '#/paths/~1doctors~1verify-email/post' }
+  /doctor/apply/email-verify:
+    post: { $ref: '#/paths/~1doctors~1apply~1email-verify/post' }
+  /doctor/resend-otp:
+    post: { $ref: '#/paths/~1doctors~1resend-otp/post' }
+  /doctor/application-status:
+    get: { $ref: '#/paths/~1doctors~1application-status/get' }
 components:
   securitySchemes:
     bearerAuth:
@@ -432,6 +530,11 @@ components:
     DoctorId:
       in: path
       name: doctorId
+      required: true
+      schema: { type: string, format: uuid }
+    PatientId:
+      in: path
+      name: patientId
       required: true
       schema: { type: string, format: uuid }
   schemas:

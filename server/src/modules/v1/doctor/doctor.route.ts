@@ -1,3 +1,9 @@
+/**
+ * @copyright 2026
+ * @author Fardin Islam Selim
+ * @license Apache-2.0
+ */
+
 import { Router } from "express";
 
 import { doctorController } from "@/modules/v1/doctor/doctor.controller";
@@ -5,9 +11,13 @@ import { upload } from "@/lib/multer";
 import validateRequest from "@/middleware/validateRequest";
 import { DoctorValidation } from "@/modules/v1/doctor/doctor.validation";
 import { doctorApplicantAuth } from "@/middleware/doctorApplicantAuth";
+import { auth } from "@/middleware/checkAuth";
+import { Role } from "../../../../generated/prisma/client";
 
-// Public doctor application routes.
+// Router Initialization
 const router = Router();
+
+const adminAuth = auth(Role.ADMIN, Role.SUPER_ADMIN);
 
 /**
  * Apply as Doctor Route
