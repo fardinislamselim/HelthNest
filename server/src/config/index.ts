@@ -23,6 +23,7 @@ export default {
   port: process.env.PORT,
   google_client_id: process.env.GOOGLE_CLIENT_ID,
   log_level: process.env.LOG_LEVEL || "info",
+  timezone: process.env.TIMEZONE || "Asia/Dhaka",
   database_url: process.env.DATABASE_URL,
   bak_url: process.env.APP_URL,
   frontend_url: process.env.FRONTEND_URL,

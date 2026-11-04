@@ -7,6 +7,7 @@
 import { Router } from "express";
 
 import { doctorController } from "@/modules/v1/doctor/doctor.controller";
+import { scheduleController } from "@/modules/v1/schedule/schedule.controller";
 import { upload } from "@/lib/multer";
 import validateRequest from "@/middleware/validateRequest";
 import { DoctorValidation } from "@/modules/v1/doctor/doctor.validation";
@@ -18,6 +19,19 @@ import { Role } from "../../../../generated/prisma/client";
 const router = Router();
 
 const adminAuth = auth(Role.ADMIN, Role.SUPER_ADMIN);
+const patientAuth = auth(Role.PATIENT);
+
+/**
+ * Retrieve Doctors Available Today Route
+ * @access PATIENT
+ * @method GET
+ * @route /api/v1/doctors/available-today
+ */
+router.get(
+  "/available-today",
+  patientAuth,
+  scheduleController.getDoctorsAvailableToday,
+);
 
 /**
  * Apply as Doctor Route

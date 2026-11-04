@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc && tsc-alias -f",
-    "start": "node dist/src/server.js",
-    "test": "tsx src/modules/v1/schedule/test-runner.ts"
+    "start": "node dist/src/server.js"
   },
   "keywords": [],
   "author": "",

@@ -13,8 +13,33 @@ import { ScheduleValidation } from "./schedule.validation";
 
 const router = Router();
 const doctorAuth = auth(Role.DOCTOR);
+const patientAuth = auth(Role.PATIENT);
 const scheduleIdValidation = validateRequest(
   ScheduleValidation.scheduleIdParamsValidationSchema,
+);
+
+/**
+ * Retrieve all doctors' available schedules for today
+ * @access PATIENT
+ * @method GET /api/v1/schedules/today
+ */
+router.get(
+  "/today",
+  patientAuth,
+  validateRequest(ScheduleValidation.getTodaySchedulesQueryValidationSchema),
+  scheduleController.getTodayAvailableSchedules,
+);
+
+/**
+ * Retrieve available slots for a specific schedule
+ * @access PATIENT
+ * @method GET /api/v1/schedules/:scheduleId/slots
+ */
+router.get(
+  "/:scheduleId/slots",
+  patientAuth,
+  scheduleIdValidation,
+  scheduleController.getScheduleAvailableSlots,
 );
 
 /**

@@ -184,9 +184,30 @@ const getMySchedulesQueryValidationSchema = z.object({
     .optional(),
 });
 
+const getTodaySchedulesQueryValidationSchema = z.object({
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int()
+        .positive("Page must be a positive integer")
+        .optional()
+        .default(1),
+      limit: z.coerce
+        .number()
+        .int()
+        .positive("Limit must be a positive integer")
+        .max(100, "Limit cannot exceed 100")
+        .optional()
+        .default(10),
+    })
+    .optional(),
+});
+
 export const ScheduleValidation = {
   createScheduleValidationSchema,
   updateScheduleValidationSchema,
   scheduleIdParamsValidationSchema,
   getMySchedulesQueryValidationSchema,
+  getTodaySchedulesQueryValidationSchema,
 };

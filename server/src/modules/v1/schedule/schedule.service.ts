@@ -15,11 +15,21 @@ import {
   IScheduleFilterQuery,
   ISchedulesListResult,
   IScheduleResponse,
+  IPatientTodaySchedulesResult,
+  IPatientScheduleSlotsResponse,
+  IPatientAvailableDoctorItem,
+  IPatientAvailableScheduleItem,
+  IPatientSlotItem,
 } from "./schedule.interface";
 import {
   timeToMinutes,
   minutesToTime,
 } from "./schedule.validation";
+import {
+  getZonedTime,
+  isSlotAvailable,
+  isScheduleVisibleForPatient,
+} from "./schedule.utils";
 
 /**
  * Generate 20-minute slots from startTime to endTime
@@ -491,6 +501,268 @@ const deleteSchedule = async (
   return null;
 };
 
+/**
+ * Patient: Retrieve all doctors' schedules available for booking today
+ */
+const getTodayAvailableSchedules = async (
+  query: { page?: number | string; limit?: number | string } = {},
+): Promise<IPatientTodaySchedulesResult> => {
+  const { todayDate, currentTime } = getZonedTime();
+
+  const page = Math.max(1, Number(query.page) || 1);
+  const limit = Math.max(1, Math.min(100, Number(query.limit) || 10));
+  const skip = (page - 1) * limit;
+
+  // Filter for today's published, unexpired schedules with available slots
+  const whereClause: Prisma.ScheduleWhereInput = {
+    date: todayDate,
+    status: ScheduleStatus.PUBLISHED,
+    isDeleted: false,
+    startTime: {
+      gt: currentTime,
+    },
+    doctor: {
+      isDeleted: false,
+    },
+    slots: {
+      some: {
+        isBooked: false,
+        OR: [
+          { appointment: null },
+          { appointment: { status: AppointmentStatus.CANCELLED } },
+        ],
+      },
+    },
+  };
+
+  const [total, rawSchedules] = await Promise.all([
+    prisma.schedule.count({ where: whereClause }),
+    prisma.schedule.findMany({
+      where: whereClause,
+      include: {
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialization: true,
+            experienceYears: true,
+            consultationFee: true,
+            user: {
+              select: {
+                profileImageUrl: true,
+              },
+            },
+          },
+        },
+        slots: {
+          select: {
+            id: true,
+            isBooked: true,
+            appointment: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+      },
+      skip,
+      take: limit,
+      orderBy: { startTime: "asc" },
+    }),
+  ]);
+
+  const schedules: IPatientAvailableScheduleItem[] = rawSchedules.map((schedule) => {
+    const availableSlots = schedule.slots.filter(isSlotAvailable).length;
+
+    return {
+      id: schedule.id,
+      scheduleId: schedule.id,
+      date: schedule.date,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      status: schedule.status,
+      totalSlots: schedule.totalSlots,
+      availableSlots,
+      doctor: {
+        id: schedule.doctor.id,
+        doctorId: schedule.doctor.id,
+        name: schedule.doctor.name,
+        specialization: schedule.doctor.specialization,
+        profileImage: schedule.doctor.user?.profileImageUrl || null,
+        experienceYears: schedule.doctor.experienceYears,
+        consultationFee: schedule.doctor.consultationFee
+          ? Number(schedule.doctor.consultationFee)
+          : null,
+      },
+    };
+  });
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    schedules,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  };
+};
+
+/**
+ * Patient: Retrieve available slots for an eligible schedule
+ */
+const getScheduleAvailableSlots = async (
+  scheduleId: string,
+): Promise<IPatientScheduleSlotsResponse> => {
+  const schedule = await prisma.schedule.findFirst({
+    where: {
+      id: scheduleId,
+      isDeleted: false,
+    },
+    include: {
+      slots: {
+        orderBy: { serialNumber: "asc" },
+        include: {
+          appointment: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!schedule) {
+    throw new AppError(httpStatus.NOT_FOUND, "Schedule not found");
+  }
+
+  // Check all patient visibility rules (today only, published, start time not arrived, not fully booked)
+  const isEligible = isScheduleVisibleForPatient(schedule);
+
+  if (!isEligible) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Schedule not found or no longer available for booking",
+    );
+  }
+
+  const slots: IPatientSlotItem[] = schedule.slots.map((slot) => ({
+    id: slot.id,
+    slotId: slot.id,
+    serialNumber: slot.serialNumber,
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    isAvailable: isSlotAvailable(slot),
+  }));
+
+  return {
+    scheduleId: schedule.id,
+    date: schedule.date,
+    startTime: schedule.startTime,
+    endTime: schedule.endTime,
+    totalSlots: schedule.totalSlots,
+    slots,
+  };
+};
+
+/**
+ * Patient: Retrieve unique doctors with at least one available schedule today
+ */
+const getDoctorsAvailableToday = async (): Promise<IPatientAvailableDoctorItem[]> => {
+  const { todayDate, currentTime } = getZonedTime();
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      date: todayDate,
+      status: ScheduleStatus.PUBLISHED,
+      isDeleted: false,
+      startTime: {
+        gt: currentTime,
+      },
+      doctor: {
+        isDeleted: false,
+      },
+      slots: {
+        some: {
+          isBooked: false,
+          OR: [
+            { appointment: null },
+            { appointment: { status: AppointmentStatus.CANCELLED } },
+          ],
+        },
+      },
+    },
+    include: {
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          specialization: true,
+          experienceYears: true,
+          consultationFee: true,
+          user: {
+            select: {
+              profileImageUrl: true,
+            },
+          },
+        },
+      },
+      slots: {
+        select: {
+          id: true,
+          isBooked: true,
+          appointment: {
+            select: {
+              status: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { startTime: "asc" },
+  });
+
+  const doctorMap = new Map<string, IPatientAvailableDoctorItem>();
+
+  for (const schedule of schedules) {
+    const availableSlots = schedule.slots.filter(isSlotAvailable).length;
+    if (availableSlots === 0) {
+      continue;
+    }
+
+    const doctor = schedule.doctor;
+    const existing = doctorMap.get(doctor.id);
+
+    if (existing) {
+      existing.availableScheduleCount += 1;
+      existing.availableSlotCount += availableSlots;
+    } else {
+      doctorMap.set(doctor.id, {
+        id: doctor.id,
+        doctorId: doctor.id,
+        name: doctor.name,
+        specialization: doctor.specialization,
+        profileImage: doctor.user?.profileImageUrl || null,
+        experienceYears: doctor.experienceYears,
+        consultationFee: doctor.consultationFee
+          ? Number(doctor.consultationFee)
+          : null,
+        availableScheduleCount: 1,
+        availableSlotCount: availableSlots,
+      });
+    }
+  }
+
+  return Array.from(doctorMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+};
+
 export const scheduleService = {
   createSchedule,
   getMySchedules,
@@ -499,5 +771,8 @@ export const scheduleService = {
   publishSchedule,
   unpublishSchedule,
   deleteSchedule,
+  getTodayAvailableSchedules,
+  getScheduleAvailableSlots,
+  getDoctorsAvailableToday,
 };
 

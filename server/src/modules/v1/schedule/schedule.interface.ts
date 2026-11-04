@@ -71,3 +71,62 @@ export interface ISchedulesListResult {
   meta: IPaginationMeta;
 }
 
+/**
+ * Patient Schedule & Slot Discovery Interfaces
+ */
+export interface IPatientDoctorInfo {
+  id: string;
+  doctorId: string;
+  name: string;
+  specialization: string;
+  profileImage: string | null;
+  experienceYears?: number;
+  consultationFee?: number | string | null;
+}
+
+export interface IPatientAvailableScheduleItem {
+  id: string;
+  scheduleId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: ScheduleStatus;
+  totalSlots: number;
+  availableSlots: number;
+  doctor: IPatientDoctorInfo;
+}
+
+export interface IPatientTodaySchedulesResult {
+  schedules: IPatientAvailableScheduleItem[];
+  meta: IPaginationMeta;
+}
+
+export interface IPatientSlotItem {
+  id: string;
+  slotId: string;
+  serialNumber: number;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+}
+
+export interface IPatientScheduleSlotsResponse {
+  scheduleId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  totalSlots: number;
+  slots: IPatientSlotItem[];
+}
+
+export interface IPatientAvailableDoctorItem {
+  id: string;
+  doctorId: string;
+  name: string;
+  specialization: string;
+  profileImage: string | null;
+  experienceYears?: number;
+  consultationFee?: number | string | null;
+  availableScheduleCount: number;
+  availableSlotCount: number;
+}

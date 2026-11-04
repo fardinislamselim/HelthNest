@@ -18,7 +18,7 @@ import { globalErrorHandler } from "@/middleware/globalErrorHandler";
 import { notFound } from "@/middleware/notFound";
 import router from "@/routes/v1/routes";
 import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
-
+import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
 
 // Initialize Express Application
 const app: Application = express();
@@ -75,6 +75,8 @@ app.use(
 app.use("/api/v1", router);
 app.use("/schedules", scheduleRoutes);
 app.use("/schedule", scheduleRoutes);
+app.use("/doctors", doctorRoutes);
+app.use("/doctor", doctorRoutes);
 
 // Root Route
 app.get("/", async (req: Request, res: Response) => {

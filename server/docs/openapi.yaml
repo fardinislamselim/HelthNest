@@ -14,6 +14,7 @@ tags:
   - name: Admin Doctors
   - name: Admin Patients
   - name: Doctor Schedules
+  - name: Patient Schedules
 paths:
   /auth/register:
     post:
@@ -604,6 +605,47 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: Conflict }
+
+  /schedules/today:
+    get:
+      tags: [Patient Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve all doctors' available schedules for today
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+
+  /schedules/{scheduleId}/slots:
+    get:
+      tags: [Patient Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve available consultation slots for an eligible schedule
+      parameters:
+        - $ref: '#/components/parameters/ScheduleId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /doctors/available-today:
+    get:
+      tags: [Patient Schedules]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve unique doctors who have at least one bookable schedule today
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
 
   # Backward-compatible singular route aliases mounted by the v1 router.
   /user/me:

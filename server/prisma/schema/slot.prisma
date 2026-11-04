@@ -1,0 +1,22 @@
+model Slot {
+  id String @id @default(uuid())
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  serialNumber Int
+  startTime    String // Format: HH:mm
+  endTime      String // Format: HH:mm
+
+  isBooked Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointment Appointment?
+
+  @@unique([scheduleId, serialNumber], name: "unique_schedule_slot_serial")
+  @@unique([scheduleId, startTime], name: "unique_schedule_slot_start_time")
+  @@index([scheduleId], name: "idx_slot_schedule")
+  @@map("slots")
+}
