@@ -42,3 +42,11 @@ enum AppointmentStatus {
   CANCELLED
   COMPLETED
 }
+
+enum RefundStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+

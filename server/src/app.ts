@@ -20,6 +20,7 @@ import router from "@/routes/v1/routes";
 import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
 import { prescriptionRoutes } from "@/modules/v1/prescription/prescription.routes";
+import { refundRoutes } from "@/modules/v1/refund/refund.routes";
 import { paymentController } from "@/modules/v1/payment/payment.controller";
 
 // Initialize Express Application
@@ -82,12 +83,8 @@ app.use(
 
 // API Routes
 app.use("/api/v1", router);
-app.use("/schedules", scheduleRoutes);
-app.use("/schedule", scheduleRoutes);
-app.use("/doctors", doctorRoutes);
-app.use("/doctor", doctorRoutes);
-app.use("/prescriptions", prescriptionRoutes);
-app.use("/prescription", prescriptionRoutes);
+app.use("/refunds", refundRoutes);
+app.use("/refund", refundRoutes);
 
 // Root Route
 app.get("/", async (req: Request, res: Response) => {

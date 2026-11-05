@@ -14,6 +14,7 @@ model Appointment {
   doctor   Doctor? @relation(fields: [doctorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   payment  Payment?
   prescription Prescription?
+  refunds  Refund[]
 
   serialNumber Int?
   status       AppointmentStatus @default(PENDING)

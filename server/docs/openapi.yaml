@@ -753,7 +753,7 @@ paths:
       tags: [Appointments]
       security: [{ bearerAuth: [] }]
       summary: Cancel a pending or booked appointment
-      description: Preserves the appointment record and releases its slot. Refunds are not initiated by the current cancellation flow.
+      description: Cancels the appointment, frees the consultation slot, and evaluates refund eligibility via the 1-hour rule. If cancelled strictly > 1 hour before schedule start, an automated Stripe refund is initiated.
       parameters:
         - $ref: '#/components/parameters/AppointmentId'
       responses:
@@ -859,6 +859,71 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { description: Forbidden }
         '404': { $ref: '#/components/responses/NotFound' }
+
+  /refunds:
+    post:
+      tags: [Refunds]
+      security: [{ bearerAuth: [] }]
+      summary: Process eligible refund (Internal / Admin)
+      description: Internal/Admin endpoint to manually trigger a refund for an eligible cancelled appointment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId]
+              properties:
+                appointmentId:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Conflict or payment already refunded }
+
+  /refunds/my-refunds:
+    get:
+      tags: [Refunds]
+      security: [{ bearerAuth: [] }]
+      summary: Get own refund history (Patient)
+      description: Retrieves authenticated patient's refund history, sorted newest first with pagination.
+      parameters:
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/LimitQuery'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+
+  /refunds/{refundId}:
+    get:
+      tags: [Refunds]
+      security: [{ bearerAuth: [] }]
+      summary: Get refund details
+      description: Retrieves details of a specific refund. Accessible to the owning patient or administrators.
+      parameters:
+        - name: refundId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /refund/my-refunds:
+    get: { $ref: '#/paths/~1refunds~1my-refunds/get' }
+  /refund/{refundId}:
+    get: { $ref: '#/paths/~1refunds~1{refundId}/get' }
 
   # Backward-compatible singular route aliases mounted by the v1 router.
   /user/me:

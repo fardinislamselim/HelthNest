@@ -8809,6 +8809,134 @@
           }
         }
       ]
+    },
+    {
+      "name": "Refunds",
+      "item": [
+        {
+          "name": "Cancel appointment (triggers refund if > 1h)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patient_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/appointments/{{appointment_id}}/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointment_id}}",
+                "cancel"
+              ]
+            },
+            "description": "Cancels the appointment, frees the slot, and calculates refund eligibility using the 1-hour rule. Initiates Stripe refund if eligible."
+          }
+        },
+        {
+          "name": "Process eligible refund (Admin / Internal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointment_id}}\",\n  \"reason\": \"Administrative manual refund processing\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/refunds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "refunds"
+              ]
+            },
+            "description": "Internal/Admin endpoint to manually trigger a refund for an eligible cancelled appointment."
+          }
+        },
+        {
+          "name": "Get my refund history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patient_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/refunds/my-refunds?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "refunds",
+                "my-refunds"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Retrieves authenticated patient refund history, sorted newest first."
+          }
+        },
+        {
+          "name": "Get refund details by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patient_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/refunds/{{refund_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "refunds",
+                "{{refund_id}}"
+              ]
+            },
+            "description": "Retrieves details for a specific refund. Accessible to the owning patient or administrators."
+          }
+        }
+      ]
     }
   ]
 }

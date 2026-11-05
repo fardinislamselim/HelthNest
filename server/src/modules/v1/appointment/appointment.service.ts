@@ -2,6 +2,8 @@ import httpStatus from "http-status";
 import { Prisma } from "../../../../generated/prisma/client";
 import {
   AppointmentStatus,
+  PaymentStatus,
+  RefundStatus,
   Role,
   ScheduleStatus,
 } from "../../../../generated/prisma/enums";
@@ -14,6 +16,11 @@ import type {
   ICreateAppointmentPayload,
 } from "./appointment.interface";
 import { paymentService } from "@/modules/v1/payment/payment.service";
+import { refundService } from "@/modules/v1/refund/refund.service";
+import {
+  getScheduleStartDateTime,
+  isEligibleForRefund,
+} from "@/utils/payment-refund";
 
 const appointmentInclude = {
   patient: {
@@ -256,27 +263,95 @@ const completeAppointment = async (userId: string, appointmentId: string) => {
 
 const cancelAppointment = async (userId: string, appointmentId: string) => {
   const patient = await getPatient(userId);
-  const result = await prisma.$transaction(async (tx) => {
-    const appointment = await tx.appointment.findFirst({
-      where: { id: appointmentId, patientId: patient.id },
-    });
-    if (!appointment) throw new AppError(httpStatus.NOT_FOUND, "Appointment not found");
-    if (
-      appointment.status === AppointmentStatus.ONGOING ||
-      appointment.status === AppointmentStatus.COMPLETED ||
-      appointment.status === AppointmentStatus.CANCELLED
-    ) {
-      throw new AppError(httpStatus.CONFLICT, "Appointment cannot be cancelled in its current state");
-    }
+
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: {
+      schedule: true,
+      payment: true,
+      slot: true,
+      patient: true,
+    },
+  });
+
+  if (!appointment || appointment.patientId !== patient.id) {
+    throw new AppError(httpStatus.NOT_FOUND, "Appointment not found");
+  }
+
+  if (appointment.status === AppointmentStatus.CANCELLED) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Appointment has already been cancelled",
+    );
+  }
+  if (appointment.status === AppointmentStatus.COMPLETED) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Completed appointment cannot be cancelled",
+    );
+  }
+  if (appointment.status === AppointmentStatus.ONGOING) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Ongoing appointment cannot be cancelled",
+    );
+  }
+
+  const cancellationTime = new Date();
+  const scheduleStartTime = getScheduleStartDateTime(
+    appointment.schedule.date,
+    appointment.schedule.startTime,
+  );
+  const refundEligible = isEligibleForRefund(cancellationTime, scheduleStartTime);
+
+  const updatedAppointment = await prisma.$transaction(async (tx) => {
     const updated = await tx.appointment.update({
       where: { id: appointment.id },
-      data: { status: AppointmentStatus.CANCELLED, cancelledAt: new Date() },
+      data: { status: AppointmentStatus.CANCELLED, cancelledAt: cancellationTime },
       include: appointmentInclude,
     });
     await tx.slot.update({ where: { id: appointment.slotId }, data: { isBooked: false } });
     return updated;
   });
-  return result;
+
+  let refundResult = null;
+  const hasPaidPayment =
+    appointment.payment && appointment.payment.status === PaymentStatus.PAID;
+
+  if (refundEligible && hasPaidPayment) {
+    refundResult = await refundService.processRefundInternal({
+      appointmentId: appointment.id,
+      paymentId: appointment.payment!.id,
+      patientId: patient.id,
+      amount: Number(appointment.payment!.amount),
+      currency: appointment.payment!.currency,
+      reason: "Appointment cancelled by patient > 1 hour prior to schedule",
+    });
+  }
+
+  let message: string;
+  if (refundEligible) {
+    if (hasPaidPayment) {
+      message =
+        refundResult?.status === RefundStatus.COMPLETED
+          ? "Appointment cancelled and refund processed successfully"
+          : "Appointment cancelled and refund is processing";
+    } else {
+      message = "Appointment cancelled successfully. No paid payment found to refund.";
+    }
+  } else {
+    message =
+      "Appointment cancelled successfully. No refund issued as cancellation was within 1 hour or after schedule start.";
+  }
+
+  return {
+    appointment: updatedAppointment,
+    cancellationTime: cancellationTime.toISOString(),
+    scheduleStartTime: scheduleStartTime.toISOString(),
+    refundEligible,
+    refund: refundResult,
+    message,
+  };
 };
 
 export const appointmentService = {

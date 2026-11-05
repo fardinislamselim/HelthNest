@@ -57,9 +57,15 @@ const completeAppointment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const cancelAppointment = catchAsync(async (req: Request, res: Response) => {
-  const appointment = await appointmentService.cancelAppointment(req.user!.userId, String(req.params.appointmentId));
-  sendResponse(res, { statusCode: httpStatus.OK, success: true, message: "Appointment cancelled successfully", data: { appointment } });
+  const result = await appointmentService.cancelAppointment(req.user!.userId, String(req.params.appointmentId));
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: result.message || "Appointment cancelled successfully",
+    data: result,
+  });
 });
+
 
 export const appointmentController = {
   createAppointment,

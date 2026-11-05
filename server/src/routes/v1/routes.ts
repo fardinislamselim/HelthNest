@@ -14,6 +14,7 @@ import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 import { appointmentRoutes } from "@/modules/v1/appointment/appointment.routes";
 import { paymentRoutes } from "@/modules/v1/payment/payment.routes";
 import { prescriptionRoutes } from "@/modules/v1/prescription/prescription.routes";
+import { refundRoutes } from "@/modules/v1/refund/refund.routes";
 
 // Router Initialization
 const router: Router = Router();
@@ -78,6 +79,16 @@ const moduleRoutes = [
     // Backward-compatible singular prescription alias.
     path: "/prescription",
     route: prescriptionRoutes,
+  },
+  {
+    // Cancellation refund management.
+    path: "/refunds",
+    route: refundRoutes,
+  },
+  {
+    // Backward-compatible singular refund alias.
+    path: "/refund",
+    route: refundRoutes,
   },
 ];
 
