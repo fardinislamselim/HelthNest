@@ -19,6 +19,7 @@ import { notFound } from "@/middleware/notFound";
 import router from "@/routes/v1/routes";
 import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
+import { prescriptionRoutes } from "@/modules/v1/prescription/prescription.routes";
 import { paymentController } from "@/modules/v1/payment/payment.controller";
 
 // Initialize Express Application
@@ -40,6 +41,7 @@ app.use(
   }),
 );
 
+// Stripe Webhook Route
 app.post(
   "/api/v1/payments/stripe/webhook",
   express.raw({ type: "application/json" }),
@@ -80,6 +82,12 @@ app.use(
 
 // API Routes
 app.use("/api/v1", router);
+app.use("/schedules", scheduleRoutes);
+app.use("/schedule", scheduleRoutes);
+app.use("/doctors", doctorRoutes);
+app.use("/doctor", doctorRoutes);
+app.use("/prescriptions", prescriptionRoutes);
+app.use("/prescription", prescriptionRoutes);
 
 // Root Route
 app.get("/", async (req: Request, res: Response) => {

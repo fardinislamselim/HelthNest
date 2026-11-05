@@ -1,4 +1,3 @@
-import PDFDocument from "pdfkit";
 import httpStatus from "http-status";
 import {
   PaymentStatus,

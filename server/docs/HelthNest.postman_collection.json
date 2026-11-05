@@ -6816,22 +6816,39 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"scheduleId\": \"{{scheduleId}}\",\n  \"slotId\": \"{{slotId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           },
@@ -6855,13 +6872,25 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/payments/checkout/{{appointmentId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "payments", "checkout", "{{appointmentId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "checkout",
+                "{{appointmentId}}"
+              ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -6873,19 +6902,44 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments/my-appointments?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments", "my-appointments"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "my-appointments"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" },
-                { "key": "status", "value": "PENDING", "disabled": true },
-                { "key": "date", "value": "2026-11-05", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "disabled": true
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-05",
+                  "disabled": true
+                }
               ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -6897,19 +6951,45 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments/doctor/my-appointments?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments", "doctor", "my-appointments"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "doctor",
+                "my-appointments"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" },
-                { "key": "status", "value": "BOOKED", "disabled": true },
-                { "key": "date", "value": "2026-11-05", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "BOOKED",
+                  "disabled": true
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-05",
+                  "disabled": true
+                }
               ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -6921,13 +7001,24 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments", "{{appointmentId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}"
+              ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -6939,13 +7030,25 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/start",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments", "{{appointmentId}}", "start"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "start"
+              ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -6957,13 +7060,25 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/complete",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments", "{{appointmentId}}", "complete"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "complete"
+              ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -6975,13 +7090,25 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/cancel",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "appointments", "{{appointmentId}}", "cancel"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "cancel"
+              ]
             },
             "auth": {
               "type": "bearer",
               "bearer": [
-                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -8516,6 +8643,169 @@
               ]
             },
             "description": "Retrieve unique doctors who have at least one bookable consultation schedule today with schedule and slot counts."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prescriptions",
+      "item": [
+        {
+          "name": "Create prescription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/prescriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "prescriptions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"keyFindings\": \"Patient presented with high fever, sore throat, and headaches.\",\n  \"medicines\": [\n    {\n      \"name\": \"Amoxicillin\",\n      \"dosage\": \"500mg\",\n      \"frequency\": \"1-0-1\",\n      \"duration\": \"7 days\",\n      \"instructions\": \"Take after meals with water\"\n    },\n    {\n      \"name\": \"Paracetamol\",\n      \"dosage\": \"500mg\",\n      \"frequency\": \"1-1-1\",\n      \"duration\": \"3 days\",\n      \"instructions\": \"Take as needed for fever\"\n    }\n  ],\n  \"additionalInstructions\": \"Drink plenty of warm fluids and rest. Follow up if symptoms worsen.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Doctor creates a digital prescription for a completed consultation."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.id) pm.collectionVariables.set('prescriptionId', json.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get my prescriptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/prescriptions/my-prescriptions?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "prescriptions",
+                "my-prescriptions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Records per page"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Patient retrieves their own prescription records."
+          }
+        },
+        {
+          "name": "Get prescription details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/prescriptions/{{prescriptionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "prescriptions",
+                "{{prescriptionId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Authorized patient or doctor retrieves complete details of a specific prescription."
+          }
+        },
+        {
+          "name": "Download prescription PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/prescriptions/{{prescriptionId}}/pdf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "prescriptions",
+                "{{prescriptionId}}",
+                "pdf"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Download the officially generated PDF document for a prescription."
           }
         }
       ]

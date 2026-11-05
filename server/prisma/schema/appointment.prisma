@@ -1,4 +1,3 @@
-
 model Appointment {
   id String @id @default(uuid())
 
@@ -14,6 +13,7 @@ model Appointment {
   doctorId String?
   doctor   Doctor? @relation(fields: [doctorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   payment  Payment?
+  prescription Prescription?
 
   serialNumber Int?
   status       AppointmentStatus @default(PENDING)
@@ -28,6 +28,6 @@ model Appointment {
   @@index([scheduleId], name: "idx_appointment_schedule")
   @@index([patientId], name: "idx_appointment_patient")
   @@index([doctorId], name: "idx_appointment_doctor")
-  @@unique([scheduleId, serialNumber], name: "unique_schedule_appointment_serial")
+  @@index([scheduleId, serialNumber], name: "idx_schedule_appointment_serial")
   @@map("appointments")
 }

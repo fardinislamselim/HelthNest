@@ -16,6 +16,7 @@ tags:
   - name: Doctor Schedules
   - name: Patient Schedules
   - name: Appointments
+  - name: Prescriptions
 paths:
   /auth/register:
     post:
@@ -80,6 +81,11 @@ paths:
       tags: [Authentication]
       summary: Refresh access and refresh tokens
       parameters:
+    PrescriptionId:
+      in: path
+      name: prescriptionId
+      required: true
+      schema: { type: string, format: uuid }
         - in: cookie
           name: refreshToken
           schema: { type: string }
@@ -773,6 +779,86 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: Appointment is not awaiting payment }
         '503': { description: Stripe is not configured }
+
+  /prescriptions:
+    post:
+      tags: [Prescriptions]
+      security: [{ bearerAuth: [] }]
+      summary: Create a prescription for a completed appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId, keyFindings, medicines]
+              properties:
+                appointmentId: { type: string, format: uuid }
+                keyFindings: { type: string }
+                medicines:
+                  type: array
+                  items:
+                    type: object
+                    required: [name, dosage, frequency, duration]
+                    properties:
+                      name: { type: string }
+                      dosage: { type: string }
+                      frequency: { type: string }
+                      duration: { type: string }
+                      instructions: { type: string }
+                additionalInstructions: { type: string }
+      responses:
+        '201': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Prescription already exists }
+
+  /prescriptions/my-prescriptions:
+    get:
+      tags: [Prescriptions]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve the authenticated patient's prescriptions
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+
+  /prescriptions/{prescriptionId}:
+    get:
+      tags: [Prescriptions]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve prescription details
+      parameters:
+        - $ref: '#/components/parameters/PrescriptionId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /prescriptions/{prescriptionId}/pdf:
+    get:
+      tags: [Prescriptions]
+      security: [{ bearerAuth: [] }]
+      summary: Download prescription as PDF
+      parameters:
+        - $ref: '#/components/parameters/PrescriptionId'
+      responses:
+        '200':
+          description: Downloadable PDF document
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
 
   # Backward-compatible singular route aliases mounted by the v1 router.
   /user/me:

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Medical Prescription - HealthNest</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #334155;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .header {
+      background: #0d9488;
+      color: #ffffff;
+      padding: 24px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      margin: 4px 0 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 28px 24px;
+    }
+    .card {
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 20px 0;
+      border-left: 4px solid #0d9488;
+    }
+    .card table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .card td {
+      padding: 6px 0;
+      font-size: 14px;
+    }
+    .card td.label {
+      color: #64748b;
+      width: 40%;
+      font-weight: 500;
+    }
+    .card td.value {
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .footer {
+      background: #f8fafc;
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>HealthNest</h1>
+      <p>Digital Healthcare Consultation</p>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 16px; margin-top: 0;">Dear <strong><%= patientName %></strong>,</p>
+
+      <p>Your online medical consultation with <strong>Dr. <%= doctorName %></strong> has been completed.</p>
+
+      <p>Your official medical prescription has been generated and is attached to this email as a PDF document for your records.</p>
+
+      <div class="card">
+        <table>
+          <tr>
+            <td class="label">Attending Doctor:</td>
+            <td class="value">Dr. <%= doctorName %></td>
+          </tr>
+          <tr>
+            <td class="label">Prescription ID:</td>
+            <td class="value"><%= prescriptionId %></td>
+          </tr>
+          <tr>
+            <td class="label">Appointment Ref:</td>
+            <td class="value"><%= appointmentId %></td>
+          </tr>
+          <tr>
+            <td class="label">Issue Date:</td>
+            <td class="value"><%= date %></td>
+          </tr>
+        </table>
+      </div>
+
+      <p style="margin-bottom: 0;">
+        Please review the attached PDF for complete medication details, dosages, and specific clinical advice. If you experience adverse reactions or have questions, please reach out to your doctor immediately.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 4px 0;">&copy; <%= year %> HealthNest. All rights reserved.</p>
+      <p style="margin: 0;">This is an automated email. For support, contact <%= supportEmail %></p>
+    </div>
+  </div>
+</body>
+</html>
+

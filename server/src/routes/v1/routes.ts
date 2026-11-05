@@ -13,6 +13,7 @@ import { adminRoutes } from "@/modules/v1/admin/admin.route";
 import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 import { appointmentRoutes } from "@/modules/v1/appointment/appointment.routes";
 import { paymentRoutes } from "@/modules/v1/payment/payment.routes";
+import { prescriptionRoutes } from "@/modules/v1/prescription/prescription.routes";
 
 // Router Initialization
 const router: Router = Router();
@@ -59,12 +60,24 @@ const moduleRoutes = [
     route: scheduleRoutes,
   },
   {
+    // Appointment management.
     path: "/appointments",
     route: appointmentRoutes,
   },
   {
+    // Backward-compatible singular appointment alias.
     path: "/payments",
     route: paymentRoutes,
+  },
+  {
+    // Prescription management.
+    path: "/prescriptions",
+    route: prescriptionRoutes,
+  },
+  {
+    // Backward-compatible singular prescription alias.
+    path: "/prescription",
+    route: prescriptionRoutes,
   },
 ];
 
