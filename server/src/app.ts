@@ -83,8 +83,6 @@ app.use(
 
 // API Routes
 app.use("/api/v1", router);
-app.use("/refunds", refundRoutes);
-app.use("/refund", refundRoutes);
 
 // Root Route
 app.get("/", async (req: Request, res: Response) => {

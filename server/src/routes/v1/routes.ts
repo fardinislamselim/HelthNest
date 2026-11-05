@@ -15,6 +15,7 @@ import { appointmentRoutes } from "@/modules/v1/appointment/appointment.routes";
 import { paymentRoutes } from "@/modules/v1/payment/payment.routes";
 import { prescriptionRoutes } from "@/modules/v1/prescription/prescription.routes";
 import { refundRoutes } from "@/modules/v1/refund/refund.routes";
+import { dashboardRoutes } from "@/modules/v1/dashboard/dashboard.route";
 
 // Router Initialization
 const router: Router = Router();
@@ -89,6 +90,11 @@ const moduleRoutes = [
     // Backward-compatible singular refund alias.
     path: "/refund",
     route: refundRoutes,
+  },
+  {
+    // Role-specific and platform dashboard statistics.
+    path: "/dashboard",
+    route: dashboardRoutes,
   },
 ];
 

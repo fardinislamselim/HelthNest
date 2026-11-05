@@ -17,7 +17,48 @@ tags:
   - name: Patient Schedules
   - name: Appointments
   - name: Prescriptions
+  - name: Dashboards
 paths:
+  /dashboard/admin:
+    get:
+      tags: [Dashboards]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve administrator dashboard statistics
+      description: Available to ADMIN and SUPER_ADMIN users.
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /dashboard/doctor:
+    get:
+      tags: [Dashboards]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve the authenticated doctor's dashboard statistics
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /dashboard/patient:
+    get:
+      tags: [Dashboards]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve the authenticated patient's dashboard statistics
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /dashboard/super-admin:
+    get:
+      tags: [Dashboards]
+      security: [{ bearerAuth: [] }]
+      summary: Retrieve platform-wide dashboard statistics
+      description: Available only to SUPER_ADMIN users.
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
   /auth/register:
     post:
       tags: [Authentication]
@@ -1081,5 +1122,7 @@ components:
       description: Invalid request
     Unauthorized:
       description: Authentication required or invalid credentials
+    Forbidden:
+      description: Authenticated user does not have the required role
     NotFound:
       description: Resource not found
