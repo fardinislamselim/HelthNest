@@ -56,6 +56,12 @@ export default {
   email_pass: (process.env.EMAIL_PASS || process.env.SMTP_PASS)!,
   email_sender: (process.env.EMAIL_SENDER || process.env.SMTP_USER)!,
 
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
+  stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET!,
+  stripe_success_url: process.env.STRIPE_SUCCESS_URL || `${process.env.FRONTEND_URL}/payment/success`,
+  stripe_cancel_url: process.env.STRIPE_CANCEL_URL || `${process.env.FRONTEND_URL}/payment/cancel`,
+  payment_currency: process.env.PAYMENT_CURRENCY || "usd",
+
   cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET!,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY!,

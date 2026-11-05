@@ -6849,6 +6849,24 @@
           ]
         },
         {
+          "name": "Create Stripe checkout session",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/checkout/{{appointmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "checkout", "{{appointmentId}}"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            }
+          }
+        },
+        {
           "name": "Get my appointments (patient)",
           "request": {
             "method": "GET",

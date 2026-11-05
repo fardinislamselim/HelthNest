@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Confirmation - HealthNest</title>
+</head>
+
+<body style="margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#334155;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0"
+    style="background:#eef2f7;padding:35px 12px;">
+
+    <tr>
+      <td align="center">
+
+        <table width="600" cellpadding="0" cellspacing="0" border="0"
+          style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background:#087f68;padding:30px 20px;">
+
+              <h1 style="margin:0;color:#ffffff;font-size:28px;">
+                ♥ HealthNest
+              </h1>
+
+              <p style="margin:8px 0 0;color:#d5f5e9;font-size:13px;">
+                Your Health, Our Priority
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Main Content -->
+          <tr>
+            <td style="padding:35px 30px;">
+
+              <div style="text-align:center;margin-bottom:25px;">
+
+                <div style="font-size:45px;color:#16a36b;">
+                  &#10004;
+                </div>
+
+                <h2 style="margin:10px 0;color:#142e2a;font-size:24px;">
+                  Payment Successful!
+                </h2>
+
+                <p style="color:#64748b;font-size:14px;line-height:22px;">
+                  Your appointment has been successfully confirmed.
+                </p>
+
+              </div>
+
+              <p style="font-size:15px;line-height:24px;">
+                Hello <strong><%= patientName %></strong>,
+              </p>
+
+              <p style="font-size:14px;line-height:24px;color:#64748b;">
+                Thank you for choosing HealthNest. We have successfully
+                received your payment. Your appointment is now confirmed.
+                Please find your payment invoice attached to this email.
+              </p>
+
+              <!-- Appointment Summary -->
+              <table width="100%" cellpadding="0" cellspacing="0"
+                style="background:#f0f8f5;border-radius:8px;padding:20px;margin:22px 0;">
+
+                <tr>
+                  <td colspan="2">
+                    <h3 style="margin:0 0 16px;color:#087f68;font-size:15px;">
+                      APPOINTMENT SUMMARY
+                    </h3>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:8px 0;color:#64748b;font-size:13px;">Doctor</td>
+                  <td align="right" style="padding:8px 0;color:#142e2a;font-weight:bold;font-size:13px;">
+                    <%= doctorName %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:8px 0;color:#64748b;font-size:13px;">Date</td>
+                  <td align="right" style="padding:8px 0;color:#142e2a;font-size:13px;">
+                    <%= scheduleDate %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:8px 0;color:#64748b;font-size:13px;">Time</td>
+                  <td align="right" style="padding:8px 0;color:#142e2a;font-size:13px;">
+                    <%= slotStart %> - <%= slotEnd %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:8px 0;color:#64748b;font-size:13px;">Serial Number</td>
+                  <td align="right" style="padding:8px 0;color:#087f68;font-weight:bold;font-size:13px;">
+                    #<%= serialNumber %>
+                  </td>
+                </tr>
+
+              </table>
+
+              <!-- Payment Details -->
+              <table width="100%" cellpadding="0" cellspacing="0"
+                style="border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin:22px 0;">
+
+                <tr>
+                  <td colspan="2">
+                    <h3 style="margin:0 0 15px;color:#142e2a;font-size:15px;">
+                      PAYMENT DETAILS
+                    </h3>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:8px 0;color:#64748b;font-size:13px;">Invoice Number</td>
+                  <td align="right" style="padding:8px 0;font-size:13px;color:#142e2a;">
+                    <%= invoiceNumber %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:8px 0;color:#64748b;font-size:13px;">Payment Status</td>
+                  <td align="right" style="padding:8px 0;color:#16a36b;font-weight:bold;font-size:13px;">
+                    PAID
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="2" style="padding-top:15px;border-top:1px solid #e2e8f0;">
+                    <table width="100%">
+                      <tr>
+                        <td style="font-size:15px;font-weight:bold;color:#142e2a;">
+                          Total Paid
+                        </td>
+                        <td align="right" style="font-size:22px;font-weight:bold;color:#087f68;">
+                          <%= currency %> <%= amount %>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+              </table>
+
+              <!-- Attachment Notice -->
+              <table width="100%" cellpadding="0" cellspacing="0"
+                style="background:#f1f5f9;border-radius:8px;padding:15px;margin:22px 0;">
+
+                <tr>
+                  <td width="45" style="font-size:28px;color:#dc4545;">
+                    &#128196;
+                  </td>
+                  <td>
+                    <strong style="font-size:13px;color:#142e2a;">
+                      Payment Invoice.pdf
+                    </strong>
+                    <p style="margin:5px 0 0;font-size:12px;color:#64748b;">
+                      Your official payment invoice is attached.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+
+              <p style="font-size:14px;line-height:23px;color:#64748b;">
+                Please keep this email for your records. We look forward
+                to serving you.
+              </p>
+
+              <p style="font-size:14px;line-height:23px;">
+                Best Regards,<br />
+                <strong style="color:#087f68;">HealthNest Team</strong>
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background:#f1f5f9;padding:25px 20px;">
+
+              <p style="margin:0 0 8px;font-size:12px;color:#64748b;">
+                Need help? Contact our support team.
+              </p>
+
+              <a href="mailto:<%= supportEmail %>"
+                style="color:#087f68;font-size:13px;text-decoration:none;">
+                <%= supportEmail %>
+              </a>
+
+              <p style="margin:15px 0 0;font-size:11px;color:#94a3b8;">
+                &copy; <%= year %> HealthNest. All rights reserved.
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

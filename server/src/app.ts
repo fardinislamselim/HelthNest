@@ -19,6 +19,7 @@ import { notFound } from "@/middleware/notFound";
 import router from "@/routes/v1/routes";
 import { scheduleRoutes } from "@/modules/v1/schedule/schedule.routes";
 import { doctorRoutes } from "@/modules/v1/doctor/doctor.route";
+import { paymentController } from "@/modules/v1/payment/payment.controller";
 
 // Initialize Express Application
 const app: Application = express();
@@ -37,6 +38,12 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   }),
+);
+
+app.post(
+  "/api/v1/payments/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.handleStripeWebhook,
 );
 
 // Body Parsing Middleware

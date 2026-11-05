@@ -13,6 +13,7 @@ import type {
   IAppointmentQuery,
   ICreateAppointmentPayload,
 } from "./appointment.interface";
+import { paymentService } from "@/modules/v1/payment/payment.service";
 
 const appointmentInclude = {
   patient: {
@@ -37,6 +38,14 @@ const appointmentInclude = {
   },
   slot: {
     select: { id: true, serialNumber: true, startTime: true, endTime: true },
+  },
+  payment: {
+    select: {
+      status: true,
+      amount: true,
+      currency: true,
+      invoiceNumber: true,
+    },
   },
 } satisfies Prisma.AppointmentInclude;
 
@@ -97,7 +106,7 @@ const createAppointment = async (
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    const appointment = await prisma.$transaction(async (tx) => {
       const slot = await tx.slot.findFirst({
         where: { id: payload.slotId, scheduleId: schedule.id },
       });
@@ -135,6 +144,25 @@ const createAppointment = async (
         include: appointmentInclude,
       });
     });
+    try {
+      const payment = await paymentService.createCheckoutSession(
+        appointment.id,
+        userId,
+      );
+      return { appointment, payment };
+    } catch (error) {
+      await prisma.$transaction(async (tx) => {
+        await tx.appointment.update({
+          where: { id: appointment.id },
+          data: { status: AppointmentStatus.CANCELLED, cancelledAt: new Date() },
+        });
+        await tx.slot.update({
+          where: { id: appointment.slotId },
+          data: { isBooked: false },
+        });
+      });
+      throw error;
+    }
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

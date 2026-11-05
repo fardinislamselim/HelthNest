@@ -653,7 +653,7 @@ paths:
       tags: [Appointments]
       security: [{ bearerAuth: [] }]
       summary: Create a pending appointment booking request
-      description: Creates a PENDING appointment for an available slot. Payment confirmation is not implemented by the current server and this operation does not assign a serial number or mark the appointment BOOKED.
+      description: Creates a pending appointment and Stripe checkout session. The appointment becomes BOOKED only after a verified Stripe webhook.
       requestBody:
         required: true
         content:
@@ -747,7 +747,7 @@ paths:
       tags: [Appointments]
       security: [{ bearerAuth: [] }]
       summary: Cancel a pending or booked appointment
-      description: Preserves the appointment record and releases its slot. Refund behavior is not performed because no payment module is currently present.
+      description: Preserves the appointment record and releases its slot. Refunds are not initiated by the current cancellation flow.
       parameters:
         - $ref: '#/components/parameters/AppointmentId'
       responses:
@@ -757,6 +757,22 @@ paths:
         '403': { description: Forbidden }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: Appointment cannot be cancelled in its current state }
+
+  /payments/checkout/{appointmentId}:
+    post:
+      tags: [Appointments]
+      security: [{ bearerAuth: [] }]
+      summary: Create a Stripe Checkout session
+      description: Creates a Stripe-hosted payment session for the authenticated patient's pending appointment.
+      parameters:
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Forbidden }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Appointment is not awaiting payment }
+        '503': { description: Stripe is not configured }
 
   # Backward-compatible singular route aliases mounted by the v1 router.
   /user/me:

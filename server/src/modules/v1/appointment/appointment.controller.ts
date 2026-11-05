@@ -6,12 +6,12 @@ import { appointmentService } from "./appointment.service";
 import { Role } from "../../../../generated/prisma/enums";
 
 const createAppointment = catchAsync(async (req: Request, res: Response) => {
-  const appointment = await appointmentService.createAppointment(req.user!.userId, req.body);
+  const result = await appointmentService.createAppointment(req.user!.userId, req.body);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
     message: "Appointment booking request created successfully",
-    data: { appointment },
+    data: result,
   });
 });
 
