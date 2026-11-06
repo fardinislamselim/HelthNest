@@ -16,7 +16,10 @@ export const seedSuperAdmin = async () => {
     try {
         const isSuperAdminExist = await prisma.user.findFirst({
             where : {
-                role : Role.SUPER_ADMIN
+                OR: [
+                    { role: Role.SUPER_ADMIN },
+                    { email: config.super_admin_email }
+                ]
             }
         });
 
@@ -51,16 +54,7 @@ export const seedSuperAdmin = async () => {
 
 
     } catch (error) {
-
         logger.error("Error Seeding Super Admin : ", error);
-
-        await prisma.user.delete({
-            where : {
-                email : config.super_admin_email
-            }
-        })
-
-        
     }
 }
 

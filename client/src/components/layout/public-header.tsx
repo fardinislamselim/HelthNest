@@ -3,9 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, Menu, X } from "lucide-react";
+import { Activity, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/ui-store";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -18,6 +19,7 @@ const NAV_LINKS = [
 export function PublicHeader() {
   const pathname = usePathname();
   const { isMobileNavOpen, toggleMobileNav, closeAllNav } = useUiStore();
+  const { user, isAuthenticated, isLoading, logout, isLoggingOut, getDashboardPath } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -57,12 +59,40 @@ export function PublicHeader() {
 
         {/* Desktop Auth CTAs */}
         <div className="hidden md:flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/register">Get Started</Link>
-          </Button>
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-16 animate-pulse rounded-md bg-muted/60" />
+              <div className="h-8 w-24 animate-pulse rounded-md bg-muted/60" />
+            </div>
+          ) : isAuthenticated && user ? (
+            <>
+              <Button asChild size="sm" className="gap-2">
+                <Link href={getDashboardPath(user.role)}>
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span>Dashboard</span>
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => logout()}
+                disabled={isLoggingOut}
+                className="text-xs text-muted-foreground hover:text-destructive gap-1.5"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -105,12 +135,42 @@ export function PublicHeader() {
             })}
           </nav>
           <div className="pt-4 border-t border-border flex flex-col gap-2">
-            <Button asChild variant="outline" className="w-full justify-center" onClick={closeAllNav}>
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild className="w-full justify-center" onClick={closeAllNav}>
-              <Link href="/register">Get Started</Link>
-            </Button>
+            {isLoading ? (
+              <div className="space-y-2">
+                <div className="h-9 w-full animate-pulse rounded-md bg-muted/60" />
+                <div className="h-9 w-full animate-pulse rounded-md bg-muted/60" />
+              </div>
+            ) : isAuthenticated && user ? (
+              <>
+                <Button asChild className="w-full justify-center gap-2" onClick={closeAllNav}>
+                  <Link href={getDashboardPath(user.role)}>
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard ({user.name})
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-center text-destructive"
+                  onClick={() => {
+                    closeAllNav();
+                    logout();
+                  }}
+                  disabled={isLoggingOut}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" className="w-full justify-center" onClick={closeAllNav}>
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild className="w-full justify-center" onClick={closeAllNav}>
+                  <Link href="/register">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

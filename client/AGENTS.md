@@ -19,6 +19,7 @@ Read the following project documents before coding:
 5. `ai-workflow-rules.md` — required development workflow and completion criteria.
 6. `progress-tracker.md` — current status, decisions, and blockers.
 7. `api-docs.md` — API Docs.
+8. `component-architecture-rules.md` — Component Architecture & Separation Rules.
 
 These files are the working project guidance. If existing code conflicts with them, inspect the code and explain the conflict before making breaking changes. Do not overwrite existing work.
 

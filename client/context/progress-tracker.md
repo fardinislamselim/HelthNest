@@ -37,18 +37,19 @@
 ## 2. Authentication
 
 - [x] Confirm backend auth endpoints and cookie/CORS behavior (documented in `docs/api-contract.md`).
-- [ ] Implement patient registration.
-- [ ] Implement email OTP verification and resend.
-- [ ] Implement email/password login.
-- [ ] Integrate patient Google login.
-- [ ] Implement forgot-password OTP request.
-- [ ] Implement reset password.
+- [x] Implement patient registration (`src/app/(auth)/register/page.tsx` with React Hook Form, Zod, and API integration).
+- [x] Implement doctor application/registration (`src/app/(public)/doctors/apply/page.tsx` with credentials and resume upload).
+- [x] Implement email OTP verification and resend (`src/app/(auth)/verify-email/page.tsx` with 60s cooldown timer and multi-role support).
+- [x] Implement email/password login (`src/app/(auth)/login/page.tsx` with role-aware redirects and error feedback).
+- [x] Integrate patient Google login (`@react-oauth/google` integrated into `SocialAuthButtons`, `LoginForm`, `PatientRegisterForm`, and `Providers`).
+- [x] Implement forgot-password OTP request (`src/app/(auth)/forgot-password/page.tsx` with `ForgotPasswordForm`, Zod validation, and backend API).
+- [x] Implement reset password (`src/app/(auth)/reset-password/page.tsx` with `ResetPasswordForm`, 6-digit OTP, password confirmation validation, and cooldown resend).
 - [ ] Implement change password.
 - [ ] Implement set password for Google-only patients.
-- [ ] Implement refresh coordination and logout.
-- [ ] Implement session restoration and current-user query.
-- [ ] Implement role-aware route navigation and forbidden states.
-- [ ] Test blocked, pending, rejected, and unauthenticated access.
+- [x] Implement refresh coordination and logout (Axios interceptor refresh queue + `/auth/logout` endpoint + cache clearing).
+- [x] Implement session restoration and current-user query (`useAuth` hook powered by TanStack Query `/auth/me`).
+- [x] Implement role-aware route navigation and forbidden states (`ProtectedRoute` guarding `/dashboard`, `/doctor`, `/admin`).
+- [x] Test blocked, pending, rejected, and unauthenticated access (Checked with status banners and redirect boundaries).
 
 ## 3. Patient experience
 
@@ -131,11 +132,12 @@
 | 2026-11-05 | Payment provider | Backend uses Stripe Checkout and Stripe Refunds. Documented in `docs/api-contract.md`. | Resolved |
 | 2026-11-05 | NextAuth/Auth.js vs Backend Session | Directly integrate with the backend auth endpoints using Axios + HTTP-only cookies + TanStack Query to avoid dual auth synchronization issues. | Resolved |
 | 2026-11-05 | Document / Prescription PDFs | Generated and streamed server-side by backend via `/prescriptions/:prescriptionId/pdf`. | Resolved |
+| 2026-11-06 | Auth Redirect & Navbar Synchronization | Fixed backend development cookie options (`sameSite: "lax"`, `secure: false`), included full user and relation payload in login response, added TanStack Query synchronous cache seeding in `useAuth`, and integrated navbar skeleton loading to eliminate layout flash. | Resolved |
 
 ---
 
 ## Current milestone
 
-**Milestone:** 0. Project foundation & shared public presentation  
-**Overall status:** Completed & Verified (Foundation Ready)  
-**Next recommended task:** Task 1: Patient Authentication Flow (Patient Registration, Email OTP verification, Login, Session Query, and Route Protection).
+**Milestone:** 2. Core Authentication Flow  
+**Overall status:** Completed & Verified (Registration, Verification, Login, Logout, Session, Route Protection)  
+**Next recommended task:** Task 3: Patient Experience (Dashboard overview, doctor discovery, schedule & slot browsing, booking flow) or Password Management flows (Forgot/Reset Password).

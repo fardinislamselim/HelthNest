@@ -23,4 +23,7 @@ export const transporter = nodemailer.createTransport({
 		user: config.email_user,
 		pass: config.email_pass,
 	},
+	connectionTimeout: 4000,
+	greetingTimeout: 4000,
+	socketTimeout: 4000,
 });

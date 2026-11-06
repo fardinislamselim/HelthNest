@@ -201,14 +201,19 @@ const applyAsDoctor = async (
       expiresIn: "5 minutes",
     });
 
-    await transporter.sendMail({
-      from: config.email_sender,
-      to: email,
-      subject: "Verify your doctor application email",
-      html,
-    });
+    await Promise.race([
+      transporter.sendMail({
+        from: config.email_sender,
+        to: email,
+        subject: "Verify your doctor application email",
+        html,
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("SMTP connection timed out")), 3000),
+      ),
+    ]);
   } catch (error) {
-    logger.error("Failed to send doctor verification email:", error);
+    logger.warn(`Failed to send doctor verification email to ${email}: ${(error as Error)?.message}. OTP logged to console.`);
   }
 
   return doctorApplication;
@@ -325,14 +330,19 @@ const resendDoctorOtp = async (email: string) => {
       expiresIn: "5 minutes",
     });
 
-    await transporter.sendMail({
-      from: config.email_sender,
-      to: normalizedEmail,
-      subject: "Verify your doctor application email",
-      html,
-    });
+    await Promise.race([
+      transporter.sendMail({
+        from: config.email_sender,
+        to: normalizedEmail,
+        subject: "Verify your doctor application email",
+        html,
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("SMTP connection timed out")), 3000),
+      ),
+    ]);
   } catch (error) {
-    logger.error("Failed to resend doctor verification email:", error);
+    logger.warn(`Failed to resend doctor verification email to ${normalizedEmail}: ${(error as Error)?.message}. OTP logged to console.`);
   }
 };
 

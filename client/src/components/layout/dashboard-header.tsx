@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Menu, User } from "lucide-react";
+import { Menu, User, LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUiStore } from "@/stores/ui-store";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import type { Role } from "@/types/user";
 
 interface DashboardHeaderProps {
@@ -19,6 +20,7 @@ export function DashboardHeader({
   title,
 }: DashboardHeaderProps) {
   const { toggleMobileNav } = useUiStore();
+  const { logout, isLoggingOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
@@ -48,9 +50,26 @@ export function DashboardHeader({
             {userName}
           </span>
         </div>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => logout()}
+          disabled={isLoggingOut}
+          className="text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5"
+          title="Sign out of account"
+        >
+          {isLoggingOut ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <LogOut className="h-3.5 w-3.5" />
+          )}
+          <span className="hidden sm:inline">Sign Out</span>
+        </Button>
       </div>
     </header>
   );
 }
+
 
 export default DashboardHeader;

@@ -23,10 +23,7 @@ payments, refunds, and medical records.
 - **React Hook Form + Zod:** forms and client-side validation.
 - **Axios:** centralized HTTP client and interceptors.
 - **Lucide React:** icons.
-- **NextAuth/Auth.js:** use only if its provider/session model is
-  deliberately integrated with the existing backend. Do not introduce
-  a second independent identity system or duplicate backend
-  authentication.
+
 
 ## 3. Application boundaries
 

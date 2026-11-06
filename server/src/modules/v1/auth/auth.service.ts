@@ -40,26 +40,39 @@ const sendEmailVerificationOtp = async (email: string, name: string) => {
       expiration: { type: "EX", value: expirationSeconds },
     });
 
-    if (config.node_env === "development") {
-      console.log(`[dev] Email verification OTP for ${email}: ${otp}`);
+    console.log(`\n==================================================`);
+    console.log(`[OTP] Email verification OTP for ${email}: ${otp}`);
+    console.log(`==================================================\n`);
+
+    try {
+      const templatePath = path.join(
+        process.cwd(),
+        "src/templates/email-verification.ejs",
+      );
+      const html = await ejs.renderFile(templatePath, {
+        name,
+        otp,
+        expiresIn: `${expirationSeconds / 60} minutes`,
+      });
+
+      await Promise.race([
+        transporter.sendMail({
+          from: config.email_sender,
+          to: email,
+          subject: "Verify your HealthNest email",
+          html,
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("SMTP connection timed out")), 3000),
+        ),
+      ]);
+    } catch (mailError) {
+      logger.warn(
+        `Failed to deliver email verification OTP to ${email}: ${(mailError as Error)?.message}. OTP logged to console.`,
+      );
     }
 
-    const templatePath = path.join(
-      process.cwd(),
-      "src/templates/email-verification.ejs",
-    );
-    const html = await ejs.renderFile(templatePath, {
-      name,
-      otp,
-      expiresIn: `${expirationSeconds / 60} minutes`,
-    });
-
-    await transporter.sendMail({
-      from: config.email_sender,
-      to: email,
-      subject: "Verify your HealthNest email",
-      html,
-    });
+    return otp;
 };
 
 // Verify Email Service
@@ -164,13 +177,14 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
     config.jwt_refresh_expires_in as SignOptions,
   );
 
-  await sendEmailVerificationOtp(email, name);
+  const otp = await sendEmailVerificationOtp(email, name);
 
   return {
     user,
     patient,
     accessToken,
     refreshToken,
+    devOtp: config.node_env !== "production" ? otp : undefined,
   };
 };
 
@@ -182,7 +196,7 @@ const loginUser = async (payload: ILoginUserPayload) => {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { doctor: true },
+    include: { doctor: true, patient: true },
   });
 
   if (!user) {
@@ -244,10 +258,13 @@ const loginUser = async (payload: ILoginUserPayload) => {
     config.jwt_refresh_expires_in as SignOptions,
   );
 
+  const { password: _pwd, ...sanitizedUser } = user;
+
   return {
     accessToken,
     refreshToken,
     needPasswordChange: user.needPasswordChange,
+    user: sanitizedUser,
   };
 };
 
@@ -260,6 +277,7 @@ const getMe = async (user: IRequestUser) => {
     },
     include: {
       patient: true,
+      doctor: true,
     },
     omit: {
       password: true,
@@ -466,14 +484,29 @@ const forgotPassword = async (email: string) => {
     expirationMinutes: expirationSeconds / 60,
   };
 
-  const html = await ejs.renderFile(templatePath, templateData);
+  console.log(`\n==================================================`);
+  console.log(`[OTP] Forgot-password OTP for ${email}: ${otp}`);
+  console.log(`==================================================\n`);
 
-  await transporter.sendMail({
-    from: config.email_sender,
-    to: isUserExist.email,
-    subject: "Forgot Password",
-    html,
-  });
+  try {
+    const html = await ejs.renderFile(templatePath, templateData);
+
+    await Promise.race([
+      transporter.sendMail({
+        from: config.email_sender,
+        to: isUserExist.email,
+        subject: "Forgot Password",
+        html,
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("SMTP connection timed out")), 3000),
+      ),
+    ]);
+  } catch (mailError) {
+    logger.warn(
+      `Failed to deliver forgot-password email to ${email}: ${(mailError as Error)?.message}. OTP logged to console.`,
+    );
+  }
 };
 
 // Reset Password Service
