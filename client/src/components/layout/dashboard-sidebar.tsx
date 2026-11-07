@@ -49,6 +49,7 @@ const DOCTOR_NAV: NavItem[] = [
   { href: "/doctor/schedules", label: "My Schedules", icon: Clock },
   { href: "/doctor/appointments", label: "Consultations", icon: Calendar },
   { href: "/doctor/prescriptions", label: "Prescriptions", icon: FileText },
+  { href: "/doctor/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/doctor/profile", label: "Doctor Profile", icon: User },
 ];
 

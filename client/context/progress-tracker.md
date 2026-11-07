@@ -68,19 +68,19 @@
 
 ## 4. Doctor experience
 
-- [ ] Doctor dashboard overview.
-- [ ] Doctor profile and professional information.
-- [ ] Create draft schedule with validation.
-- [ ] Publish/unpublish schedule.
-- [ ] Edit/delete schedule subject to backend rules.
-- [ ] Schedule detail and slot overview.
-- [ ] Doctor appointment list.
-- [ ] Appointment details and meeting link.
-- [ ] Start consultation.
-- [ ] Complete consultation.
-- [ ] Create prescription for completed appointment.
-- [ ] Prescription PDF/email confirmation state.
-- [ ] Doctor analytics.
+- [x] Doctor dashboard overview (`GET /dashboard/doctor` with live metrics, today's schedule preview, upcoming consultations, and recent Rx).
+- [x] Doctor profile and professional information (`GET /users/me`, `PATCH /users/me`, credentials, fee, and Cloudinary image upload `PATCH /users/me/profile-image`).
+- [x] Create draft schedule with validation (3–8 hr constraint, 20-min slot preview count, midnight prevention, meet link: `POST /schedules`).
+- [x] Publish/unpublish schedule (`PATCH /schedules/:id/publish`, `PATCH /schedules/:id/unpublish`).
+- [x] Edit/delete schedule subject to backend rules (`DELETE /schedules/:id` with booking conflict protection and confirmation dialog).
+- [x] Schedule detail and slot overview (`GET /schedules/:id` showing discrete 20-minute slots, booked status, and patient info).
+- [x] Doctor appointment list (`GET /appointments/doctor/my-appointments` with status and date filtering, pagination).
+- [x] Appointment details and meeting link (`GET /appointments/:id` with Google Meet room launching).
+- [x] Start consultation (`PATCH /appointments/:id/start` transitions `BOOKED` -> `ONGOING`).
+- [x] Complete consultation (`PATCH /appointments/:id/complete` transitions `ONGOING` -> `COMPLETED`).
+- [x] Create prescription for completed appointment (`POST /prescriptions` with diagnosis, dynamic medicines list, dosage, duration, instructions).
+- [x] Prescription PDF/email confirmation state (`GET /prescriptions/:id/pdf` binary download and modal preview).
+- [x] Doctor analytics (Completion vs cancellation rate, 20-min slot utilization, unique patient reach, schedule capacity).
 
 ## 5. Admin and Super Admin experience
 

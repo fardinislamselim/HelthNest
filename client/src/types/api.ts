@@ -6,6 +6,7 @@ export interface ApiMeta {
   limit: number;
   total: number;
   totalPage: number;
+  totalPages?: number;
 }
 
 /**
