@@ -53,18 +53,18 @@
 
 ## 3. Patient experience
 
-- [ ] Patient dashboard overview and statistics.
-- [ ] View/edit patient profile.
-- [ ] Profile image upload (after confirming backend contract).
-- [ ] Appointment list and filters.
-- [ ] Today's schedule discovery.
-- [ ] Available 20-minute slot selection.
-- [ ] Booking review and payment initiation.
-- [ ] Payment return and server confirmation.
-- [ ] Appointment details and cancellation.
-- [ ] Prescription list and PDF access.
-- [ ] Payment history.
-- [ ] Personal analytics.
+- [x] Patient dashboard overview and statistics (`GET /dashboard/patient`).
+- [x] View/edit patient profile (`GET /users/me`, `PATCH /users/me`).
+- [x] Profile image upload (`PATCH /users/me/profile-image` via Cloudinary).
+- [x] Appointment list and filters (`GET /appointments/my-appointments`).
+- [x] Today's schedule discovery (`GET /schedules/today`).
+- [x] Available 20-minute slot selection (`GET /schedules/:scheduleId/slots`).
+- [x] Booking review and payment initiation (`POST /appointments`, `POST /payments/checkout/:appointmentId`).
+- [x] Payment return and server confirmation (`/payment/success` and `/payment/cancel`).
+- [x] Appointment details and cancellation (`GET /appointments/:appointmentId`, `PATCH /appointments/:appointmentId/cancel`).
+- [x] Prescription list and PDF access (`GET /prescriptions/my-prescriptions`, `GET /prescriptions/:prescriptionId/pdf`).
+- [x] Payment history (`GET /refunds/my-refunds` & appointment billing).
+- [x] Personal analytics (Consultation ratios, spending, specialty distributions).
 
 ## 4. Doctor experience
 
@@ -101,17 +101,17 @@
 ## 6. Payments, refunds, and documents
 
 - [x] Confirm payment provider and backend contract (Stripe confirmed in backend).
-- [ ] Implement payment initiation and redirect/checkout.
-- [ ] Handle return/callback safely.
-- [ ] Fetch backend-confirmed payment/appointment state.
-- [ ] Display invoice PDF.
-- [ ] Display refund status and history.
-- [ ] Handle cancellation/refund eligibility messages.
-- [ ] Display and download prescription PDFs.
+- [x] Implement payment initiation and redirect/checkout.
+- [x] Handle return/callback safely.
+- [x] Fetch backend-confirmed payment/appointment state.
+- [x] Display invoice PDF.
+- [x] Display refund status and history.
+- [x] Handle cancellation/refund eligibility messages.
+- [x] Display and download prescription PDFs.
 
 ## 7. Quality and release
 
-- [ ] Responsive audit: mobile, tablet, desktop.
+- [x] Responsive audit: mobile, tablet, desktop.
 - [ ] Accessibility and keyboard-navigation audit.
 - [ ] Unit tests for schemas and utilities.
 - [ ] Component tests for critical forms and states.
@@ -133,11 +133,13 @@
 | 2026-11-05 | NextAuth/Auth.js vs Backend Session | Directly integrate with the backend auth endpoints using Axios + HTTP-only cookies + TanStack Query to avoid dual auth synchronization issues. | Resolved |
 | 2026-11-05 | Document / Prescription PDFs | Generated and streamed server-side by backend via `/prescriptions/:prescriptionId/pdf`. | Resolved |
 | 2026-11-06 | Auth Redirect & Navbar Synchronization | Fixed backend development cookie options (`sameSite: "lax"`, `secure: false`), included full user and relation payload in login response, added TanStack Query synchronous cache seeding in `useAuth`, and integrated navbar skeleton loading to eliminate layout flash. | Resolved |
+| 2026-11-07 | Patient Dashboard & Module Implementation | Completed full patient experience (Dashboard metrics, profile editing & Cloudinary image upload, today's schedule discovery, 20-min slot selection, Stripe checkout & payment return, appointment management & cancellation with refund rules, digital prescriptions & PDF download, billing/refund history, and personal analytics). | Resolved |
+| 2026-11-07 | Responsive Design & Mobile Drawer Audit | Fully refactored dashboard navigation, sidebar, layout shells, cards, stats, tables, dialogs, and analytics for fluid responsiveness across all target viewports (320px–1440px). Implemented mobile drawer with backdrop, scroll-lock, auto-close, touch-sized buttons, horizontal scroll containers, and mobile cards for wide tables. Verified with 0 type errors, 0 lint warnings, and clean Next.js 16 production build. | Resolved |
 
 ---
 
 ## Current milestone
 
-**Milestone:** 2. Core Authentication Flow  
-**Overall status:** Completed & Verified (Registration, Verification, Login, Logout, Session, Route Protection)  
-**Next recommended task:** Task 3: Patient Experience (Dashboard overview, doctor discovery, schedule & slot browsing, booking flow) or Password Management flows (Forgot/Reset Password).
+**Milestone:** 3. Patient Experience  
+**Overall status:** Completed & Verified (Dashboard, Profile, Schedules, Booking, Payments, Appointments, Prescriptions, Analytics)  
+**Next recommended task:** Task 4: Doctor Experience (Doctor dashboard overview, profile management, schedule creation with slot generation, publishing/unpublishing, consultation management, and digital prescription issuance).

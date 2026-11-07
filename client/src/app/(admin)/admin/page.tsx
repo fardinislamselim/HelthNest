@@ -1,26 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import { AdminDashboardView } from "@/features/admin-dashboard/components/AdminDashboardView";
 
-import * as React from "react";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import {
-  AdminDashboardHeader,
-  AdminDashboardStats,
-  PendingDoctorApprovalsCard,
-  AdminQuickActions,
-} from "@/features/admin-dashboard/components";
+export const metadata: Metadata = {
+  title: "Administration Center | HealthNest",
+  description: "Platform management, medical credentials verification, and administrative audit",
+};
 
 export default function AdminDashboardPage() {
-  const { user } = useAuth();
-
-  return (
-    <div className="space-y-6">
-      <AdminDashboardHeader
-        adminName={user?.name || "Administrator"}
-        role={user?.role || "ADMIN"}
-      />
-      <AdminDashboardStats />
-      <AdminQuickActions />
-      <PendingDoctorApprovalsCard />
-    </div>
-  );
+  return <AdminDashboardView />;
 }

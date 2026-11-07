@@ -43,24 +43,24 @@ export function DoctorDashboardStats({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (
-          <Card key={stat.title} className="shadow-xs">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+          <Card key={stat.title} className="shadow-xs min-w-0">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 gap-2">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
                 {stat.title}
               </CardTitle>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
                 <Icon className="h-4 w-4" aria-hidden="true" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tracking-tight">
+              <div className="text-xl sm:text-2xl font-bold tracking-tight truncate">
                 {stat.value}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1 truncate">
                 {stat.description}
               </p>
             </CardContent>
@@ -72,4 +72,3 @@ export function DoctorDashboardStats({
 }
 
 export default DoctorDashboardStats;
-

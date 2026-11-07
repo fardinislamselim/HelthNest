@@ -2,6 +2,14 @@
  * Centralized API endpoint constants for the HealthNest backend
  */
 export const API_ENDPOINTS = {
+  // Dashboard
+  DASHBOARD: {
+    PATIENT: "/dashboard/patient",
+    DOCTOR: "/dashboard/doctor",
+    ADMIN: "/dashboard/admin",
+    SUPER_ADMIN: "/dashboard/super-admin",
+  },
+
   // Auth
   AUTH: {
     REGISTER: "/auth/register",

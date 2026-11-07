@@ -19,17 +19,17 @@ export function PendingDoctorApprovalsCard({
   hasPendingDoctors = false,
 }: PendingDoctorApprovalsCardProps) {
   return (
-    <Card className="shadow-xs">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <div>
-          <CardTitle className="text-base font-semibold">
+    <Card className="shadow-xs min-w-0">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3">
+        <div className="min-w-0">
+          <CardTitle className="text-base font-semibold truncate">
             Pending Doctor Verifications
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             Medical practitioners awaiting license & credential review
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" asChild className="gap-1 text-xs">
+        <Button variant="ghost" size="sm" asChild className="gap-1 text-xs self-start sm:self-auto shrink-0">
           <Link href="/admin/doctors?status=PENDING">
             View all <ArrowRight className="h-3.5 w-3.5" />
           </Link>

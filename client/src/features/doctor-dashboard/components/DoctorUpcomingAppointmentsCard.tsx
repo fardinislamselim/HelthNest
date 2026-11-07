@@ -19,17 +19,17 @@ export function DoctorUpcomingAppointmentsCard({
   hasAppointments = false,
 }: DoctorUpcomingAppointmentsCardProps) {
   return (
-    <Card className="shadow-xs">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <div>
-          <CardTitle className="text-base font-semibold">
+    <Card className="shadow-xs min-w-0">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3">
+        <div className="min-w-0">
+          <CardTitle className="text-base font-semibold truncate">
             Upcoming Patient Consultations
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             Scheduled video calls and consultation details
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" asChild className="gap-1 text-xs">
+        <Button variant="ghost" size="sm" asChild className="gap-1 text-xs self-start sm:self-auto shrink-0">
           <Link href="/doctor/appointments">
             View all <ArrowRight className="h-3.5 w-3.5" />
           </Link>

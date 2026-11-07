@@ -7,7 +7,7 @@ export function DoctorApplyHeader() {
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary mb-2 shadow-xs">
         <Stethoscope className="h-7 w-7" aria-hidden="true" />
       </div>
-      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
         Apply as a Medical Practitioner
       </h1>
       <p className="max-w-xl mx-auto text-muted-foreground text-sm sm:text-base">

@@ -1,27 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import { PatientDashboardView } from "@/features/patient/dashboard/components/PatientDashboardView";
 
-import * as React from "react";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import {
-  PatientDashboardHeader,
-  PatientDashboardStats,
-  UpcomingAppointmentsCard,
-  RecentPrescriptionsCard,
-  PatientQuickActions,
-} from "@/features/patient-dashboard/components";
+export const metadata: Metadata = {
+  title: "Dashboard Overview | HealthNest",
+  description: "View your upcoming consultations, prescription records, and healthcare statistics",
+};
 
 export default function PatientDashboardPage() {
-  const { user } = useAuth();
-
-  return (
-    <div className="space-y-6">
-      <PatientDashboardHeader userName={user?.name || "Patient"} />
-      <PatientDashboardStats />
-      <PatientQuickActions />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UpcomingAppointmentsCard />
-        <RecentPrescriptionsCard />
-      </div>
-    </div>
-  );
+  return <PatientDashboardView />;
 }

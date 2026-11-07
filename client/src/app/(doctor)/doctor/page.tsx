@@ -1,30 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import { DoctorDashboardView } from "@/features/doctor-dashboard/components/DoctorDashboardView";
 
-import * as React from "react";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import {
-  DoctorDashboardHeader,
-  DoctorDashboardStats,
-  DoctorTodayScheduleCard,
-  DoctorUpcomingAppointmentsCard,
-  DoctorQuickActions,
-} from "@/features/doctor-dashboard/components";
+export const metadata: Metadata = {
+  title: "Doctor Dashboard | HealthNest",
+  description: "Practitioner consultations, today's schedule, and patient appointments",
+};
 
 export default function DoctorDashboardPage() {
-  const { user } = useAuth();
-
-  return (
-    <div className="space-y-6">
-      <DoctorDashboardHeader
-        doctorName={user?.name || "Practitioner"}
-        specialization={user?.doctor?.specialization}
-      />
-      <DoctorDashboardStats />
-      <DoctorQuickActions />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DoctorTodayScheduleCard />
-        <DoctorUpcomingAppointmentsCard />
-      </div>
-    </div>
-  );
+  return <DoctorDashboardView />;
 }
