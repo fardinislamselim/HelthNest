@@ -1,9 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Mail, Phone, MapPin, Calendar, CheckCircle2, Shield } from "lucide-react";
+import { Mail, Phone, MapPin, Calendar, CheckCircle2, Shield, KeyRound } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ChangePasswordModal } from "@/features/auth/components/ChangePasswordModal";
+import { SetPasswordModal } from "@/features/auth/components/SetPasswordModal";
 import type { FullPatientProfile } from "../types/profile.types";
 
 interface PatientProfileCardProps {
@@ -11,10 +14,15 @@ interface PatientProfileCardProps {
 }
 
 export function PatientProfileCard({ profile }: PatientProfileCardProps) {
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = React.useState(false);
+  const [isSetPasswordOpen, setIsSetPasswordOpen] = React.useState(false);
+
   const memberSince = new Date(profile.createdAt).toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   });
+
+  const isGoogle = profile.authProvider === "GOOGLE";
 
   return (
     <Card className="shadow-xs">
@@ -68,8 +76,41 @@ export function PatientProfileCard({ profile }: PatientProfileCardProps) {
               Auth Provider: <span className="capitalize">{profile.authProvider.toLowerCase()}</span>
             </span>
           </div>
+
+          <div className="pt-3 border-t border-border/60">
+            {isGoogle ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsSetPasswordOpen(true)}
+                className="w-full gap-2 text-xs"
+              >
+                <KeyRound className="h-3.5 w-3.5 text-primary" />
+                <span>Set Account Password</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsChangePasswordOpen(true)}
+                className="w-full gap-2 text-xs"
+              >
+                <KeyRound className="h-3.5 w-3.5 text-primary" />
+                <span>Change Password</span>
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
+
+      <ChangePasswordModal
+        open={isChangePasswordOpen}
+        onOpenChange={setIsChangePasswordOpen}
+      />
+      <SetPasswordModal
+        open={isSetPasswordOpen}
+        onOpenChange={setIsSetPasswordOpen}
+      />
     </Card>
   );
 }

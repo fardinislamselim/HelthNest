@@ -50,6 +50,10 @@
 - [x] Implement session restoration and current-user query (`useAuth` hook powered by TanStack Query `/auth/me`).
 - [x] Implement role-aware route navigation and forbidden states (`ProtectedRoute` guarding `/dashboard`, `/doctor`, `/admin`).
 - [x] Test blocked, pending, rejected, and unauthenticated access (Checked with status banners and redirect boundaries).
+- [x] First-login forced password change for newly created admin accounts (`ForcePasswordChangeModal` in `ProtectedRoute` and backend checkAuth exemption for `/me`, `/change-password`, `/logout`).
+- [x] Password change option for all users (`ChangePasswordModal`, dashboard header button, profile cards, and dedicated Server Component route `/change-password`).
+- [x] Set password option for Google Login accounts (`SetPasswordModal` invoking `PATCH /auth/set-password` for Google-authenticated patients).
+- [x] Robust route error boundaries and parameter decoding in Doctor, Admin, and Patient portals (`(doctor)/doctor/error.tsx`, `(admin)/admin/error.tsx`, `(patient)/dashboard/error.tsx`).
 
 ## 3. Patient experience
 
@@ -84,19 +88,19 @@
 
 ## 5. Admin and Super Admin experience
 
-- [ ] Admin dashboard overview.
-- [ ] Pending doctor application list.
-- [ ] Doctor application detail and review.
-- [ ] Approve/reject doctor application.
-- [ ] Block/unblock doctor.
-- [ ] Patient list and detail.
-- [ ] Block/unblock patient.
-- [ ] Admin creation flow.
-- [ ] Super Admin creation flow (Super Admin only).
-- [ ] Admin/Super Admin block controls (Super Admin only).
-- [ ] Appointment and payment overview.
-- [ ] Platform analytics.
-- [ ] Verify permission differences between Admin and Super Admin.
+- [x] Admin dashboard overview.
+- [x] Pending doctor application list.
+- [x] Doctor application detail and review.
+- [x] Approve/reject doctor application.
+- [x] Block/unblock doctor.
+- [x] Patient list and detail.
+- [x] Block/unblock patient.
+- [x] Admin creation flow.
+- [x] Super Admin creation flow (Super Admin only).
+- [x] Admin/Super Admin block controls (Super Admin only).
+- [x] Appointment and payment overview.
+- [x] Platform analytics.
+- [x] Verify permission differences between Admin and Super Admin.
 
 ## 6. Payments, refunds, and documents
 
@@ -135,11 +139,13 @@
 | 2026-11-06 | Auth Redirect & Navbar Synchronization | Fixed backend development cookie options (`sameSite: "lax"`, `secure: false`), included full user and relation payload in login response, added TanStack Query synchronous cache seeding in `useAuth`, and integrated navbar skeleton loading to eliminate layout flash. | Resolved |
 | 2026-11-07 | Patient Dashboard & Module Implementation | Completed full patient experience (Dashboard metrics, profile editing & Cloudinary image upload, today's schedule discovery, 20-min slot selection, Stripe checkout & payment return, appointment management & cancellation with refund rules, digital prescriptions & PDF download, billing/refund history, and personal analytics). | Resolved |
 | 2026-11-07 | Responsive Design & Mobile Drawer Audit | Fully refactored dashboard navigation, sidebar, layout shells, cards, stats, tables, dialogs, and analytics for fluid responsiveness across all target viewports (320px–1440px). Implemented mobile drawer with backdrop, scroll-lock, auto-close, touch-sized buttons, horizontal scroll containers, and mobile cards for wide tables. Verified with 0 type errors, 0 lint warnings, and clean Next.js 16 production build. | Resolved |
+| 2026-11-07 | Doctor Experience Module Implementation | Completed full doctor practitioner experience (Dashboard metrics, profile editing, schedule creation with automated 20-min slot generation, publishing/unpublishing lifecycle, consultation management, and digital prescription issuance with PDF generation). | Resolved |
+| 2026-11-07 | Admin & Super Admin Module Implementation | Completed full administrative experience: Admin & Super Admin live dashboards, role-based sidebar navigation (Admin strictly prevented from seeing or accessing Admin/Super Admin management), doctor application review workflow (inspection, approval & rejection with reason), doctor & patient account management with block/unblock controls, Super Admin account provisioning with personal email credential dispatch, platform-wide appointments & payments audit, and platform analytics. Zero Server Component rule violations (`page.tsx` remain pure Server Components). Verified with 0 TypeScript errors, 0 ESLint warnings, and 39/39 routes compiled successfully. | Resolved |
 
 ---
 
 ## Current milestone
 
-**Milestone:** 3. Patient Experience  
-**Overall status:** Completed & Verified (Dashboard, Profile, Schedules, Booking, Payments, Appointments, Prescriptions, Analytics)  
-**Next recommended task:** Task 4: Doctor Experience (Doctor dashboard overview, profile management, schedule creation with slot generation, publishing/unpublishing, consultation management, and digital prescription issuance).
+**Milestone:** 5. Admin and Super Admin Experience  
+**Overall status:** Completed & Verified (All 13 features implemented and validated)  
+**Next recommended task:** Task 6: Payments, Refunds, and Documents / Task 7: Quality and release audit.

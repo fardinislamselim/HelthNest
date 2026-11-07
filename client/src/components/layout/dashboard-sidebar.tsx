@@ -13,6 +13,9 @@ import {
   User,
   Users,
   UserCheck,
+  FileCheck,
+  ShieldAlert,
+  ShieldCheck,
   LayoutDashboard,
   BarChart3,
   ChevronLeft,
@@ -54,11 +57,25 @@ const DOCTOR_NAV: NavItem[] = [
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { href: "/admin", label: "Platform Overview", icon: LayoutDashboard },
-  { href: "/admin/doctors", label: "Doctor Management", icon: UserCheck },
-  { href: "/admin/patients", label: "Patient Management", icon: Users },
-  { href: "/admin/appointments", label: "All Appointments", icon: Calendar },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/doctor-applications", label: "Doctor Applications", icon: FileCheck },
+  { href: "/admin/doctors", label: "Doctors", icon: UserCheck },
+  { href: "/admin/patients", label: "Patients", icon: Users },
+  { href: "/admin/appointments", label: "Appointments", icon: Calendar },
   { href: "/admin/payments", label: "Payments & Refunds", icon: CreditCard },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+];
+
+const SUPER_ADMIN_NAV: NavItem[] = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/doctor-applications", label: "Doctor Applications", icon: FileCheck },
+  { href: "/admin/doctors", label: "Doctors", icon: UserCheck },
+  { href: "/admin/patients", label: "Patients", icon: Users },
+  { href: "/admin/admins", label: "Admin Management", icon: ShieldAlert },
+  { href: "/admin/super-admins", label: "Super Admin Management", icon: ShieldCheck },
+  { href: "/admin/appointments", label: "Appointments", icon: Calendar },
+  { href: "/admin/payments", label: "Payments & Refunds", icon: CreditCard },
+  { href: "/admin/analytics", label: "Platform Analytics", icon: BarChart3 },
 ];
 
 interface DashboardSidebarProps {
@@ -71,12 +88,16 @@ export function DashboardSidebar({ role = "PATIENT", className }: DashboardSideb
   const { isSidebarOpen, toggleSidebar, isMobileNavOpen, closeAllNav } = useUiStore();
   const { user, logout, isLoggingOut } = useAuth();
 
+  const effectiveRole = user?.role || role;
+
   const navItems =
-    role === "DOCTOR"
+    effectiveRole === "DOCTOR"
       ? DOCTOR_NAV
-      : role === "ADMIN" || role === "SUPER_ADMIN"
-        ? ADMIN_NAV
-        : PATIENT_NAV;
+      : effectiveRole === "SUPER_ADMIN"
+        ? SUPER_ADMIN_NAV
+        : effectiveRole === "ADMIN"
+          ? ADMIN_NAV
+          : PATIENT_NAV;
 
   // Prevent background scrolling while the mobile drawer is open
   React.useEffect(() => {
@@ -144,7 +165,7 @@ export function DashboardSidebar({ role = "PATIENT", className }: DashboardSideb
               (item.href !== "/dashboard" &&
                 item.href !== "/doctor" &&
                 item.href !== "/admin" &&
-                pathname.startsWith(item.href));
+                Boolean(pathname?.startsWith(item.href)));
 
             return (
               <Link
@@ -255,7 +276,7 @@ export function DashboardSidebar({ role = "PATIENT", className }: DashboardSideb
                   (item.href !== "/dashboard" &&
                     item.href !== "/doctor" &&
                     item.href !== "/admin" &&
-                    pathname.startsWith(item.href));
+                    Boolean(pathname?.startsWith(item.href)));
 
                 return (
                   <Link

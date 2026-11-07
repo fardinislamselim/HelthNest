@@ -25,7 +25,8 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const normalized = status.toUpperCase();
+  const safeStatus = typeof status === "string" ? status : "UNKNOWN";
+  const normalized = safeStatus.toUpperCase();
 
   const getVariant = (): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" => {
     switch (normalized) {
@@ -58,7 +59,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
 
   return (
     <Badge variant={getVariant()} className={cn("capitalize tracking-wide font-medium", className)}>
-      {status.toLowerCase().replace(/_/g, " ")}
+      {safeStatus.toLowerCase().replace(/_/g, " ")}
     </Badge>
   );
 }

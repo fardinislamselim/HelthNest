@@ -8,9 +8,12 @@ import {
   ShieldCheck,
   Calendar,
   AlertTriangle,
+  KeyRound,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { ChangePasswordModal } from "@/features/auth/components/ChangePasswordModal";
 import type { FullDoctorProfile } from "../types/profile.types";
 
 interface DoctorProfileCardProps {
@@ -18,6 +21,7 @@ interface DoctorProfileCardProps {
 }
 
 export function DoctorProfileCard({ profile }: DoctorProfileCardProps) {
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = React.useState(false);
   const doctor = profile.doctor;
   const formattedJoined = profile.createdAt
     ? format(new Date(profile.createdAt), "MMMM d, yyyy")
@@ -153,8 +157,25 @@ export function DoctorProfileCard({ profile }: DoctorProfileCardProps) {
               <p className="font-semibold text-foreground">{formattedJoined}</p>
             </div>
           </div>
+
+          <div className="pt-4 mt-4 border-t border-border/60">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsChangePasswordOpen(true)}
+              className="gap-2 text-xs"
+            >
+              <KeyRound className="h-3.5 w-3.5 text-primary" />
+              <span>Change Account Password</span>
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      <ChangePasswordModal
+        open={isChangePasswordOpen}
+        onOpenChange={setIsChangePasswordOpen}
+      />
     </div>
   );
 }

@@ -16,7 +16,7 @@ export function AdminDashboardShell({
   return (
     <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
       <div className="flex min-h-screen bg-muted/20 text-foreground">
-        <DashboardSidebar role="ADMIN" />
+        <DashboardSidebar role={user?.role || "ADMIN"} />
         <div className="flex flex-1 flex-col min-w-0 overflow-x-hidden">
           <DashboardHeader
             role={user?.role || "ADMIN"}

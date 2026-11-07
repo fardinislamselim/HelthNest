@@ -3,11 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, User, LogOut, Loader2 } from "lucide-react";
+import { Menu, User, LogOut, Loader2, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUiStore } from "@/stores/ui-store";
 import { useAuth } from "@/features/auth/hooks/use-auth";
+import { ChangePasswordModal } from "@/features/auth/components/ChangePasswordModal";
+import { SetPasswordModal } from "@/features/auth/components/SetPasswordModal";
 import type { Role } from "@/types/user";
 
 interface DashboardHeaderProps {
@@ -23,6 +25,11 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const { toggleMobileNav } = useUiStore();
   const { user, logout, isLoggingOut } = useAuth();
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
+
+  const isGooglePatientWithoutPassword =
+    user?.role === "PATIENT" &&
+    user?.authProvider === "GOOGLE";
 
   const profileHref =
     role === "DOCTOR"
@@ -85,6 +92,20 @@ export function DashboardHeader({
           </span>
         </Link>
 
+        {/* <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsPasswordModalOpen(true)}
+          className="h-8 px-2 sm:px-2.5 text-xs text-muted-foreground hover:text-foreground gap-1.5 shrink-0"
+          title={isGooglePatientWithoutPassword ? "Set local password" : "Change account password"}
+          aria-label={isGooglePatientWithoutPassword ? "Set local password" : "Change account password"}
+        >
+          <KeyRound className="h-3.5 w-3.5" />
+          <span className="hidden md:inline">
+            {isGooglePatientWithoutPassword ? "Set Password" : "Password"}
+          </span>
+        </Button> */}
+
         <Button
           variant="ghost"
           size="sm"
@@ -102,6 +123,19 @@ export function DashboardHeader({
           <span className="hidden sm:inline">Sign Out</span>
         </Button>
       </div>
+
+      {/* Password Modals */}
+      {isGooglePatientWithoutPassword ? (
+        <SetPasswordModal
+          open={isPasswordModalOpen}
+          onOpenChange={setIsPasswordModalOpen}
+        />
+      ) : (
+        <ChangePasswordModal
+          open={isPasswordModalOpen}
+          onOpenChange={setIsPasswordModalOpen}
+        />
+      )}
     </header>
   );
 }

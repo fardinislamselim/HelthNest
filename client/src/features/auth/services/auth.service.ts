@@ -169,6 +169,29 @@ export const authService = {
     );
     return response.data;
   },
+
+  // Change Password (for all authenticated users)
+  changePassword: async (payload: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<ApiResponse<unknown>> => {
+    const response = await apiClient.patch<ApiResponse<unknown>>(
+      API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+      payload,
+    );
+    return response.data;
+  },
+
+  // Set Password (for Google login patients)
+  setPassword: async (payload: {
+    newPassword: string;
+  }): Promise<ApiResponse<unknown>> => {
+    const response = await apiClient.patch<ApiResponse<unknown>>(
+      API_ENDPOINTS.AUTH.SET_PASSWORD,
+      payload,
+    );
+    return response.data;
+  },
 };
 
 export default authService;

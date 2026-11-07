@@ -101,7 +101,14 @@ export const auth = (...requiredRoles: Role[]) => {
       );
     }
 
-    if (user.needPasswordChange && req.path !== "/change-password") {
+    const isAuthExemptPath =
+      req.path === "/change-password" ||
+      req.originalUrl?.includes("/api/v1/auth/change-password") ||
+      (req.baseUrl === "/api/v1/auth" && (req.path === "/me" || req.path === "/logout")) ||
+      req.originalUrl?.includes("/api/v1/auth/me") ||
+      req.originalUrl?.includes("/api/v1/auth/logout");
+
+    if (user.needPasswordChange && !isAuthExemptPath) {
       throw new AppError(
         httpStatus.FORBIDDEN,
         "You must change your temporary password before accessing this resource.",

@@ -14,5 +14,6 @@ export default async function DoctorScheduleDetailsPage({
   params,
 }: DoctorScheduleDetailsPageProps) {
   const { id } = await params;
-  return <DoctorScheduleDetailsContainer scheduleId={id} />;
+  const decodedId = decodeURIComponent(id || "").trim();
+  return <DoctorScheduleDetailsContainer scheduleId={decodedId} />;
 }

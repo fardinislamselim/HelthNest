@@ -6,6 +6,7 @@ import { ShieldAlert, Clock, Ban, LogOut } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { LoadingSkeleton } from "@/components/feedback/loading-skeleton";
 import { Button } from "@/components/ui/button";
+import { ForcePasswordChangeModal } from "@/features/auth/components/ForcePasswordChangeModal";
 import type { Role } from "@/types/user";
 
 interface ProtectedRouteProps {
@@ -47,6 +48,11 @@ export function ProtectedRoute({
   // Not authenticated
   if (!isAuthenticated || !user) {
     return null;
+  }
+
+  // First-Login Forced Password Change State (Blocks all access until changed)
+  if (user.needPasswordChange) {
+    return <ForcePasswordChangeModal />;
   }
 
   // Account Blocked State
