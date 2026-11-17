@@ -261,7 +261,7 @@ export function DoctorApplicationDetailsModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {doctor.additionalFiles.map((file, i) => (
                       <div key={i} className="flex items-center justify-between rounded-md border border-border p-2">
-                        <span className="text-xs truncate max-w-[160px]">Certificate #{i + 1}</span>
+                        <span className="text-xs truncate max-w-40">Certificate #{i + 1}</span>
                         <Button size="sm" variant="ghost" asChild className="h-6 text-xs px-2 gap-1">
                           <a href={file} target="_blank" rel="noopener noreferrer">
                             Inspect <ExternalLink className="h-2.5 w-2.5" />

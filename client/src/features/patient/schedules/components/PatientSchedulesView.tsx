@@ -6,11 +6,9 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useTodaySchedules } from "@/features/patient/schedules/hooks/useTodaySchedules";
 import { useUpcomingSchedules } from "@/features/patient/schedules/hooks/useUpcomingSchedules";
 import { useBookingFlow } from "@/features/patient/booking/hooks/useBookingFlow";
-import {
-  TodayScheduleFilters,
-  DoctorScheduleList,
-  ScheduleSlotModal,
-} from "./index";
+import { TodayScheduleFilters } from "./TodayScheduleFilters";
+import { DoctorScheduleList } from "./DoctorScheduleList";
+import { ScheduleSlotModal } from "./ScheduleSlotModal";
 import { BookingReviewCard } from "@/features/patient/booking/components";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -83,6 +81,10 @@ export function PatientSchedulesView() {
       return matchesSearch && matchesSpec && matchesDate;
     });
   }, [schedules, searchQuery, selectedSpecialization, isUpcoming, selectedDate]);
+
+  const handleCloseSlotModal = React.useCallback(() => {
+    setIsSlotModalOpen(false);
+  }, []);
 
   const handleOpenSlotModal = (schedule: PatientScheduleItem) => {
     setActiveSchedule(schedule);
@@ -242,7 +244,7 @@ export function PatientSchedulesView() {
             key={activeSchedule?.id || "slot-modal"}
             schedule={activeSchedule}
             open={isSlotModalOpen}
-            onClose={() => setIsSlotModalOpen(false)}
+            onClose={handleCloseSlotModal}
             onProceedToBooking={handleProceedToBooking}
           />
         </>

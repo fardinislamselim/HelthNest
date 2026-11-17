@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Stethoscope,
   ShieldCheck,
@@ -17,14 +18,33 @@ import { Button } from "@/components/ui/button";
 import type { PublicDoctorFilterParams } from "../types/doctor.types";
 
 export function PublicDoctorsView() {
+  const searchParams = useSearchParams();
+  const initialSpecialization = searchParams.get("specialization") || undefined;
+  const initialSearch = searchParams.get("search") || "";
+
   const [filters, setFilters] = React.useState<PublicDoctorFilterParams>({
     page: 1,
     limit: 12,
-    search: "",
-    specialization: undefined,
+    search: initialSearch,
+    specialization: initialSpecialization,
     minExperience: undefined,
     maxFee: undefined,
   });
+
+  // Keep filters in sync if URL search params change
+  React.useEffect(() => {
+    const urlSpec = searchParams.get("specialization") || undefined;
+    const urlSearch = searchParams.get("search") || "";
+    setFilters((prev) => {
+      if (prev.specialization === urlSpec && prev.search === urlSearch) return prev;
+      return {
+        ...prev,
+        specialization: urlSpec,
+        search: urlSearch,
+        page: 1,
+      };
+    });
+  }, [searchParams]);
 
   const { doctors, meta, isLoading, isError, error, refetch } = usePublicDoctors(filters);
 

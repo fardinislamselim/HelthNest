@@ -3,7 +3,7 @@
  * @author Fardin Islam Selim
  * @license Apache-2.0
  */
-import { logger } from "@/lib/winston";
+import { logger } from "../lib/winston";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 
 // Create Token

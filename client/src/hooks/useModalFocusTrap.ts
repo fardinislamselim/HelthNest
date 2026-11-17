@@ -15,6 +15,8 @@ export function useModalFocusTrap<T extends HTMLElement = HTMLDivElement>({
 }: UseModalFocusTrapOptions) {
   const containerRef = React.useRef<T>(null);
   const previousActiveElementRef = React.useRef<HTMLElement | null>(null);
+  const onCloseRef = React.useRef(onClose);
+  onCloseRef.current = onClose;
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -51,9 +53,9 @@ export function useModalFocusTrap<T extends HTMLElement = HTMLDivElement>({
     }, 20);
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && onClose) {
+      if (e.key === "Escape" && onCloseRef.current) {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -93,7 +95,7 @@ export function useModalFocusTrap<T extends HTMLElement = HTMLDivElement>({
         previousActiveElementRef.current.focus();
       }
     };
-  }, [isOpen, onClose, initialFocusRef]);
+  }, [isOpen]);
 
   return containerRef;
 }
