@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { format } from "date-fns";
 import { Clock, Award, DollarSign, Calendar, User, CheckCircle2 } from "lucide-react";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,24 @@ interface DoctorScheduleCardProps {
   schedule: PatientScheduleItem;
   onSelectSchedule: (schedule: PatientScheduleItem) => void;
 }
+
+const formatScheduleDate = (dateStr?: string) => {
+  if (!dateStr) return "N/A";
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    if (dateStr === today) {
+      return `Today (${dateStr})`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      return format(new Date(y, m - 1, d), "EEEE, MMM d, yyyy");
+    }
+    const parsed = new Date(dateStr);
+    return isNaN(parsed.getTime()) ? dateStr : format(parsed, "EEEE, MMM d, yyyy");
+  } catch {
+    return dateStr;
+  }
+};
 
 export function DoctorScheduleCard({
   schedule,
@@ -25,10 +44,10 @@ export function DoctorScheduleCard({
         <div className="flex flex-wrap sm:flex-nowrap items-start justify-between gap-2.5">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-full border border-primary/20 bg-muted/60 flex items-center justify-center">
-              {doctor.user?.profileImageUrl ? (
+              {doctor?.user?.profileImageUrl ? (
                 <Image
                   src={doctor.user.profileImageUrl}
-                  alt={doctor.name}
+                  alt={doctor.name || "Doctor"}
                   width={56}
                   height={56}
                   className="h-full w-full object-cover"
@@ -40,21 +59,21 @@ export function DoctorScheduleCard({
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm sm:text-base font-bold text-foreground truncate">
-                Dr. {doctor.name}
+                Dr. {doctor?.name || "Practitioner"}
               </h3>
               <p className="text-xs font-semibold text-primary truncate">
-                {doctor.specialization}
+                {doctor?.specialization || "General Medicine"}
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                {doctor.qualifications}
+                {doctor?.qualifications || "Certified Specialist"}
               </p>
             </div>
           </div>
           <Badge
-            variant={schedule.availableSlots > 0 ? "success" : "destructive"}
+            variant={(schedule?.availableSlots ?? 0) > 0 ? "success" : "destructive"}
             className="text-[11px] sm:text-xs font-semibold shrink-0"
           >
-            {schedule.availableSlots} {schedule.availableSlots === 1 ? "Slot" : "Slots"} Left
+            {schedule?.availableSlots ?? 0} {(schedule?.availableSlots ?? 0) === 1 ? "Slot" : "Slots"} Left
           </Badge>
         </div>
       </CardHeader>
@@ -63,12 +82,12 @@ export function DoctorScheduleCard({
         <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/50">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Award className="h-4 w-4 text-primary shrink-0" />
-            <span className="truncate">{doctor.experienceYears} Years Exp.</span>
+            <span className="truncate">{doctor?.experienceYears ?? 0} Years Exp.</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span className="font-semibold text-foreground truncate">
-              ${Number(doctor.consultationFee || 0).toFixed(2)} Fee
+              ${Number(doctor?.consultationFee || 0).toFixed(2)} Fee
             </span>
           </div>
         </div>
@@ -76,7 +95,7 @@ export function DoctorScheduleCard({
         <div className="space-y-1 text-muted-foreground">
           <div className="flex items-center gap-2">
             <Calendar className="h-3.5 w-3.5 text-primary shrink-0" />
-            <span className="truncate">Today ({schedule.date})</span>
+            <span className="truncate font-medium text-foreground">{formatScheduleDate(schedule.date)}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -91,11 +110,11 @@ export function DoctorScheduleCard({
         <Button
           type="button"
           onClick={() => onSelectSchedule(schedule)}
-          disabled={schedule.availableSlots === 0}
+          disabled={(schedule?.availableSlots ?? 0) === 0}
           className="w-full gap-2 shadow-xs text-xs sm:text-sm"
         >
           <CheckCircle2 className="h-4 w-4" />
-          {schedule.availableSlots > 0 ? "View Available Slots" : "Fully Booked"}
+          {(schedule?.availableSlots ?? 0) > 0 ? "View Available Slots" : "Fully Booked"}
         </Button>
       </CardFooter>
     </Card>

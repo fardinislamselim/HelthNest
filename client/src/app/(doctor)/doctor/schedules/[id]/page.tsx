@@ -14,6 +14,15 @@ export default async function DoctorScheduleDetailsPage({
   params,
 }: DoctorScheduleDetailsPageProps) {
   const { id } = await params;
-  const decodedId = decodeURIComponent(id || "").trim();
+  let decodedId = (id || "").trim();
+  try {
+    decodedId = decodeURIComponent(decodedId).trim();
+  } catch {
+    // Keep fallback raw id
+  }
+  // Sanitize UUID in case spaces were introduced by URL copy-pasting or query encoding
+  if (decodedId.includes(" ")) {
+    decodedId = decodedId.replace(/\s+/g, "-");
+  }
   return <DoctorScheduleDetailsContainer scheduleId={decodedId} />;
 }

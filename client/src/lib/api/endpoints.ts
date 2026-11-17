@@ -36,6 +36,8 @@ export const API_ENDPOINTS = {
 
   // Doctors
   DOCTORS: {
+    PUBLIC_LIST: "/doctors",
+    PUBLIC_BY_ID: (doctorId: string) => `/doctors/${doctorId}`,
     AVAILABLE_TODAY: "/doctors/available-today",
     APPLY: "/doctors/apply",
     VERIFY_EMAIL: "/doctors/verify-email",
@@ -53,6 +55,7 @@ export const API_ENDPOINTS = {
     UNPUBLISH: (scheduleId: string) => `/schedules/${scheduleId}/unpublish`,
     DELETE: (scheduleId: string) => `/schedules/${scheduleId}`,
     TODAY: "/schedules/today",
+    UPCOMING: "/schedules/upcoming",
     SLOTS: (scheduleId: string) => `/schedules/${scheduleId}/slots`,
   },
 

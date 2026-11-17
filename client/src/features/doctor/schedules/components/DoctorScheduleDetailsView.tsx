@@ -32,6 +32,10 @@ interface DoctorScheduleDetailsViewProps {
 const formatDateSafe = (dateStr?: string, pattern = "EEEE, MMMM d, yyyy") => {
   if (!dateStr) return "N/A";
   try {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      return format(new Date(y, m - 1, d), pattern);
+    }
     const parsed = new Date(dateStr);
     if (isNaN(parsed.getTime())) return dateStr;
     return format(parsed, pattern);
@@ -124,7 +128,7 @@ export function DoctorScheduleDetailsView({ scheduleId }: DoctorScheduleDetailsV
                 </span>
                 <span className="flex items-center gap-1 font-sans">
                   <Calendar className="h-3.5 w-3.5 text-primary" />
-                  {schedule.totalSlots} Slots total
+                  {schedule.totalSlots ?? slots.length} Slots total
                 </span>
               </div>
             </div>
@@ -190,23 +194,25 @@ export function DoctorScheduleDetailsView({ scheduleId }: DoctorScheduleDetailsV
           </div>
 
           {/* Meeting Link Room */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-lg bg-card border border-border/80">
-            <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground min-w-0">
-              <Video className="h-4 w-4 text-primary shrink-0" />
-              <span className="truncate">{schedule.meetLink}</span>
+          {schedule.meetLink ? (
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-lg bg-card border border-border/80">
+              <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground min-w-0">
+                <Video className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate">{schedule.meetLink}</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="h-8 text-xs gap-1 self-start sm:self-auto shrink-0"
+              >
+                <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer">
+                  <span>Test Meet Room</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="h-8 text-xs gap-1 self-start sm:self-auto shrink-0"
-            >
-              <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer">
-                <span>Test Meet Room</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </Button>
-          </div>
+          ) : null}
         </CardContent>
       </Card>
 

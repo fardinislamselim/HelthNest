@@ -107,4 +107,26 @@ router.get(
   doctorController.getApplicationStatus,
 );
 
+/**
+ * Retrieve Public Doctors Directory
+ * @access Public
+ * @method GET /api/v1/doctors
+ */
+router.get(
+  "/",
+  validateRequest(DoctorValidation.getPublicDoctorsQueryValidationSchema),
+  doctorController.getAllPublicDoctors,
+);
+
+/**
+ * Retrieve Public Doctor Profile
+ * @access Public
+ * @method GET /api/v1/doctors/:doctorId
+ */
+router.get(
+  "/:doctorId",
+  validateRequest(DoctorValidation.doctorIdParamsValidationSchema),
+  doctorController.getPublicDoctorById,
+);
+
 export const doctorRoutes = router;

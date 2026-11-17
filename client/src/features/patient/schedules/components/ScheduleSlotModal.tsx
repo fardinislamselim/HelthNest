@@ -30,13 +30,12 @@ export function ScheduleSlotModal({
   const { slotsData, isLoading } = useScheduleSlots(
     open && schedule ? schedule.id : null,
   );
-  const [prevScheduleId, setPrevScheduleId] = React.useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = React.useState<PatientSlotItem | null>(null);
 
-  if (schedule?.id !== prevScheduleId) {
-    setPrevScheduleId(schedule?.id ?? null);
+  const handleClose = React.useCallback(() => {
     setSelectedSlot(null);
-  }
+    onClose();
+  }, [onClose]);
 
   // Prevent background scrolling while modal is open
   React.useEffect(() => {
@@ -53,12 +52,12 @@ export function ScheduleSlotModal({
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && open) {
-        onClose();
+        handleClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  }, [open, handleClose]);
 
   if (!open || !schedule) return null;
 
@@ -69,7 +68,7 @@ export function ScheduleSlotModal({
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-background/80 backdrop-blur-xs transition-opacity animate-in fade-in-0 duration-200"
-        onClick={onClose}
+        onClick={handleClose}
         aria-hidden="true"
       />
 
@@ -88,7 +87,7 @@ export function ScheduleSlotModal({
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground shrink-0"
             aria-label="Close modal"
           >
@@ -150,7 +149,7 @@ export function ScheduleSlotModal({
               type="button"
               variant="outline"
               size="sm"
-              onClick={onClose}
+              onClick={handleClose}
               className="w-full sm:w-auto text-xs"
             >
               Cancel
@@ -158,10 +157,12 @@ export function ScheduleSlotModal({
             <Button
               type="button"
               size="sm"
-              disabled={!selectedSlot}
+              disabled={!selectedSlot || !schedule}
               onClick={() => {
-                if (selectedSlot) {
-                  onProceedToBooking(schedule, selectedSlot);
+                if (selectedSlot && schedule) {
+                  const chosenSlot = selectedSlot;
+                  setSelectedSlot(null);
+                  onProceedToBooking(schedule, chosenSlot);
                 }
               }}
               className="w-full sm:w-auto gap-2 shadow-xs text-xs whitespace-nowrap"

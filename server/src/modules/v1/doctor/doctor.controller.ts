@@ -93,10 +93,37 @@ const getApplicationStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Retrieve Public Doctors List Controller
+const getAllPublicDoctors = catchAsync(async (req: Request, res: Response) => {
+  const result = await doctorService.getAllPublicDoctors(req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Public doctors retrieved successfully",
+    meta: result.meta,
+    data: result.doctors,
+  });
+});
+
+// Retrieve Public Doctor Details Controller
+const getPublicDoctorById = catchAsync(async (req: Request, res: Response) => {
+  const { doctorId } = req.params;
+  const result = await doctorService.getPublicDoctorById(String(doctorId));
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor details retrieved successfully",
+    data: result,
+  });
+});
+
 export const doctorController = {
   applyAsDoctor,
   verifyDoctorEmail,
   resendDoctorOtp,
   getApplicationStatus,
-
+  getAllPublicDoctors,
+  getPublicDoctorById,
 };

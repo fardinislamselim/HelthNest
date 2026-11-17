@@ -417,9 +417,153 @@ const getApplicationStatus = async (query: TGetApplicationStatusQuery) => {
 
 
 
+const publicDoctorSelect = {
+  id: true,
+  name: true,
+  specialization: true,
+  qualifications: true,
+  experienceYears: true,
+  bio: true,
+  consultationFee: true,
+  user: {
+    select: {
+      profileImageUrl: true,
+    },
+  },
+} as const;
+
+export interface IPublicDoctorQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  specialization?: string;
+  minExperience?: number;
+  maxFee?: number;
+}
+
+const getAllPublicDoctors = async (query?: IPublicDoctorQuery) => {
+  const page = Number(query?.page) || 1;
+  const limit = Number(query?.limit) || 12;
+  const skip = (page - 1) * limit;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {
+    isDeleted: false,
+    verificationStatus: DoctorVerificationStatus.APPROVED,
+    user: {
+      status: UserStatus.ACTIVE,
+      isDeleted: false,
+    },
+  };
+
+  if (query?.search) {
+    const term = query.search.trim();
+    where.OR = [
+      { name: { contains: term, mode: "insensitive" } },
+      { specialization: { contains: term, mode: "insensitive" } },
+      { qualifications: { contains: term, mode: "insensitive" } },
+    ];
+  }
+
+  if (query?.specialization && query.specialization !== "ALL") {
+    where.specialization = {
+      contains: query.specialization.trim(),
+      mode: "insensitive",
+    };
+  }
+
+  if (query?.minExperience !== undefined && query.minExperience > 0) {
+    where.experienceYears = {
+      gte: Number(query.minExperience),
+    };
+  }
+
+  if (query?.maxFee !== undefined && query.maxFee > 0) {
+    where.consultationFee = {
+      lte: Number(query.maxFee),
+    };
+  }
+
+  const [total, doctors] = await Promise.all([
+    prisma.doctor.count({ where }),
+    prisma.doctor.findMany({
+      where,
+      select: publicDoctorSelect,
+      skip,
+      take: limit,
+      orderBy: { experienceYears: "desc" },
+    }),
+  ]);
+
+  const formattedDoctors = doctors.map((doc) => ({
+    id: doc.id,
+    name: doc.name,
+    specialization: doc.specialization,
+    qualifications: doc.qualifications,
+    experienceYears: doc.experienceYears,
+    bio: doc.bio,
+    consultationFee: doc.consultationFee ? Number(doc.consultationFee) : null,
+    profileImageUrl: doc.user?.profileImageUrl || null,
+  }));
+
+  return {
+    doctors: formattedDoctors,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit) || 1,
+    },
+  };
+};
+
+const getPublicDoctorById = async (doctorId: string) => {
+  const doctor = await prisma.doctor.findFirst({
+    where: {
+      id: doctorId,
+      isDeleted: false,
+      verificationStatus: DoctorVerificationStatus.APPROVED,
+      user: {
+        status: UserStatus.ACTIVE,
+      },
+    },
+    select: {
+      ...publicDoctorSelect,
+      contactNumber: true,
+      address: true,
+      createdAt: true,
+    },
+  });
+
+  if (!doctor) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Doctor not found or currently unavailable",
+    );
+  }
+
+  return {
+    id: doctor.id,
+    name: doctor.name,
+    specialization: doctor.specialization,
+    qualifications: doctor.qualifications,
+    experienceYears: doctor.experienceYears,
+    bio: doctor.bio,
+    consultationFee: doctor.consultationFee
+      ? Number(doctor.consultationFee)
+      : null,
+    profileImageUrl: doctor.user?.profileImageUrl || null,
+    contactNumber: doctor.contactNumber,
+    address: doctor.address,
+    createdAt: doctor.createdAt,
+  };
+};
+
 export const doctorService = {
   applyAsDoctor,
   verifyDoctorEmail,
   resendDoctorOtp,
-  getApplicationStatus
+  getApplicationStatus,
+  getAllPublicDoctors,
+  getPublicDoctorById,
 };

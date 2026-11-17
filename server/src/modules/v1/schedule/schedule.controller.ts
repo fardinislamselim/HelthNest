@@ -164,6 +164,26 @@ const getTodayAvailableSchedules = catchAsync(async (req: Request, res: Response
 });
 
 /**
+ * Patient: Retrieve all doctors' available upcoming schedules
+ */
+const getUpcomingAvailableSchedules = catchAsync(async (req: Request, res: Response) => {
+  const result = await scheduleService.getUpcomingAvailableSchedules(req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Upcoming available schedules retrieved successfully",
+    data: result.schedules,
+    meta: {
+      page: result.meta.page,
+      limit: result.meta.limit,
+      total: result.meta.total,
+      totalPage: result.meta.totalPages,
+    },
+  });
+});
+
+/**
  * Patient: Retrieve available slots for a schedule
  */
 const getScheduleAvailableSlots = catchAsync(async (req: Request, res: Response) => {
@@ -202,6 +222,7 @@ export const scheduleController = {
   unpublishSchedule,
   deleteSchedule,
   getTodayAvailableSchedules,
+  getUpcomingAvailableSchedules,
   getScheduleAvailableSlots,
   getDoctorsAvailableToday,
 };

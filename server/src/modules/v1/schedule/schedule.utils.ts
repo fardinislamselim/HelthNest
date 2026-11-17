@@ -86,13 +86,13 @@ export const isScheduleVisibleForPatient = (
 
   const { todayDate, currentTime } = getZonedTime(referenceDate, timeZone);
 
-  // Rule 1: Today's schedules only
-  if (schedule.date !== todayDate) return false;
+  // Rule 1: Date must not be in the past
+  if (schedule.date < todayDate) return false;
 
-  // Rule 3: Disappear when start time arrives (strictly greater than currentTime)
-  if (schedule.startTime <= currentTime) return false;
+  // Rule 2: If schedule is today, start time must not have arrived yet (strictly greater than currentTime)
+  if (schedule.date === todayDate && schedule.startTime <= currentTime) return false;
 
-  // Rule 4: Must have at least one available slot
+  // Rule 3: Must have at least one available slot
   if (!schedule.slots || !schedule.slots.some(isSlotAvailable)) {
     return false;
   }

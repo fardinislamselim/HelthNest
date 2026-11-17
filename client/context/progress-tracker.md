@@ -30,8 +30,8 @@
 - [x] Build reusable cards, badges, inputs, labels, and feedback primitives.
 - [x] Build loading skeletons, empty states, error states, and toast feedback (`StatusBadge`, `EmptyState`, `ErrorState`, `LoadingSkeleton`, Sonner).
 - [x] Build landing page (`src/app/(public)/page.tsx` with hero, 3-step consultation, trust metrics).
-- [ ] Build public doctor listing and filters.
-- [ ] Build public doctor profile.
+- [x] Build public doctor listing and filters (`src/app/(public)/doctors/page.tsx` with hero, `DoctorFilters`, `DoctorList`, `DoctorCard`, and `usePublicDoctors`).
+- [x] Build public doctor profile (`src/app/(public)/doctors/[doctorId]/page.tsx` with credentials, fee card, auth-aware booking CTA, and `usePublicDoctorDetails`).
 - [x] Build About and Contact pages (`about/page.tsx`, `contact/page.tsx`).
 
 ## 2. Authentication
@@ -44,8 +44,8 @@
 - [x] Integrate patient Google login (`@react-oauth/google` integrated into `SocialAuthButtons`, `LoginForm`, `PatientRegisterForm`, and `Providers`).
 - [x] Implement forgot-password OTP request (`src/app/(auth)/forgot-password/page.tsx` with `ForgotPasswordForm`, Zod validation, and backend API).
 - [x] Implement reset password (`src/app/(auth)/reset-password/page.tsx` with `ResetPasswordForm`, 6-digit OTP, password confirmation validation, and cooldown resend).
-- [ ] Implement change password.
-- [ ] Implement set password for Google-only patients.
+- [x] Implement change password (`ChangePasswordModal`, `ChangePasswordView`, `/change-password` route, `useChangePasswordMutation`).
+- [x] Implement set password for Google-only patients (`SetPasswordModal`, `useSetPasswordMutation`, `PATCH /auth/set-password`).
 - [x] Implement refresh coordination and logout (Axios interceptor refresh queue + `/auth/logout` endpoint + cache clearing).
 - [x] Implement session restoration and current-user query (`useAuth` hook powered by TanStack Query `/auth/me`).
 - [x] Implement role-aware route navigation and forbidden states (`ProtectedRoute` guarding `/dashboard`, `/doctor`, `/admin`).
@@ -54,6 +54,8 @@
 - [x] Password change option for all users (`ChangePasswordModal`, dashboard header button, profile cards, and dedicated Server Component route `/change-password`).
 - [x] Set password option for Google Login accounts (`SetPasswordModal` invoking `PATCH /auth/set-password` for Google-authenticated patients).
 - [x] Robust route error boundaries and parameter decoding in Doctor, Admin, and Patient portals (`(doctor)/doctor/error.tsx`, `(admin)/admin/error.tsx`, `(patient)/dashboard/error.tsx`).
+- [x] Fixed `ScheduleSlotModal` infinite re-render loop on patient schedule consultation booking (`/dashboard/schedules`).
+- [x] Hardened doctor schedule details route with UUID whitespace sanitization and null-safe meet room rendering (`/doctor/schedules/[id]`).
 
 ## 3. Patient experience
 
@@ -62,6 +64,7 @@
 - [x] Profile image upload (`PATCH /users/me/profile-image` via Cloudinary).
 - [x] Appointment list and filters (`GET /appointments/my-appointments`).
 - [x] Today's schedule discovery (`GET /schedules/today`).
+- [x] Upcoming schedule discovery and booking across future dates (`GET /schedules/upcoming`, scope tabs, date filters, 20-min slot modal).
 - [x] Available 20-minute slot selection (`GET /schedules/:scheduleId/slots`).
 - [x] Booking review and payment initiation (`POST /appointments`, `POST /payments/checkout/:appointmentId`).
 - [x] Payment return and server confirmation (`/payment/success` and `/payment/cancel`).

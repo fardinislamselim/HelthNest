@@ -99,8 +99,10 @@ const createAppointment = async (
       id: payload.scheduleId,
       status: ScheduleStatus.PUBLISHED,
       isDeleted: false,
-      date: todayDate,
-      startTime: { gt: currentTime },
+      OR: [
+        { date: { gt: todayDate } },
+        { date: todayDate, startTime: { gt: currentTime } },
+      ],
       doctor: { isDeleted: false },
     },
     select: { id: true, doctorId: true },

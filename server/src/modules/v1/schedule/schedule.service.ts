@@ -16,6 +16,8 @@ import {
   ISchedulesListResult,
   IScheduleResponse,
   IPatientTodaySchedulesResult,
+  IPatientUpcomingSchedulesResult,
+  IUpcomingSchedulesFilterQuery,
   IPatientScheduleSlotsResponse,
   IPatientAvailableDoctorItem,
   IPatientAvailableScheduleItem,
@@ -611,6 +613,131 @@ const getTodayAvailableSchedules = async (
 };
 
 /**
+ * Patient: Retrieve all doctors' available upcoming schedules (today and future dates)
+ */
+const getUpcomingAvailableSchedules = async (
+  query: IUpcomingSchedulesFilterQuery = {},
+): Promise<IPatientUpcomingSchedulesResult> => {
+  const { todayDate, currentTime } = getZonedTime();
+
+  const page = Math.max(1, Number(query.page) || 1);
+  const limit = Math.max(1, Math.min(100, Number(query.limit) || 20));
+  const skip = (page - 1) * limit;
+
+  // Determine starting date threshold (defaults to todayDate)
+  const requestedStart = query.startDate && query.startDate >= todayDate ? query.startDate : todayDate;
+
+  // Construct OR condition for dates:
+  // If startDate === todayDate: today after currentTime OR future date
+  // If startDate > todayDate: future date >= requestedStart
+  const dateConditions: Prisma.ScheduleWhereInput[] = [];
+
+  if (requestedStart === todayDate) {
+    dateConditions.push(
+      { date: todayDate, startTime: { gt: currentTime } },
+      { date: { gt: todayDate } },
+    );
+  } else {
+    dateConditions.push({ date: { gte: requestedStart } });
+  }
+
+  const whereClause: Prisma.ScheduleWhereInput = {
+    status: ScheduleStatus.PUBLISHED,
+    isDeleted: false,
+    OR: dateConditions,
+    ...(query.endDate ? { date: { lte: query.endDate } } : {}),
+    ...(query.doctorId ? { doctorId: query.doctorId } : {}),
+    doctor: {
+      isDeleted: false,
+      ...(query.specialization ? { specialization: query.specialization } : {}),
+    },
+    slots: {
+      some: {
+        isBooked: false,
+        OR: [
+          { appointments: { none: { status: { not: AppointmentStatus.CANCELLED } } } },
+        ],
+      },
+    },
+  };
+
+  const [total, rawSchedules] = await Promise.all([
+    prisma.schedule.count({ where: whereClause }),
+    prisma.schedule.findMany({
+      where: whereClause,
+      include: {
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialization: true,
+            experienceYears: true,
+            consultationFee: true,
+            user: {
+              select: {
+                profileImageUrl: true,
+              },
+            },
+          },
+        },
+        slots: {
+          select: {
+            id: true,
+            isBooked: true,
+            appointments: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+      },
+      skip,
+      take: limit,
+      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+    }),
+  ]);
+
+  const schedules: IPatientAvailableScheduleItem[] = rawSchedules.map((schedule) => {
+    const availableSlots = schedule.slots.filter(isSlotAvailable).length;
+
+    return {
+      id: schedule.id,
+      scheduleId: schedule.id,
+      date: schedule.date,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      status: schedule.status,
+      totalSlots: schedule.totalSlots,
+      availableSlots,
+      doctor: {
+        id: schedule.doctor.id,
+        doctorId: schedule.doctor.id,
+        name: schedule.doctor.name,
+        specialization: schedule.doctor.specialization,
+        profileImage: schedule.doctor.user?.profileImageUrl || null,
+        experienceYears: schedule.doctor.experienceYears,
+        consultationFee: schedule.doctor.consultationFee
+          ? Number(schedule.doctor.consultationFee)
+          : null,
+      },
+    };
+  });
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    schedules,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  };
+};
+
+/**
  * Patient: Retrieve available slots for an eligible schedule
  */
 const getScheduleAvailableSlots = async (
@@ -770,6 +897,7 @@ export const scheduleService = {
   unpublishSchedule,
   deleteSchedule,
   getTodayAvailableSchedules,
+  getUpcomingAvailableSchedules,
   getScheduleAvailableSlots,
   getDoctorsAvailableToday,
 };

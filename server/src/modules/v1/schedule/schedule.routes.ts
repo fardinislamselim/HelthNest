@@ -31,6 +31,18 @@ router.get(
 );
 
 /**
+ * Retrieve all doctors' available upcoming schedules
+ * @access PATIENT
+ * @method GET /api/v1/schedules/upcoming
+ */
+router.get(
+  "/upcoming",
+  patientAuth,
+  validateRequest(ScheduleValidation.getUpcomingSchedulesQueryValidationSchema),
+  scheduleController.getUpcomingAvailableSchedules,
+);
+
+/**
  * Retrieve available slots for a specific schedule
  * @access PATIENT
  * @method GET /api/v1/schedules/:scheduleId/slots

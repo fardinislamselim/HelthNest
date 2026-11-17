@@ -34,3 +34,12 @@ export interface PatientScheduleSlotsResponse {
   schedule: PatientScheduleItem;
   slots: PatientSlotItem[];
 }
+
+export interface UpcomingScheduleFilterParams {
+  page?: number;
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+  doctorId?: string;
+  specialization?: string;
+}

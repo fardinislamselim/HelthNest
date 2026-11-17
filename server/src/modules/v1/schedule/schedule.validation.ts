@@ -204,10 +204,44 @@ const getTodaySchedulesQueryValidationSchema = z.object({
     .optional(),
 });
 
+const getUpcomingSchedulesQueryValidationSchema = z.object({
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int()
+        .positive("Page must be a positive integer")
+        .optional()
+        .default(1),
+      limit: z.coerce
+        .number()
+        .int()
+        .positive("Limit must be a positive integer")
+        .max(100, "Limit cannot exceed 100")
+        .optional()
+        .default(20),
+      startDate: z
+        .string()
+        .regex(dateRegex, "Start date must be in YYYY-MM-DD format")
+        .optional(),
+      endDate: z
+        .string()
+        .regex(dateRegex, "End date must be in YYYY-MM-DD format")
+        .optional(),
+      doctorId: z
+        .string()
+        .uuid("Doctor ID must be a valid UUID")
+        .optional(),
+      specialization: z.string().trim().optional(),
+    })
+    .optional(),
+});
+
 export const ScheduleValidation = {
   createScheduleValidationSchema,
   updateScheduleValidationSchema,
   scheduleIdParamsValidationSchema,
   getMySchedulesQueryValidationSchema,
   getTodaySchedulesQueryValidationSchema,
+  getUpcomingSchedulesQueryValidationSchema,
 };

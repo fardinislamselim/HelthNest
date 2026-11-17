@@ -101,6 +101,20 @@ export interface IPatientTodaySchedulesResult {
   meta: IPaginationMeta;
 }
 
+export interface IUpcomingSchedulesFilterQuery {
+  page?: number | string;
+  limit?: number | string;
+  startDate?: string;
+  endDate?: string;
+  doctorId?: string;
+  specialization?: string;
+}
+
+export interface IPatientUpcomingSchedulesResult {
+  schedules: IPatientAvailableScheduleItem[];
+  meta: IPaginationMeta;
+}
+
 export interface IPatientSlotItem {
   id: string;
   slotId: string;

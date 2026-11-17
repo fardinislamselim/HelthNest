@@ -10,12 +10,16 @@ interface DoctorScheduleListProps {
   schedules: PatientScheduleItem[];
   isLoading?: boolean;
   onSelectSchedule: (schedule: PatientScheduleItem) => void;
+  emptyTitle?: string;
+  emptyDescription?: string;
 }
 
 export function DoctorScheduleList({
   schedules,
   isLoading = false,
   onSelectSchedule,
+  emptyTitle = "No Available Schedules",
+  emptyDescription = "There are currently no doctors with published open schedules remaining for this filter.",
 }: DoctorScheduleListProps) {
   if (isLoading) {
     return (
@@ -44,8 +48,8 @@ export function DoctorScheduleList({
   if (schedules.length === 0) {
     return (
       <EmptyState
-        title="No Available Schedules Today"
-        description="There are currently no doctors with published open schedules remaining for today. Schedules open daily before their consultation start time."
+        title={emptyTitle}
+        description={emptyDescription}
         icon={Clock}
         className="my-8 py-12"
       />

@@ -128,6 +128,7 @@ All endpoints are rooted under `/api/v1` (with backward-compatible singular root
 | `PATCH` | `/schedules/:scheduleId/unpublish` | Doctor | Unpublishes schedule. |
 | `DELETE` | `/schedules/:scheduleId` | Doctor | Deletes schedule (only if no booked appointments). |
 | `GET` | `/schedules/today` | Patient | Lists today's available schedules strictly before start time. |
+| `GET` | `/schedules/upcoming` | Patient | Query: `?startDate=&endDate=&doctorId=&specialization=&page=&limit=`. Lists upcoming available schedules across future dates. |
 | `GET` | `/schedules/:scheduleId/slots` | Patient | Lists available 20-min slots for booking. |
 
 ### 4.5 Appointments (`/appointments`)

@@ -55,10 +55,29 @@ const resendDoctorOtpValidationSchema = z.object({
   }),
 });
 
+const getPublicDoctorsQueryValidationSchema = z.object({
+  query: z
+    .object({
+      page: z.coerce.number().int().positive().optional().default(1),
+      limit: z.coerce.number().int().positive().max(50).optional().default(12),
+      search: z.string().trim().optional(),
+      specialization: z.string().trim().optional(),
+      minExperience: z.coerce.number().int().min(0).optional(),
+      maxFee: z.coerce.number().nonnegative().optional(),
+    })
+    .optional(),
+});
 
+const doctorIdParamsValidationSchema = z.object({
+  params: z.object({
+    doctorId: z.string().uuid("Doctor ID must be a valid UUID"),
+  }),
+});
 
 export const DoctorValidation = {
   applyAsDoctorValidationSchema,
   verifyDoctorEmailValidationSchema,
   resendDoctorOtpValidationSchema,
+  getPublicDoctorsQueryValidationSchema,
+  doctorIdParamsValidationSchema,
 };
