@@ -4,6 +4,7 @@ import * as React from "react";
 import { X, Calendar, DollarSign, Clock, ArrowRight, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 import { useScheduleSlots } from "../hooks/useScheduleSlots";
 import { TimeSlotSelector } from "./TimeSlotSelector";
 import type {
@@ -37,6 +38,11 @@ export function ScheduleSlotModal({
     onClose();
   }, [onClose]);
 
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose: handleClose,
+  });
+
   // Prevent background scrolling while modal is open
   React.useEffect(() => {
     if (open) {
@@ -47,17 +53,6 @@ export function ScheduleSlotModal({
       };
     }
   }, [open]);
-
-  // Handle escape key
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        handleClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, handleClose]);
 
   if (!open || !schedule) return null;
 
@@ -73,11 +68,20 @@ export function ScheduleSlotModal({
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-50 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card p-4 sm:p-6 shadow-2xl space-y-4 animate-in fade-in-0 zoom-in-95 duration-200">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="schedule-slot-modal-title"
+        className="relative z-50 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card p-4 sm:p-6 shadow-2xl space-y-4 animate-in fade-in-0 zoom-in-95 duration-200"
+      >
         {/* Header */}
         <div className="flex items-start justify-between border-b border-border/60 pb-3 gap-2">
           <div className="min-w-0">
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground flex items-center gap-2 truncate">
+            <h2
+              id="schedule-slot-modal-title"
+              className="text-base sm:text-lg font-bold tracking-tight text-foreground flex items-center gap-2 truncate"
+            >
               <Stethoscope className="h-5 w-5 text-primary shrink-0" />
               <span>Choose 20-Min Slot</span>
             </h2>
@@ -88,8 +92,8 @@ export function ScheduleSlotModal({
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground shrink-0"
-            aria-label="Close modal"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Close dialog"
           >
             <X className="h-4 w-4" />
           </button>

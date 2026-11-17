@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 import type { RecentPayment, RecentRefund } from "../../types/admin.types";
 
 interface PaymentDetailsModalProps {
@@ -24,6 +25,11 @@ export function PaymentDetailsModal({
   open,
   onClose,
 }: PaymentDetailsModalProps) {
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose,
+  });
+
   React.useEffect(() => {
     if (open) {
       const original = document.body.style.overflow;
@@ -33,16 +39,6 @@ export function PaymentDetailsModal({
       };
     }
   }, [open]);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
 
   if (!open || !item) return null;
 
@@ -70,12 +66,18 @@ export function PaymentDetailsModal({
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative z-10 w-full max-w-lg rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl transition-all">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-details-modal-title"
+        className="relative z-10 w-full max-w-lg rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl transition-all"
+      >
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus:outline-hidden"
-          aria-label="Close"
+          className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
         </button>
@@ -93,7 +95,7 @@ export function PaymentDetailsModal({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold tracking-tight">
+              <h2 id="payment-details-modal-title" className="text-lg font-bold tracking-tight">
                 {isPayment ? "Stripe Payment Audit" : "Refund Transaction Audit"}
               </h2>
               <StatusBadge status={item.status} />

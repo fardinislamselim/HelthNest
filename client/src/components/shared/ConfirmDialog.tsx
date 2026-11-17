@@ -4,6 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -28,15 +29,12 @@ export function ConfirmDialog({
   isLoading = false,
   onConfirm,
 }: ConfirmDialogProps) {
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open && !isLoading) {
-        onOpenChange(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, isLoading, onOpenChange]);
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose: () => {
+      if (!isLoading) onOpenChange(false);
+    },
+  });
 
   // Lock background scroll when open
   React.useEffect(() => {
@@ -62,6 +60,7 @@ export function ConfirmDialog({
 
       {/* Modal Dialog */}
       <div
+        ref={dialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"

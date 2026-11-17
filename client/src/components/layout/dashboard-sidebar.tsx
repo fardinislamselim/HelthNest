@@ -171,6 +171,8 @@ export function DashboardSidebar({ role = "PATIENT", className }: DashboardSideb
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                aria-label={!isSidebarOpen ? item.label : undefined}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
@@ -283,6 +285,7 @@ export function DashboardSidebar({ role = "PATIENT", className }: DashboardSideb
                     key={item.href}
                     href={item.href}
                     onClick={closeAllNav}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3.5 py-3 text-sm font-medium transition-colors",
                       isActive

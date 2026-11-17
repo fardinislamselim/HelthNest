@@ -45,6 +45,7 @@ export function PublicHeader() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "transition-colors hover:text-foreground/80",
                   isActive
@@ -148,6 +149,7 @@ export function PublicHeader() {
                   key={link.href}
                   href={link.href}
                   onClick={closeAllNav}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "px-3 py-2 rounded-md text-base font-medium transition-colors",
                     isActive

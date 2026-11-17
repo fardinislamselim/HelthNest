@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 import { doctorPrescriptionService } from "../services/prescription.service";
 import type { DoctorPrescriptionItem } from "../types/prescription.types";
 
@@ -29,15 +30,10 @@ export function PrescriptionDetailsModal({
 }: PrescriptionDetailsModalProps) {
   const [isDownloading, setIsDownloading] = React.useState(false);
 
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        onOpenChange(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onOpenChange]);
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose: () => onOpenChange(false),
+  });
 
   if (!open || !prescription) return null;
 
@@ -76,8 +72,10 @@ export function PrescriptionDetailsModal({
 
       {/* Modal Dialog */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
+        aria-labelledby="prescription-details-modal-title"
         className="relative z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl space-y-5 animate-in fade-in-0 zoom-in-95 duration-200"
       >
         {/* Header */}
@@ -87,7 +85,7 @@ export function PrescriptionDetailsModal({
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-foreground">
+              <h3 id="prescription-details-modal-title" className="text-base sm:text-lg font-bold text-foreground">
                 Digital Medical Prescription
               </h3>
               <p className="text-xs text-muted-foreground">
@@ -101,6 +99,7 @@ export function PrescriptionDetailsModal({
             size="sm"
             onClick={() => onOpenChange(false)}
             className="h-8 w-8 p-0"
+            aria-label="Close dialog"
           >
             <X className="h-4 w-4" />
           </Button>

@@ -12,6 +12,7 @@ import { useChangePasswordMutation } from "../hooks/usePassword";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 
 interface ChangePasswordModalProps {
   open: boolean;
@@ -54,15 +55,10 @@ export function ChangePasswordModal({
     }
   }, [changePasswordMutation.isPending, onOpenChange, reset]);
 
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        handleClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, handleClose]);
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose: handleClose,
+  });
 
   if (!open) return null;
 
@@ -77,6 +73,7 @@ export function ChangePasswordModal({
 
       {/* Modal Dialog */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="change-password-title"

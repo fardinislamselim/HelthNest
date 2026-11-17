@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateSuperAdminMutation } from "../../hooks/useAdmin";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 
 interface CreateSuperAdminModalProps {
   open: boolean;
@@ -33,6 +34,13 @@ export function CreateSuperAdminModal({
     onClose();
   }, [onClose]);
 
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose: () => {
+      if (!createMutation.isPending) handleClose();
+    },
+  });
+
   // Lock background scroll
   React.useEffect(() => {
     if (open) {
@@ -43,17 +51,6 @@ export function CreateSuperAdminModal({
       };
     }
   }, [open]);
-
-  // Handle Escape
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open && !createMutation.isPending) {
-        handleClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, createMutation.isPending, handleClose]);
 
   if (!open) return null;
 
@@ -94,13 +91,19 @@ export function CreateSuperAdminModal({
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative z-10 w-full max-w-lg rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl transition-all">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-super-admin-title"
+        className="relative z-10 w-full max-w-lg rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl transition-all"
+      >
         <button
           type="button"
           onClick={handleClose}
           disabled={createMutation.isPending}
-          className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus:outline-hidden"
-          aria-label="Close"
+          className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
         </button>
@@ -111,7 +114,7 @@ export function CreateSuperAdminModal({
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold tracking-tight">Provision Super Administrator</h2>
+              <h2 id="create-super-admin-title" className="text-lg font-semibold tracking-tight">Provision Super Administrator</h2>
               <p className="text-xs text-muted-foreground">
                 Grant full root governance privileges over platform credentials, operators, and billing.
               </p>

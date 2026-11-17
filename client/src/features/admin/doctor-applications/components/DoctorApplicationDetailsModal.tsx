@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 import type { DoctorAdminRecord } from "../../types/admin.types";
 
 interface DoctorApplicationDetailsModalProps {
@@ -31,6 +32,11 @@ export function DoctorApplicationDetailsModal({
   onApprove,
   onReject,
 }: DoctorApplicationDetailsModalProps) {
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: open,
+    onClose,
+  });
+
   // Lock background scroll
   React.useEffect(() => {
     if (open) {
@@ -41,17 +47,6 @@ export function DoctorApplicationDetailsModal({
       };
     }
   }, [open]);
-
-  // Handle Escape
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
 
   if (!open || !doctor) return null;
 
@@ -77,12 +72,18 @@ export function DoctorApplicationDetailsModal({
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl transition-all">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="doctor-application-modal-title"
+        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xl transition-all"
+      >
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus:outline-hidden"
-          aria-label="Close"
+          className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
         </button>
@@ -95,7 +96,7 @@ export function DoctorApplicationDetailsModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold tracking-tight">Dr. {doctor.name}</h2>
+                <h2 id="doctor-application-modal-title" className="text-xl font-bold tracking-tight">Dr. {doctor.name}</h2>
                 <StatusBadge status={doctor.verificationStatus} />
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">

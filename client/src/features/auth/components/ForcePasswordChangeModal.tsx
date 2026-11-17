@@ -13,6 +13,7 @@ import { useAuth } from "../hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useModalFocusTrap } from "@/hooks/useModalFocusTrap";
 
 export function ForcePasswordChangeModal() {
   const { user, logout, isLoggingOut } = useAuth();
@@ -21,6 +22,10 @@ export function ForcePasswordChangeModal() {
   const [showConfirm, setShowConfirm] = React.useState(false);
 
   const isRequired = Boolean(user && user.needPasswordChange);
+
+  const dialogRef = useModalFocusTrap<HTMLDivElement>({
+    isOpen: isRequired,
+  });
 
   const {
     register,
@@ -62,6 +67,7 @@ export function ForcePasswordChangeModal() {
 
       {/* Modal Dialog */}
       <div
+        ref={dialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="force-password-title"
