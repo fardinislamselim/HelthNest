@@ -1,150 +1,122 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import {
-  Search,
-  UserCheck,
-  CalendarCheck,
-  Video,
-  ArrowRight,
-  ShieldCheck,
-  Clock,
-  Sparkles,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-const STEPS = [
-  {
-    stepNumber: "01",
-    title: "Search Doctor",
-    description: "Find doctors based on your medical needs, symptoms, and medical specialty.",
-    icon: Search,
-    colorClass: "text-blue-600 dark:text-blue-400 bg-blue-500/10",
-  },
-  {
-    stepNumber: "02",
-    title: "Check Profile",
-    description: "Explore available doctor information, verified qualifications, and consultation fees.",
-    icon: UserCheck,
-    colorClass: "text-teal-600 dark:text-teal-400 bg-teal-500/10",
-  },
-  {
-    stepNumber: "03",
-    title: "Schedule Booking",
-    description: "Choose an available 20-minute schedule slot and complete secure Stripe payment.",
-    icon: CalendarCheck,
-    colorClass: "text-amber-600 dark:text-amber-400 bg-amber-500/10",
-  },
-  {
-    stepNumber: "04",
-    title: "Get Your Consultation",
-    description: "Connect with your doctor via secure video call and download official PDF prescriptions.",
-    icon: Video,
-    colorClass: "text-primary bg-primary/10",
-  },
-];
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-20 lg:py-24 bg-background border-b border-border/60">
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
-          {/* Left Column: Healthcare Consultation Imagery (Clean transparent PNG, no heavy boxes or shadows) */}
-          <div className="lg:col-span-5 relative flex items-end justify-center order-2 lg:order-1">
-            <div className="relative w-full max-w-md lg:max-w-none flex items-center justify-center">
-              {/* Doctor Cutout Frame */}
-              <div className="relative w-full aspect-3/4 max-h-[460px] flex items-end justify-center">
-                <Image
-                  src="/images/how-it-works-doctor.png"
-                  alt="Doctor with digital tablet guiding telemedicine consultation"
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 450px"
-                  className="object-contain object-bottom"
-                />
-              </div>
+    <section className="w-full bg-surface-container-low py-12 lg:py-16 my-8" id="how-it-works">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-10 lg:mb-12">
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary px-3 py-1 bg-secondary-container rounded-full inline-block mb-2">
+            Care Delivery Architecture
+          </span>
+          <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl text-on-surface font-bold">
+            How It Works
+          </h2>
+          <p className="text-sm sm:text-base text-on-surface-variant mt-1.5">
+            Affordable, compassionate healthcare delivered in three simple steps.
+          </p>
+        </div>
 
-              {/* Floating Step Highlights */}
-              <div className="absolute bottom-2 -left-1 sm:-left-3 bg-card/95 backdrop-blur-md border border-border/80 shadow-xs rounded-2xl p-3 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                  <Clock className="h-5 w-5" />
+        {/* 3-Step Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 relative">
+          {/* Step 1 */}
+          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow relative flex flex-col justify-between border border-border/50">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary font-heading font-bold text-lg">
+                  01
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-foreground">Fast 20-Min Care</p>
-                  <p className="text-[11px] text-muted-foreground">Book and meet online today</p>
-                </div>
+                <span className="material-symbols-outlined text-primary text-[32px]">
+                  event_available
+                </span>
               </div>
-
-              <div className="hidden sm:flex absolute top-4 -right-2 bg-card/95 backdrop-blur-md border border-border/80 shadow-xs rounded-2xl p-2.5 items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <span className="text-xs font-bold text-foreground">100% Verified Clinicians</span>
-              </div>
+              <h3 className="font-heading text-lg text-on-surface font-semibold mb-2">
+                Pick Today&apos;s Open Slot
+              </h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed">
+                Browse licensed specialists across 25+ medical fields and pick a convenient 20-minute open appointment today.
+              </p>
+            </div>
+            <div className="mt-6 pt-3 border-t border-surface-container-high">
+              <Link
+                href="/doctors"
+                className="flex items-center gap-1 text-primary text-xs font-semibold hover:underline"
+              >
+                <span>Browse 25+ specialties</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </Link>
             </div>
           </div>
 
-          {/* Right Column: 4 Easy Steps */}
-          <div className="lg:col-span-7 space-y-6 sm:space-y-8 order-1 lg:order-2">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-bold text-primary tracking-wide">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Streamlined Patient Journey</span>
-              </div>
-
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground leading-tight text-balance">
-                4 Easy Steps To{" "}
-                <span className="bg-gradient-to-r from-primary via-indigo-600 to-teal-600 bg-clip-text text-transparent">
-                  Get Your Solution
+          {/* Step 2 */}
+          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow relative flex flex-col justify-between border border-border/50">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary font-heading font-bold text-lg">
+                  02
+                </div>
+                <span className="material-symbols-outlined text-secondary text-[32px]">
+                  credit_card
                 </span>
-              </h2>
-
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed text-pretty">
-                Experience seamless healthcare from browsing verified specialists to receiving your digital prescription.
+              </div>
+              <h3 className="font-heading text-lg text-on-surface font-semibold mb-2">
+                Pay &amp; Get Instant Meet Link
+              </h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed">
+                Transparent upfront pricing with insurance copay support. Receive your private, encrypted HD video link instantly via SMS and email.
               </p>
             </div>
-
-            {/* 4 Step Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {STEPS.map((step) => {
-                const Icon = step.icon;
-                return (
-                  <div
-                    key={step.stepNumber}
-                    className="p-5 rounded-2xl border border-border/70 bg-card hover:border-primary/40 hover:shadow-md transition-all duration-200 group flex flex-col justify-between"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-xl ${step.colorClass}`}
-                        >
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <span className="text-xs font-extrabold font-mono text-muted-foreground/60 bg-muted/60 px-2.5 py-0.5 rounded-full">
-                          {step.stepNumber}
-                        </span>
-                      </div>
-
-                      <div className="space-y-1">
-                        <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
-                          {step.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="mt-6 pt-3 border-t border-surface-container-high flex items-center gap-1 text-secondary text-xs font-semibold">
+              <span>Zero hidden platform fees</span>
+              <span className="material-symbols-outlined text-[16px]">verified</span>
             </div>
+          </div>
 
-            {/* CTA button */}
-            <div className="pt-2">
-              <Button asChild size="lg" className="gap-2 shadow-xs">
-                <Link href="/doctors">
-                  <span>Start Your Consultation</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
+          {/* Step 3 */}
+          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow relative flex flex-col justify-between border border-border/50">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary font-heading font-bold text-lg">
+                  03
+                </div>
+                <span className="material-symbols-outlined text-tertiary text-[32px]">
+                  prescriptions
+                </span>
+              </div>
+              <h3 className="font-heading text-lg text-on-surface font-semibold mb-2">
+                Join Call &amp; Receive Digital Prescription
+              </h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed">
+                Consult your doctor in real time. Receive verified electronic prescriptions and care summaries sent right to your nearest pharmacy or app.
+              </p>
             </div>
+            <div className="mt-6 pt-3 border-t border-surface-container-high flex items-center gap-1 text-primary text-xs font-semibold">
+              <span>Sent straight to your pharmacy</span>
+              <span className="material-symbols-outlined text-[16px]">local_pharmacy</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Highlight Metric Strip */}
+        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="p-4 bg-surface-container-lowest/80 rounded-xl border border-border/40 shadow-2xs">
+            <div className="font-heading text-2xl sm:text-3xl text-primary font-bold">99.4%</div>
+            <div className="text-xs text-on-surface-variant mt-0.5">Patient Satisfaction</div>
+          </div>
+          <div className="p-4 bg-surface-container-lowest/80 rounded-xl border border-border/40 shadow-2xs">
+            <div className="font-heading text-2xl sm:text-3xl text-primary font-bold">&lt; 15m</div>
+            <div className="text-xs text-on-surface-variant mt-0.5">Avg Prescription Arrival</div>
+          </div>
+          <div className="p-4 bg-surface-container-lowest/80 rounded-xl border border-border/40 shadow-2xs">
+            <div className="font-heading text-2xl sm:text-3xl text-primary font-bold">50+</div>
+            <div className="text-xs text-on-surface-variant mt-0.5">Partner Networks</div>
+          </div>
+          <div className="p-4 bg-surface-container-lowest/80 rounded-xl border border-border/40 shadow-2xs">
+            <div className="font-heading text-2xl sm:text-3xl text-primary font-bold">256-bit</div>
+            <div className="text-xs text-on-surface-variant mt-0.5">End-to-End Encryption</div>
           </div>
         </div>
       </div>

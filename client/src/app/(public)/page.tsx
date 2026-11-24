@@ -1,51 +1,35 @@
 import type { Metadata } from "next";
 import {
   HeroSection,
-  AnnouncementMarquee,
-  QuickHealthcareServices,
-  AboutSection,
-  MedicalCategoriesSection,
-  FeaturedDoctorsSection,
+  QuickBookingBar,
   HowItWorksSection,
-  PatientTestimonialsSection,
-  FinalCtaSection,
+  FeaturedDoctorsSection,
+  TrustBannerSection,
 } from "@/features/home";
 
 export const metadata: Metadata = {
-  title: "HealthNest | Consult Best Doctors Near You - Telemedicine & Online Appointments",
+  title: "HealthNest | Consult Top Doctors Online, Today - Telemedicine & Online Appointments",
   description:
-    "Connect with trusted healthcare professionals, explore medical specialties, book 20-minute video appointments with ease, and receive digital prescriptions.",
+    "Skip the waiting room. Connect with verified, board-certified specialists for instant 20-minute video consultations from the comfort of your home. Secure, seamless, and insurance-accepted.",
 };
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col w-full overflow-hidden">
-      {/* 2. Hero Section with Professional Doctor Images */}
+    <div className="flex flex-col w-full overflow-hidden bg-surface">
+      {/* 1. Hero Section with Live Triage & Interactive Consultation Card Preview */}
       <HeroSection />
 
-      {/* 3. Announcement Marquee */}
-      <AnnouncementMarquee />
+      {/* 2. Interactive Search / Quick Booking Bar Anchor */}
+      <QuickBookingBar />
 
-      {/* 4. Quick Healthcare Services */}
-      <QuickHealthcareServices />
-
-      {/* 5. About HealthNest */}
-      <AboutSection />
-
-      {/* 6. Medical Categories / Specialties */}
-      <MedicalCategoriesSection />
-
-      {/* 7. Top / Featured Doctors */}
-      <FeaturedDoctorsSection />
-
-      {/* 8. How HealthNest Works – 4 Easy Steps */}
+      {/* 3. Care Delivery Architecture: How It Works 3-Step Section & Metrics */}
       <HowItWorksSection />
 
-      {/* 9. Patient Testimonials */}
-      <PatientTestimonialsSection />
+      {/* 4. On-Duty Clinicians: Featured Specialists Grid */}
+      <FeaturedDoctorsSection />
 
-      {/* 11. Final Healthcare CTA Banner */}
-      <FinalCtaSection />
+      {/* 5. Certified Telemedicine Trust & Security Banner */}
+      <TrustBannerSection />
     </div>
   );
 }
