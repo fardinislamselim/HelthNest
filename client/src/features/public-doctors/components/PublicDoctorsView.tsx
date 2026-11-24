@@ -31,20 +31,24 @@ export function PublicDoctorsView() {
     maxFee: undefined,
   });
 
-  // Keep filters in sync if URL search params change
-  React.useEffect(() => {
-    const urlSpec = searchParams.get("specialization") || undefined;
-    const urlSearch = searchParams.get("search") || "";
-    setFilters((prev) => {
-      if (prev.specialization === urlSpec && prev.search === urlSearch) return prev;
-      return {
-        ...prev,
-        specialization: urlSpec,
-        search: urlSearch,
-        page: 1,
-      };
-    });
-  }, [searchParams]);
+  // Track previous search params to adjust state during render when URL params change
+  const [prevUrlParams, setPrevUrlParams] = React.useState({
+    spec: initialSpecialization,
+    search: initialSearch,
+  });
+
+  const urlSpec = searchParams.get("specialization") || undefined;
+  const urlSearch = searchParams.get("search") || "";
+
+  if (urlSpec !== prevUrlParams.spec || urlSearch !== prevUrlParams.search) {
+    setPrevUrlParams({ spec: urlSpec, search: urlSearch });
+    setFilters((prev) => ({
+      ...prev,
+      specialization: urlSpec,
+      search: urlSearch,
+      page: 1,
+    }));
+  }
 
   const { doctors, meta, isLoading, isError, error, refetch } = usePublicDoctors(filters);
 

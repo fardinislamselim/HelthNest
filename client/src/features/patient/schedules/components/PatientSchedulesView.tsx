@@ -30,11 +30,16 @@ export function PatientSchedulesView() {
   const [isSlotModalOpen, setIsSlotModalOpen] = React.useState(false);
   const [pendingBooking, setPendingBooking] = React.useState<BookingSelection | null>(null);
 
+  const upcomingFilterParams = React.useMemo(
+    () => ({
+      startDate: selectedDate || undefined,
+      specialization: selectedSpecialization || undefined,
+    }),
+    [selectedDate, selectedSpecialization],
+  );
+
   const todayQuery = useTodaySchedules();
-  const upcomingQuery = useUpcomingSchedules({
-    startDate: selectedDate || undefined,
-    specialization: selectedSpecialization || undefined,
-  });
+  const upcomingQuery = useUpcomingSchedules(upcomingFilterParams);
 
   const isUpcoming = scheduleScope === "upcoming";
   const currentQuery = isUpcoming ? upcomingQuery : todayQuery;
@@ -86,32 +91,32 @@ export function PatientSchedulesView() {
     setIsSlotModalOpen(false);
   }, []);
 
-  const handleOpenSlotModal = (schedule: PatientScheduleItem) => {
+  const handleOpenSlotModal = React.useCallback((schedule: PatientScheduleItem) => {
     setActiveSchedule(schedule);
     setIsSlotModalOpen(true);
-  };
+  }, []);
 
-  const handleProceedToBooking = (
+  const handleProceedToBooking = React.useCallback((
     schedule: PatientScheduleItem,
     slot: PatientSlotItem,
   ) => {
     setIsSlotModalOpen(false);
     setPendingBooking({ schedule, slot });
-  };
+  }, []);
 
-  const handleConfirmAndPay = async () => {
+  const handleConfirmAndPay = React.useCallback(async () => {
     if (!pendingBooking) return;
     await initiateBooking({
       scheduleId: pendingBooking.schedule.id,
       slotId: pendingBooking.slot.id,
     });
-  };
+  }, [pendingBooking, initiateBooking]);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = React.useCallback(() => {
     setSearchQuery("");
     setSelectedSpecialization("");
     setSelectedDate("");
-  };
+  }, []);
 
   // If in review mode, show the BookingReviewCard
   if (pendingBooking && user) {
@@ -240,13 +245,15 @@ export function PatientSchedulesView() {
             }
           />
 
-          <ScheduleSlotModal
-            key={activeSchedule?.id || "slot-modal"}
-            schedule={activeSchedule}
-            open={isSlotModalOpen}
-            onClose={handleCloseSlotModal}
-            onProceedToBooking={handleProceedToBooking}
-          />
+          {isSlotModalOpen && activeSchedule && (
+            <ScheduleSlotModal
+              key={activeSchedule.id}
+              schedule={activeSchedule}
+              open={isSlotModalOpen}
+              onClose={handleCloseSlotModal}
+              onProceedToBooking={handleProceedToBooking}
+            />
+          )}
         </>
       )}
     </div>

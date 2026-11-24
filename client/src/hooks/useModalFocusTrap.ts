@@ -16,7 +16,10 @@ export function useModalFocusTrap<T extends HTMLElement = HTMLDivElement>({
   const containerRef = React.useRef<T>(null);
   const previousActiveElementRef = React.useRef<HTMLElement | null>(null);
   const onCloseRef = React.useRef(onClose);
-  onCloseRef.current = onClose;
+
+  React.useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -95,7 +98,7 @@ export function useModalFocusTrap<T extends HTMLElement = HTMLDivElement>({
         previousActiveElementRef.current.focus();
       }
     };
-  }, [isOpen]);
+  }, [isOpen, initialFocusRef]);
 
   return containerRef;
 }
