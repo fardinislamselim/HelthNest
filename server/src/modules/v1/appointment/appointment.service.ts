@@ -54,6 +54,9 @@ const appointmentInclude = {
       invoiceNumber: true,
     },
   },
+  prescription: {
+    select: { id: true },
+  },
 } satisfies Prisma.AppointmentInclude;
 
 const getPatient = async (userId: string) => {

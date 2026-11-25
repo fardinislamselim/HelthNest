@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAppointments } from "@/features/patient/appointments/hooks/useAppointments";
 import { useCancelAppointment } from "@/features/patient/appointments/hooks/useCancelAppointment";
+import { usePayNow } from "@/features/patient/appointments/hooks/usePayNow";
 import {
   AppointmentFilters,
   AppointmentTable,
@@ -33,6 +34,7 @@ export function PatientAppointmentsView() {
   });
 
   const { cancelAppointment, isCancelling } = useCancelAppointment();
+  const { payNow, payingAppointmentId } = usePayNow();
 
   const handleRequestCancel = (appt: PatientAppointmentItem) => {
     setSelectedToCancel(appt);
@@ -97,6 +99,8 @@ export function PatientAppointmentsView() {
           appointments={appointments}
           isLoading={isLoading}
           onRequestCancel={handleRequestCancel}
+          onPayNow={payNow}
+          payingAppointmentId={payingAppointmentId}
         />
       )}
 

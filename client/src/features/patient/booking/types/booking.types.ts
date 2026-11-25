@@ -21,6 +21,15 @@ export interface CheckoutResponseData {
   paymentUrl: string;
 }
 
+/**
+ * Actual payload returned by `POST /appointments`:
+ * the created appointment plus the Stripe Checkout session created alongside it.
+ */
+export interface AppointmentCreationResult {
+  appointment: CreateAppointmentResponseData;
+  payment?: CheckoutResponseData | null;
+}
+
 export interface BookingSelection {
   schedule: PatientScheduleItem;
   slot: PatientSlotItem;

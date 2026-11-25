@@ -16,6 +16,29 @@ import { Button } from "@/components/ui/button";
 import type { BookingSelection } from "../types/booking.types";
 import type { UserProfile } from "@/types/user";
 
+const DOCTOR_TITLE_PREFIX = /^\s*dr(?:\.\s*|\s+)/i;
+
+/**
+ * The database may already store the "Dr." title, so strip it before adding it back.
+ */
+function formatDoctorName(name?: string | null): string {
+  const raw = (name || "").trim();
+  if (!raw) return "Doctor";
+  const withoutTitle = raw.replace(DOCTOR_TITLE_PREFIX, "").trim();
+  return `Dr. ${withoutTitle || raw}`;
+}
+
+function getDoctorInitials(name?: string | null): string {
+  const raw = (name || "").replace(DOCTOR_TITLE_PREFIX, "").trim();
+  const initials = raw
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+  return initials || "DR";
+}
+
 interface BookingReviewCardProps {
   booking: BookingSelection;
   currentUser: UserProfile;
@@ -34,6 +57,11 @@ export function BookingReviewCard({
   const { schedule, slot } = booking;
   const doctor = schedule.doctor;
   const fee = Number(doctor.consultationFee || 0);
+  const doctorName = formatDoctorName(doctor.name);
+  const doctorImageSrc =
+    doctor.profileImage || doctor.user?.profileImageUrl || null;
+  const [failedImageSrc, setFailedImageSrc] = React.useState<string | null>(null);
+  const showDoctorImage = Boolean(doctorImageSrc) && failedImageSrc !== doctorImageSrc;
 
   return (
     <Card className="max-w-2xl mx-auto shadow-md border-border/80 min-w-0">
@@ -65,28 +93,37 @@ export function BookingReviewCard({
         {/* Doctor Summary */}
         <div className="flex flex-col xs:flex-row items-center xs:items-start text-center xs:text-left gap-3.5 p-3.5 sm:p-4 rounded-xl bg-muted/40 border border-border/60">
           <div className="relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-full border-2 border-primary/20 bg-muted flex items-center justify-center">
-            {doctor.user?.profileImageUrl ? (
+            {showDoctorImage && doctorImageSrc ? (
               <Image
-                src={doctor.user.profileImageUrl}
-                alt={doctor.name}
+                src={doctorImageSrc}
+                alt={doctorName}
                 width={64}
                 height={64}
                 className="h-full w-full object-cover"
                 unoptimized
+                onError={() => setFailedImageSrc(doctorImageSrc)}
               />
+            ) : doctorName !== "Doctor" ? (
+              <span
+                aria-hidden="true"
+                className="text-base sm:text-lg font-bold text-primary/80 select-none"
+              >
+                {getDoctorInitials(doctor.name)}
+              </span>
             ) : (
               <User className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground/60" />
             )}
           </div>
           <div className="min-w-0 flex-1 space-y-0.5">
             <h3 className="text-sm sm:text-base font-bold text-foreground truncate">
-              Dr. {doctor.name}
+              {doctorName}
             </h3>
             <p className="text-xs font-semibold text-primary truncate">
               {doctor.specialization}
             </p>
             <p className="text-xs text-muted-foreground truncate">
-              {doctor.qualifications} • {doctor.experienceYears} Years Experience
+              {doctor.qualifications ? `${doctor.qualifications} • ` : ""}
+              {doctor.experienceYears} Years Experience
             </p>
           </div>
         </div>

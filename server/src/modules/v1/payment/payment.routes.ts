@@ -7,6 +7,20 @@ import { paymentController } from "./payment.controller";
 
 const router = Router();
 router.post(
+  "/verify",
+  auth(Role.PATIENT),
+  validateRequest(
+    z.object({
+      body: z.object({
+        appointmentId: z.string().uuid(),
+        sessionId: z.string().min(1).optional(),
+      }),
+    }),
+  ),
+  paymentController.verifyPayment,
+);
+
+router.post(
   "/checkout/:appointmentId",
   auth(Role.PATIENT),
   validateRequest(z.object({ params: z.object({ appointmentId: z.string().uuid() }) })),

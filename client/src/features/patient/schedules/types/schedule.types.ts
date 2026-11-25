@@ -1,10 +1,15 @@
 export interface PatientDoctorSummary {
   id: string;
+  doctorId?: string;
   name: string;
   specialization: string;
-  qualifications: string;
+  qualifications?: string;
   experienceYears: number;
   consultationFee: number | null;
+  /**
+   * Profile image URL as returned by the schedule endpoints.
+   */
+  profileImage?: string | null;
   user?: {
     profileImageUrl?: string | null;
   };

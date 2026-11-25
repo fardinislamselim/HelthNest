@@ -9,6 +9,10 @@ import { TODAY_SCHEDULES_QUERY_KEY } from "@/features/patient/schedules/hooks/us
 import { SCHEDULE_SLOTS_QUERY_KEY } from "@/features/patient/schedules/hooks/useScheduleSlots";
 import { APPOINTMENTS_QUERY_KEY } from "@/features/patient/appointments/hooks/useAppointments";
 import { PATIENT_DASHBOARD_QUERY_KEY } from "@/features/patient/dashboard/hooks/usePatientDashboard";
+import type {
+  AppointmentCreationResult,
+  CreateAppointmentResponseData,
+} from "../types/booking.types";
 
 export function useBookingFlow() {
   const queryClient = useQueryClient();
@@ -22,23 +26,34 @@ export function useBookingFlow() {
       scheduleId: string;
       slotId: string;
     }) => {
-      // 1. Create appointment in PENDING status
+      // 1. Create appointment in PENDING status.
+      // The backend responds with `data: { appointment, payment }`, where
+      // `payment` is the Stripe Checkout session created along with it.
       const apptRes = await patientBookingService.createAppointment({
         scheduleId,
         slotId,
       });
 
-      const appointmentId = apptRes.data?.id;
+      const payload = apptRes.data as
+        | (Partial<AppointmentCreationResult> & Partial<CreateAppointmentResponseData>)
+        | undefined;
+      const appointment = payload?.appointment ?? payload;
+
+      const appointmentId = appointment?.id;
       if (!appointmentId) {
         throw new Error("Failed to initialize appointment record");
       }
 
-      // 2. Initiate Stripe Checkout session
-      const checkoutRes = await patientBookingService.createCheckoutSession(
-        appointmentId,
-      );
+      // 2. Use the checkout session returned with the appointment; only request
+      // a new one when the backend did not include it.
+      let paymentUrl = payload?.payment?.paymentUrl;
+      if (!paymentUrl) {
+        const checkoutRes = await patientBookingService.createCheckoutSession(
+          appointmentId,
+        );
+        paymentUrl = checkoutRes.data?.paymentUrl;
+      }
 
-      const paymentUrl = checkoutRes.data?.paymentUrl;
       if (!paymentUrl) {
         throw new Error("Failed to generate secure checkout link");
       }

@@ -12,7 +12,11 @@ export function useAppointmentDetails(appointmentId: string) {
     queryFn: async () => {
       if (!appointmentId) throw new Error("Appointment ID is required");
       const res = await patientAppointmentService.getAppointmentById(appointmentId);
-      return res.data;
+      const appointment = res?.data ?? null;
+      if (!appointment) {
+        throw new Error("Appointment details are unavailable");
+      }
+      return appointment;
     },
     enabled: Boolean(appointmentId),
     staleTime: 30 * 1000,

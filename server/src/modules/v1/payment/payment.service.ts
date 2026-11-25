@@ -3,14 +3,35 @@ import {
   PaymentStatus,
   AppointmentStatus,
 } from "../../../../generated/prisma/enums";
+import type { Prisma } from "../../../../generated/prisma/client";
 import config from "@/config";
 import { prisma } from "@/lib/prisma";
-import { transporter } from "@/lib/nodemailer";
 import AppError from "@/middleware/AppError";
 import Stripe from "stripe";
 import createInvoicePdf from "@/utils/invoice-pdf";
 import sendInvoiceEmail from "@/services/email.service";
 import stripe from "@/lib/stripe";
+import { logger } from "@/lib/winston";
+import { getScheduleStartDateTime } from "@/utils/payment-refund";
+
+const confirmationInclude = {
+  patient: true,
+  doctor: true,
+  schedule: true,
+  slot: true,
+} satisfies Prisma.AppointmentInclude;
+
+/**
+ * Appends the appointment id and Stripe's session placeholder to the
+ * configured success URL so the success page can verify the payment.
+ */
+const buildSuccessUrl = (appointmentId: string) => {
+  const base = config.stripe_success_url;
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}appointmentId=${encodeURIComponent(
+    appointmentId,
+  )}&session_id={CHECKOUT_SESSION_ID}`;
+};
 
 export const createCheckoutSession = async (
   appointmentId: string,
@@ -50,6 +71,18 @@ export const createCheckoutSession = async (
       "Appointment has already been paid",
     );
   }
+  if (
+    appointment.schedule &&
+    getScheduleStartDateTime(
+      appointment.schedule.date,
+      appointment.schedule.startTime,
+    ).getTime() <= Date.now()
+  ) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "The consultation schedule has already started; payment can no longer be completed",
+    );
+  }
 
   const amount = Number(appointment.doctor.consultationFee);
   const session = await stripe().checkout.sessions.create({
@@ -68,7 +101,7 @@ export const createCheckoutSession = async (
       },
     ],
     metadata: { appointmentId: appointment.id },
-    success_url: config.stripe_success_url,
+    success_url: buildSuccessUrl(appointment.id),
     cancel_url: config.stripe_cancel_url,
   });
   if (!session.url) {
@@ -94,6 +127,131 @@ export const createCheckoutSession = async (
     },
   });
   return { checkoutSessionId: session.id, paymentUrl: session.url };
+};
+
+const getPaymentIntentId = (session: Stripe.Checkout.Session) => {
+  if (typeof session.payment_intent === "string") return session.payment_intent;
+  if (typeof session.payment_intent === "object" && session.payment_intent) {
+    return session.payment_intent.id;
+  }
+  return null;
+};
+
+/**
+ * Marks a payment as PAID, books the appointment and assigns the next
+ * serial number for its schedule — all inside one serializable transaction.
+ * Idempotent: a payment that is already PAID returns null unless its invoice
+ * still needs to be emailed.
+ */
+async function finalizePaidPayment(
+  paymentId: string,
+  transactionId?: string | null,
+) {
+  return prisma.$transaction(
+    async (tx) => {
+      const payment = await tx.payment.findUnique({
+        where: { id: paymentId },
+        include: { appointment: { include: confirmationInclude } },
+      });
+      if (!payment) return null;
+      if (payment.status === PaymentStatus.PAID) {
+        if (!payment.invoiceNumber || payment.invoiceEmailedAt) return null;
+        return {
+          payment,
+          appointment: payment.appointment,
+          invoiceNumber: payment.invoiceNumber,
+        };
+      }
+      if (payment.appointment.status !== AppointmentStatus.PENDING) return null;
+
+      const latest = await tx.appointment.aggregate({
+        where: {
+          scheduleId: payment.appointment.scheduleId,
+          serialNumber: { not: null },
+        },
+        _max: { serialNumber: true },
+      });
+      const serialNumber =
+        Math.max(
+          latest._max.serialNumber ?? 0,
+          payment.appointment.serialNumber ?? 0,
+        ) + 1;
+      const invoiceNumber =
+        payment.invoiceNumber ?? `HN-${Date.now()}-${serialNumber}`;
+
+      const paidPayment = await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: PaymentStatus.PAID,
+          transactionId: transactionId ?? undefined,
+          invoiceNumber,
+          paidAt: new Date(),
+        },
+      });
+      const appointment = await tx.appointment.update({
+        where: { id: payment.appointmentId },
+        data: { status: AppointmentStatus.BOOKED, serialNumber },
+        include: confirmationInclude,
+      });
+      return { payment: paidPayment, appointment, invoiceNumber };
+    },
+    { isolationLevel: "Serializable" },
+  );
+}
+
+async function deliverInvoice(
+  confirmation: NonNullable<Awaited<ReturnType<typeof finalizePaidPayment>>>,
+) {
+  const { appointment, payment, invoiceNumber } = confirmation;
+  if (!appointment.patient || !appointment.doctor) return;
+  if (!appointment.serialNumber || !payment.paidAt) return;
+
+  const pdf = await createInvoicePdf(invoiceNumber, {
+    id: appointment.id,
+    amount: payment.amount.toString(),
+    currency: payment.currency,
+    patientName: appointment.patient.name,
+    patientEmail: appointment.patient.email,
+    doctorName: appointment.doctor.name,
+    scheduleDate: appointment.schedule.date,
+    slotStart: appointment.slot.startTime,
+    slotEnd: appointment.slot.endTime,
+    serialNumber: appointment.serialNumber,
+    paidAt: payment.paidAt,
+  });
+
+  await sendInvoiceEmail({
+    email: appointment.patient.email,
+    patientName: appointment.patient.name,
+    doctorName: appointment.doctor.name,
+    scheduleDate: String(appointment.schedule.date),
+    slotStart: appointment.slot.startTime,
+    slotEnd: appointment.slot.endTime,
+    serialNumber: appointment.serialNumber,
+    invoiceNumber,
+    amount: payment.amount.toString(),
+    currency: payment.currency,
+    pdf,
+  });
+
+  await prisma.payment.update({
+    where: { id: payment.id },
+    data: { invoiceEmailedAt: new Date() },
+  });
+}
+
+const sendInvoiceSafely = async (
+  confirmation: NonNullable<Awaited<ReturnType<typeof finalizePaidPayment>>>,
+) => {
+  try {
+    await deliverInvoice(confirmation);
+  } catch (error) {
+    logger.error(
+      `Failed to dispatch invoice for appointment ${
+        confirmation.appointment.id
+      }: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
 
 export const handleStripeEvent = async (event: Stripe.Event) => {
@@ -151,98 +309,130 @@ export const handleStripeEvent = async (event: Stripe.Event) => {
     return;
   }
 
-  const confirmation = await prisma.$transaction(
-    async (tx) => {
-      const payment = await tx.payment.findUnique({
-        where: { checkoutSessionId: session.id },
-        include: {
-          appointment: {
-            include: {
-              patient: true,
-              doctor: true,
-              schedule: true,
-              slot: true,
-            },
-          },
-        },
-      });
-      if (!payment) return null;
-      if (payment.status === PaymentStatus.PAID) {
-        if (!payment.invoiceNumber || payment.invoiceEmailedAt) return null;
-        return {
-          payment,
-          appointment: payment.appointment,
-          invoiceNumber: payment.invoiceNumber,
-        };
-      }
-      if (payment.appointment.status !== AppointmentStatus.PENDING) return null;
-      const latest = await tx.appointment.aggregate({
-        where: {
-          scheduleId: payment.appointment.scheduleId,
-          serialNumber: { not: null },
-        },
-        _max: { serialNumber: true },
-      });
-      const serialNumber = (latest._max.serialNumber ?? 0) + 1;
-      const invoiceNumber = `HN-${Date.now()}-${serialNumber}`;
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: PaymentStatus.PAID,
-          transactionId:
-            typeof session.payment_intent === "string"
-              ? session.payment_intent
-              : undefined,
-          invoiceNumber,
-          paidAt: new Date(),
-        },
-      });
-      const appointment = await tx.appointment.update({
-        where: { id: payment.appointmentId },
-        data: { status: AppointmentStatus.BOOKED, serialNumber },
-        include: { patient: true, doctor: true, schedule: true, slot: true },
-      });
-      return { payment, appointment, invoiceNumber };
-    },
-    { isolationLevel: "Serializable" },
-  );
-
-  if (!confirmation?.appointment.patient || !confirmation.appointment.doctor)
-    return;
-const pdf = await createInvoicePdf(
-  confirmation.invoiceNumber,
-  {
-    id: confirmation.appointment.id,
-    amount: confirmation.payment.amount.toString(),
-    currency: confirmation.payment.currency,
-    patientName: confirmation.appointment.patient.name,
-    patientEmail: confirmation.appointment.patient.email,
-    doctorName: confirmation.appointment.doctor.name,
-    scheduleDate: confirmation.appointment.schedule.date,
-    slotStart: confirmation.appointment.slot.startTime,
-    slotEnd: confirmation.appointment.slot.endTime,
-    serialNumber: confirmation.appointment.serialNumber!,
-    paidAt: confirmation.payment.paidAt!,
-  }
-);
-
-await sendInvoiceEmail({
-  email: confirmation.appointment.patient.email,
-  patientName: confirmation.appointment.patient.name,
-  doctorName: confirmation.appointment.doctor.name,
-  scheduleDate: String(confirmation.appointment.schedule.date),
-  slotStart: confirmation.appointment.slot.startTime,
-  slotEnd: confirmation.appointment.slot.endTime,
-  serialNumber: confirmation.appointment.serialNumber!,
-  invoiceNumber: confirmation.invoiceNumber,
-  amount: confirmation.payment.amount.toString(),
-  currency: confirmation.payment.currency,
-  pdf,
-});
-  await prisma.payment.update({
-    where: { id: confirmation.payment.id },
-    data: { invoiceEmailedAt: new Date() },
+  const paymentRecord = await prisma.payment.findUnique({
+    where: { checkoutSessionId: session.id },
+    select: { id: true },
   });
+  if (!paymentRecord) return;
+
+  const confirmation = await finalizePaidPayment(
+    paymentRecord.id,
+    getPaymentIntentId(session),
+  );
+  if (confirmation) await sendInvoiceSafely(confirmation);
 };
 
-export const paymentService = { createCheckoutSession, handleStripeEvent };
+/**
+ * Confirms a checkout straight with Stripe after the patient is redirected
+ * back to the app, so bookings are finalised even when the webhook cannot
+ * reach a local development server.
+ */
+export const verifyCheckoutPayment = async (
+  userId: string,
+  appointmentId: string,
+  sessionId?: string,
+) => {
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: {
+      patient: true,
+      doctor: true,
+      schedule: true,
+      slot: true,
+      payment: true,
+    },
+  });
+  if (
+    !appointment ||
+    !appointment.patient ||
+    appointment.patient.userId !== userId
+  ) {
+    throw new AppError(httpStatus.NOT_FOUND, "Appointment not found");
+  }
+  if (appointment.payment?.status === PaymentStatus.PAID) {
+    return { verified: true, appointment };
+  }
+  if (!appointment.payment) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This appointment has no payment to verify",
+    );
+  }
+  if (appointment.status === AppointmentStatus.CANCELLED) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This appointment was cancelled and can no longer be paid",
+    );
+  }
+
+  const checkoutSessionId =
+    sessionId || appointment.payment.checkoutSessionId;
+  if (!checkoutSessionId) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "No Stripe checkout session is associated with this appointment",
+    );
+  }
+
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await stripe().checkout.sessions.retrieve(checkoutSessionId);
+  } catch (error) {
+    logger.error(
+      `Stripe session verification failed for ${checkoutSessionId}: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    throw new AppError(
+      httpStatus.BAD_GATEWAY,
+      "Unable to verify the payment with Stripe at the moment",
+    );
+  }
+
+  if (session.metadata?.appointmentId !== appointment.id) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This payment session does not belong to the selected appointment",
+    );
+  }
+  if (session.payment_status !== "paid") {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Stripe has not confirmed this payment yet. Please refresh in a moment.",
+    );
+  }
+
+  const confirmation = await finalizePaidPayment(
+    appointment.payment.id,
+    getPaymentIntentId(session),
+  );
+
+  if (!confirmation) {
+    const refreshed = await prisma.appointment.findUnique({
+      where: { id: appointment.id },
+      include: {
+        patient: true,
+        doctor: true,
+        schedule: true,
+        slot: true,
+        payment: true,
+      },
+    });
+    if (refreshed?.payment?.status === PaymentStatus.PAID) {
+      return { verified: true, appointment: refreshed };
+    }
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This appointment is no longer awaiting payment",
+    );
+  }
+
+  await sendInvoiceSafely(confirmation);
+  return { verified: true, appointment: confirmation.appointment };
+};
+
+export const paymentService = {
+  createCheckoutSession,
+  handleStripeEvent,
+  verifyCheckoutPayment,
+};

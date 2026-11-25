@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
   // Payments
   PAYMENTS: {
     CHECKOUT: (appointmentId: string) => `/payments/checkout/${appointmentId}`,
+    VERIFY: "/payments/verify",
   },
 
   // Refunds

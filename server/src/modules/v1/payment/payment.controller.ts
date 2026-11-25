@@ -51,4 +51,22 @@ const handleStripeWebhook = catchAsync(async (req: Request, res: Response) => {
   res.status(httpStatus.OK).json({ received: true });
 });
 
-export const paymentController = { createCheckout, handleStripeWebhook };
+const verifyPayment = catchAsync(async (req: Request, res: Response) => {
+  const result = await paymentService.verifyCheckoutPayment(
+    req.user!.userId,
+    String(req.body.appointmentId),
+    req.body.sessionId ? String(req.body.sessionId) : undefined,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment verified successfully",
+    data: result,
+  });
+});
+
+export const paymentController = {
+  createCheckout,
+  handleStripeWebhook,
+  verifyPayment,
+};

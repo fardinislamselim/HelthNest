@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PaymentSuccessView } from "@/features/patient/booking/components/PaymentSuccessView";
 
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function PaymentSuccessPage() {
-  return <PaymentSuccessView />;
+  return (
+    <Suspense fallback={null}>
+      <PaymentSuccessView />
+    </Suspense>
+  );
 }

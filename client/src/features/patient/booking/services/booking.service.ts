@@ -2,16 +2,16 @@ import apiClient from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import type { ApiResponse } from "@/types/api";
 import type {
+  AppointmentCreationResult,
   CreateAppointmentPayload,
-  CreateAppointmentResponseData,
   CheckoutResponseData,
 } from "../types/booking.types";
 
 export const patientBookingService = {
   createAppointment: async (
     payload: CreateAppointmentPayload,
-  ): Promise<ApiResponse<CreateAppointmentResponseData>> => {
-    const response = await apiClient.post<ApiResponse<CreateAppointmentResponseData>>(
+  ): Promise<ApiResponse<AppointmentCreationResult>> => {
+    const response = await apiClient.post<ApiResponse<AppointmentCreationResult>>(
       API_ENDPOINTS.APPOINTMENTS.CREATE,
       payload,
     );

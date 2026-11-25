@@ -10,9 +10,12 @@ import {
   User,
   XCircle,
   Eye,
+  CreditCard,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { formatDoctorName } from "@/lib/format-name";
 import { EmptyState } from "@/components/shared/EmptyState";
 import type { PatientAppointmentItem } from "../types/appointment.types";
 
@@ -20,12 +23,16 @@ interface AppointmentTableProps {
   appointments: PatientAppointmentItem[];
   isLoading?: boolean;
   onRequestCancel: (appointment: PatientAppointmentItem) => void;
+  onPayNow?: (appointmentId: string) => void;
+  payingAppointmentId?: string | null;
 }
 
 export function AppointmentTable({
   appointments,
   isLoading = false,
   onRequestCancel,
+  onPayNow,
+  payingAppointmentId = null,
 }: AppointmentTableProps) {
   if (isLoading) {
     return (
@@ -72,11 +79,21 @@ export function AppointmentTable({
             </thead>
             <tbody className="divide-y divide-border/60">
               {appointments.map((appt) => {
+                const isPaid =
+                  appt.payment?.status === "PAID" ||
+                  appt.status === "BOOKED" ||
+                  appt.status === "ONGOING" ||
+                  appt.status === "COMPLETED";
                 const isCancellable =
                   appt.status === "BOOKED" || appt.status === "PENDING";
+                const isAwaitingPayment = !isPaid && appt.status === "PENDING";
+                const paymentStatus = isPaid
+                  ? "PAID"
+                  : appt.payment?.status ?? "PENDING";
+                const isPaying = payingAppointmentId === appt.id;
                 const canJoinMeet =
                   (appt.status === "BOOKED" || appt.status === "ONGOING") &&
-                  Boolean(appt.schedule.meetLink);
+                  Boolean(appt.schedule?.meetLink);
 
                 return (
                   <tr
@@ -84,15 +101,19 @@ export function AppointmentTable({
                     className="hover:bg-muted/30 transition-colors"
                   >
                     <td className="py-3.5 px-4 font-bold text-foreground whitespace-nowrap">
-                      {appt.serialNumber ? `#${appt.serialNumber}` : "Pending"}
+                      {appt.serialNumber
+                        ? `#${appt.serialNumber}`
+                        : isPaid
+                          ? "—"
+                          : "Pending"}
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2.5">
                         <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-primary/20 bg-muted flex items-center justify-center">
-                          {appt.doctor.user?.profileImageUrl ? (
+                          {appt.doctor?.user?.profileImageUrl ? (
                             <Image
                               src={appt.doctor.user.profileImageUrl}
-                              alt={appt.doctor.name}
+                              alt={formatDoctorName(appt.doctor?.name)}
                               width={36}
                               height={36}
                               className="h-full w-full object-cover"
@@ -104,10 +125,10 @@ export function AppointmentTable({
                         </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-foreground truncate">
-                            Dr. {appt.doctor.name}
+                            {formatDoctorName(appt.doctor?.name)}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
-                            {appt.doctor.specialization}
+                            {appt.doctor?.specialization ?? "—"}
                           </p>
                         </div>
                       </div>
@@ -115,24 +136,29 @@ export function AppointmentTable({
                     <td className="py-3.5 px-4 text-xs whitespace-nowrap">
                       <div className="flex items-center gap-1.5 font-medium text-foreground">
                         <Calendar className="h-3.5 w-3.5 text-primary" />
-                        {appt.schedule.date}
+                        {appt.schedule?.date ?? "—"}
                       </div>
                       <div className="flex items-center gap-1.5 text-muted-foreground mt-0.5">
                         <Clock className="h-3.5 w-3.5" />
-                        {appt.slot.startTime} – {appt.slot.endTime}
+                        {appt.slot?.startTime ?? "—"} – {appt.slot?.endTime ?? "—"}
                       </div>
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       <StatusBadge status={appt.status} />
                     </td>
                     <td className="py-3.5 px-4 text-xs whitespace-nowrap">
-                      {appt.payment ? (
+                      {appt.payment || isPaid ? (
                         <div>
-                          <span className="font-semibold text-foreground">
-                            ${Number(appt.payment.amount).toFixed(2)}
-                          </span>
-                          <div className="mt-0.5">
-                            <StatusBadge status={appt.payment.status} className="text-[10px] py-0 px-1.5" />
+                          {appt.payment && (
+                            <span className="font-semibold text-foreground">
+                              ${Number(appt.payment.amount).toFixed(2)}
+                            </span>
+                          )}
+                          <div className={appt.payment ? "mt-0.5" : undefined}>
+                            <StatusBadge
+                              status={paymentStatus}
+                              className="text-[10px] py-0 px-1.5"
+                            />
                           </div>
                         </div>
                       ) : (
@@ -141,6 +167,21 @@ export function AppointmentTable({
                     </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
+                        {isAwaitingPayment && onPayNow && (
+                          <Button
+                            size="xs"
+                            onClick={() => onPayNow(appt.id)}
+                            disabled={Boolean(payingAppointmentId)}
+                            className="gap-1 text-xs"
+                          >
+                            {isPaying ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <CreditCard className="h-3.5 w-3.5" />
+                            )}
+                            Pay Now
+                          </Button>
+                        )}
                         {canJoinMeet && (
                           <Button
                             asChild
@@ -149,7 +190,7 @@ export function AppointmentTable({
                             className="gap-1 text-xs text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                           >
                             <a
-                              href={appt.schedule.meetLink!}
+                              href={appt.schedule?.meetLink ?? "#"}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -188,8 +229,18 @@ export function AppointmentTable({
       {/* Mobile Cards View (shown on mobile < 768px) */}
       <div className="md:hidden space-y-3">
         {appointments.map((appt) => {
+          const isPaid =
+            appt.payment?.status === "PAID" ||
+            appt.status === "BOOKED" ||
+            appt.status === "ONGOING" ||
+            appt.status === "COMPLETED";
           const isCancellable =
             appt.status === "BOOKED" || appt.status === "PENDING";
+          const isAwaitingPayment = !isPaid && appt.status === "PENDING";
+          const paymentStatus = isPaid
+            ? "PAID"
+            : appt.payment?.status ?? "PENDING";
+          const isPaying = payingAppointmentId === appt.id;
           const canJoinMeet =
             (appt.status === "BOOKED" || appt.status === "ONGOING") &&
             Boolean(appt.schedule.meetLink);
@@ -202,13 +253,17 @@ export function AppointmentTable({
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <span className="text-[10px] font-bold text-primary uppercase">
-                    {appt.serialNumber ? `Serial #${appt.serialNumber}` : "Pending"}
+                    {appt.serialNumber
+                      ? `Serial #${appt.serialNumber}`
+                      : isPaid
+                        ? "Serial #—"
+                        : "Pending"}
                   </span>
                   <h4 className="text-sm font-bold text-foreground truncate mt-0.5">
-                    Dr. {appt.doctor.name}
+                    {formatDoctorName(appt.doctor?.name)}
                   </h4>
                   <p className="text-xs text-muted-foreground truncate">
-                    {appt.doctor.specialization}
+                    {appt.doctor?.specialization ?? "—"}
                   </p>
                 </div>
                 <StatusBadge status={appt.status} className="shrink-0" />
@@ -217,28 +272,51 @@ export function AppointmentTable({
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs py-2 border-y border-border/60">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Calendar className="h-3.5 w-3.5 text-primary shrink-0" />
-                  <span>{appt.schedule.date}</span>
+                  <span>{appt.schedule?.date ?? "—"}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
                   <span>
-                    {appt.slot.startTime} - {appt.slot.endTime}
+                    {appt.slot?.startTime ?? "—"} - {appt.slot?.endTime ?? "—"}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="text-xs">
+                <div className="text-xs space-y-1">
                   {appt.payment && (
                     <span className="font-semibold text-foreground">
                       Fee: ${Number(appt.payment.amount).toFixed(2)}
                     </span>
                   )}
+                  {(appt.payment || isPaid) && (
+                    <div>
+                      <StatusBadge
+                        status={paymentStatus}
+                        className="text-[10px] py-0 px-1.5"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5">
+                  {isAwaitingPayment && onPayNow && (
+                    <Button
+                      size="xs"
+                      onClick={() => onPayNow(appt.id)}
+                      disabled={Boolean(payingAppointmentId)}
+                      className="text-xs gap-1"
+                    >
+                      {isPaying ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <CreditCard className="h-3 w-3" />
+                      )}
+                      Pay Now
+                    </Button>
+                  )}
                   {canJoinMeet && (
                     <Button asChild size="xs" variant="outline" className="text-xs text-emerald-600">
-                      <a href={appt.schedule.meetLink!} target="_blank" rel="noopener noreferrer">
+                      <a href={appt.schedule?.meetLink ?? "#"} target="_blank" rel="noopener noreferrer">
                         <Video className="h-3 w-3 mr-1" />
                         Join Meet
                       </a>

@@ -1,3 +1,10 @@
+import type { PatientAppointmentItem } from "@/features/patient/appointments/types/appointment.types";
+
+export interface PaymentVerificationResult {
+  verified: boolean;
+  appointment: PatientAppointmentItem;
+}
+
 export interface PatientRefundRecord {
   id: string;
   amount: number;

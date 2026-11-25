@@ -48,6 +48,7 @@ export interface PatientAppointmentItem {
   schedule: AppointmentSchedule;
   slot: AppointmentSlot;
   payment?: AppointmentPayment | null;
+  prescription?: { id: string } | null;
 }
 
 export interface CancelAppointmentResponseData {

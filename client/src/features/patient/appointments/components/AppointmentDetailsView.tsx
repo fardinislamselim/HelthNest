@@ -18,6 +18,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { formatDoctorName } from "@/lib/format-name";
 import type { PatientAppointmentItem } from "../types/appointment.types";
 
 interface AppointmentDetailsViewProps {
@@ -33,12 +34,14 @@ export function AppointmentDetailsView({
     appointment.status === "BOOKED" || appointment.status === "PENDING";
   const canJoinMeet =
     (appointment.status === "BOOKED" || appointment.status === "ONGOING") &&
-    Boolean(appointment.schedule.meetLink);
+    Boolean(appointment.schedule?.meetLink);
 
-  const formattedCreated = new Date(appointment.createdAt).toLocaleString("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const formattedCreated = appointment.createdAt
+    ? new Date(appointment.createdAt).toLocaleString("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
+    : "—";
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -94,10 +97,10 @@ export function AppointmentDetailsView({
             </h4>
             <div className="flex items-center gap-4">
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-primary/20 bg-muted flex items-center justify-center">
-                {appointment.doctor.user?.profileImageUrl ? (
+                {appointment.doctor?.user?.profileImageUrl ? (
                   <Image
                     src={appointment.doctor.user.profileImageUrl}
-                    alt={appointment.doctor.name}
+                    alt={formatDoctorName(appointment.doctor?.name)}
                     width={56}
                     height={56}
                     className="h-full w-full object-cover"
@@ -109,10 +112,10 @@ export function AppointmentDetailsView({
               </div>
               <div>
                 <h3 className="text-base font-bold text-foreground">
-                  Dr. {appointment.doctor.name}
+                  {formatDoctorName(appointment.doctor?.name)}
                 </h3>
                 <p className="text-xs font-semibold text-primary">
-                  {appointment.doctor.specialization}
+                  {appointment.doctor?.specialization ?? "—"}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Verified HealthNest Medical Practitioner
@@ -129,11 +132,11 @@ export function AppointmentDetailsView({
                 Consultation Schedule
               </span>
               <p className="text-sm font-bold text-foreground">
-                {appointment.schedule.date}
+                {appointment.schedule?.date ?? "—"}
               </p>
               <p className="text-muted-foreground flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
-                Slot: {appointment.slot.startTime} – {appointment.slot.endTime} (20 min)
+                Slot: {appointment.slot?.startTime ?? "—"} – {appointment.slot?.endTime ?? "—"} (20 min)
               </p>
             </div>
 
@@ -149,7 +152,7 @@ export function AppointmentDetailsView({
                   </p>
                   <Button asChild size="sm" className="gap-2 w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white">
                     <a
-                      href={appointment.schedule.meetLink!}
+                      href={appointment.schedule?.meetLink ?? "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -184,19 +187,19 @@ export function AppointmentDetailsView({
                   <CreditCard className="h-4 w-4 text-primary" />
                   Payment & Invoicing
                 </span>
-                <StatusBadge status={appointment.payment.status} />
+                <StatusBadge status={appointment.payment?.status ?? "PENDING"} />
               </div>
               <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
                 <div>
                   <span className="text-muted-foreground">Amount:</span>
                   <p className="font-bold text-foreground text-sm">
-                    {appointment.payment.currency} ${Number(appointment.payment.amount).toFixed(2)}
+                    {appointment.payment?.currency} ${Number(appointment.payment?.amount ?? 0).toFixed(2)}
                   </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Invoice Reference:</span>
                   <p className="font-mono text-foreground font-medium truncate">
-                    {appointment.payment.invoiceNumber || "—"}
+                    {appointment.payment?.invoiceNumber || "—"}
                   </p>
                 </div>
                 <div>
@@ -217,7 +220,7 @@ export function AppointmentDetailsView({
                     Consultation Prescription
                   </h4>
                   <p className="text-xs text-muted-foreground truncate">
-                    Dr. {appointment.doctor.name} has issued your digital prescription
+                    {formatDoctorName(appointment.doctor?.name)} has issued your digital prescription
                   </p>
                 </div>
               </div>
