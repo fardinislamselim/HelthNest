@@ -61,10 +61,18 @@ export const seedSuperAdmin = async () => {
 //create tester admin 
 export const seedTesterAdmin = async () => {
     try {
+        const name = config.tester_admin_name;
+        const email = config.tester_admin_email;
+        const password = config.tester_admin_password;
+
+        if (!name || !email || !password) {
+            throw new Error("Tester Admin Name , Email, Password Missing In Env File!!!");
+        }
+
         const isTesterAdminExist = await prisma.user.findUnique({
             where: {
-                email : config.tester_admin_email
-            }
+                email,
+            },
         });
 
         if (isTesterAdminExist) {
@@ -72,42 +80,36 @@ export const seedTesterAdmin = async () => {
             return;
         }
 
-        const name = config.tester_admin_name
-        const email = config.tester_admin_email
-        const password = config.tester_admin_password
+        const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds));
 
-        if (!name || !email || !password) {
-            throw new Error("Tester Admin Name , Email, Password Missing In Env File!!!")
-        }
-
-        const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds))
-
-        const testerAdmin = await prisma.user.create({
-            data: {
+        const testerAdmin = await prisma.user.upsert({
+            where: { email },
+            update: {},
+            create: {
                 name,
                 email,
                 password: hashedPassword,
                 role: Role.ADMIN,
                 needPasswordChange: false,
-                emailVerified: true
-            }
-        })
+                emailVerified: true,
+            },
+        });
 
         logger.info("Tester Admin Created : ", testerAdmin);
-
-
-
     } catch (error) {
-
         logger.error("Error Seeding Tester Admin : ", error);
 
-        await prisma.user.delete({
-            where: {
-                email: config.tester_admin_email
+        try {
+            if (config.tester_admin_email) {
+                await prisma.user.deleteMany({
+                    where: {
+                        email: config.tester_admin_email,
+                    },
+                });
             }
-        })
-
-
+        } catch (cleanupError) {
+            logger.warn("Failed to cleanup Tester Admin after seed error:", cleanupError);
+        }
     }
 }
 
@@ -115,10 +117,18 @@ export const seedTesterAdmin = async () => {
 // create tester doctor
 export const seedTesterDoctor = async () => {
     try {
+        const name = config.tester_doctor_name;
+        const email = config.tester_doctor_email;
+        const password = config.tester_admin_password;
+
+        if (!name || !email || !password) {
+            throw new Error("Tester Doctor Name , Email, Password Missing In Env File!!!");
+        }
+
         const isTesterDoctorExist = await prisma.user.findUnique({
             where: {
-                email : config.tester_doctor_email
-            }
+                email,
+            },
         });
 
         if (isTesterDoctorExist) {
@@ -126,41 +136,35 @@ export const seedTesterDoctor = async () => {
             return;
         }
 
-        const name = config.tester_doctor_name
-        const email = config.tester_doctor_email
-        const password = config.tester_admin_password
+        const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds));
 
-        if (!name || !email || !password) {
-            throw new Error("Tester Doctor Name , Email, Password Missing In Env File!!!")
-        }
-
-        const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds))
-
-        const testerDoctor = await prisma.user.create({
-            data: {
+        const testerDoctor = await prisma.user.upsert({
+            where: { email },
+            update: {},
+            create: {
                 name,
                 email,
                 password: hashedPassword,
                 role: Role.DOCTOR,
                 needPasswordChange: false,
-                emailVerified: true
-            }
-        })
+                emailVerified: true,
+            },
+        });
 
-        logger.info("Tester Doctor Created : ",testerDoctor);
-
-
-
+        logger.info("Tester Doctor Created : ", testerDoctor);
     } catch (error) {
-
         logger.error("Error Seeding Tester Doctor : ", error);
 
-        await prisma.user.delete({
-            where: {
-                email: config.tester_doctor_email
+        try {
+            if (config.tester_doctor_email) {
+                await prisma.user.deleteMany({
+                    where: {
+                        email: config.tester_doctor_email,
+                    },
+                });
             }
-        })
-
-
+        } catch (cleanupError) {
+            logger.warn("Failed to cleanup Tester Doctor after seed error:", cleanupError);
+        }
     }
 }

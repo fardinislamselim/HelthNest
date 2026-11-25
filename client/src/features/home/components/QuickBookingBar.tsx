@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { Stethoscope, Shield, Calendar, Search, ChevronDown } from "lucide-react";
 
 export function QuickBookingBar() {
   const router = useRouter();
@@ -19,24 +20,24 @@ export function QuickBookingBar() {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-10" id="quick-booking">
-      <div className="bg-surface-container-lowest rounded-2xl shadow-xl p-5 lg:p-6 border border-border/60">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-10 overflow-hidden" id="quick-booking">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-xl p-5 lg:p-6 border border-border/60 w-full">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end w-full">
           {/* Specialty Dropdown */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 w-full">
             <label
               htmlFor="quick-specialty"
-              className="text-xs font-semibold text-on-surface flex items-center gap-1"
+              className="text-xs font-semibold text-on-surface flex items-center gap-1.5"
             >
-              <span className="material-symbols-outlined text-primary text-[18px]">medical_services</span>
+              <Stethoscope className="h-4 w-4 text-primary shrink-0" />
               <span>Medical Specialty</span>
             </label>
-            <div className="relative">
+            <div className="relative w-full">
               <select
                 id="quick-specialty"
                 value={specialty}
                 onChange={(e) => setSpecialty(e.target.value)}
-                className="w-full h-11 px-3 rounded-lg bg-surface text-sm text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer pr-10 border border-border/60"
+                className="w-full h-11 pl-3.5 pr-10 rounded-lg bg-surface text-sm text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-border/60 truncate"
               >
                 <option value="Cardiology">Cardiology &amp; Preventive</option>
                 <option value="General Medicine">General Practice / Family Care</option>
@@ -47,27 +48,25 @@ export function QuickBookingBar() {
                 <option value="Orthopedics">Orthopedics &amp; Joint Care</option>
                 <option value="Ophthalmology">Ophthalmology &amp; Eye Care</option>
               </select>
-              <span className="material-symbols-outlined text-on-surface-variant absolute right-3 top-3 pointer-events-none text-[20px]">
-                expand_more
-              </span>
+              <ChevronDown className="h-4 w-4 text-on-surface-variant absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none shrink-0" />
             </div>
           </div>
 
           {/* Insurance Dropdown */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 w-full">
             <label
               htmlFor="quick-insurance"
-              className="text-xs font-semibold text-on-surface flex items-center gap-1"
+              className="text-xs font-semibold text-on-surface flex items-center gap-1.5"
             >
-              <span className="material-symbols-outlined text-primary text-[18px]">health_and_safety</span>
+              <Shield className="h-4 w-4 text-primary shrink-0" />
               <span>Insurance Provider</span>
             </label>
-            <div className="relative">
+            <div className="relative w-full">
               <select
                 id="quick-insurance"
                 value={insurance}
                 onChange={(e) => setInsurance(e.target.value)}
-                className="w-full h-11 px-3 rounded-lg bg-surface text-sm text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer pr-10 border border-border/60"
+                className="w-full h-11 pl-3.5 pr-10 rounded-lg bg-surface text-sm text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-border/60 truncate"
               >
                 <option value="bluecross">Blue Cross Blue Shield</option>
                 <option value="aetna">Aetna Healthcare</option>
@@ -76,45 +75,41 @@ export function QuickBookingBar() {
                 <option value="medicare">Medicare Advantage</option>
                 <option value="selfpay">Self-Pay / HSA Eligible ($49)</option>
               </select>
-              <span className="material-symbols-outlined text-on-surface-variant absolute right-3 top-3 pointer-events-none text-[20px]">
-                expand_more
-              </span>
+              <ChevronDown className="h-4 w-4 text-on-surface-variant absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none shrink-0" />
             </div>
           </div>
 
           {/* Consultation Day */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 w-full">
             <label
               htmlFor="quick-day"
-              className="text-xs font-semibold text-on-surface flex items-center gap-1"
+              className="text-xs font-semibold text-on-surface flex items-center gap-1.5"
             >
-              <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+              <Calendar className="h-4 w-4 text-primary shrink-0" />
               <span>Appointment Day</span>
             </label>
-            <div className="relative">
+            <div className="relative w-full">
               <select
                 id="quick-day"
                 value={day}
                 onChange={(e) => setDay(e.target.value)}
-                className="w-full h-11 px-3 rounded-lg bg-surface text-sm text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer pr-10 border border-border/60"
+                className="w-full h-11 pl-3.5 pr-10 rounded-lg bg-surface text-sm text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-border/60 truncate"
               >
                 <option value="today">Today (Immediate On-Demand)</option>
                 <option value="tomorrow">Tomorrow, Morning</option>
                 <option value="weekend">This Upcoming Weekend</option>
               </select>
-              <span className="material-symbols-outlined text-on-surface-variant absolute right-3 top-3 pointer-events-none text-[20px]">
-                expand_more
-              </span>
+              <ChevronDown className="h-4 w-4 text-on-surface-variant absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none shrink-0" />
             </div>
           </div>
 
           {/* Find Doctor Submit */}
-          <div>
+          <div className="w-full">
             <button
               type="submit"
-              className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary-container transition-all shadow-md cursor-pointer active:scale-[0.98]"
+              className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary-container transition-all shadow-md cursor-pointer active:scale-[0.98] whitespace-nowrap"
             >
-              <span className="material-symbols-outlined text-[20px]">search</span>
+              <Search className="h-4 w-4 shrink-0" />
               <span>Find Doctor</span>
             </button>
           </div>

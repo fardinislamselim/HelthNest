@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-surface">
+    <div className="flex flex-col w-full max-w-full overflow-x-hidden bg-surface">
       {/* 1. Hero Section with Live Triage & Interactive Consultation Card Preview */}
       <HeroSection />
 

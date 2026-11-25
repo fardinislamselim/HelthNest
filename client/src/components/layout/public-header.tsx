@@ -45,7 +45,7 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/80 shadow-xs">
-      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link
           href="/"
@@ -130,18 +130,18 @@ export function PublicHeader() {
         </nav>
 
         {/* Desktop Auth & CTAs */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           {isLoading ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <div className="h-9 w-16 animate-pulse rounded-md bg-muted/60" />
               <div className="h-9 w-24 animate-pulse rounded-md bg-muted/60" />
             </div>
           ) : isAuthenticated && user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               {/* User Avatar */}
               <Link
                 href={getDashboardPath(user.role)}
-                className="flex items-center gap-2 rounded-full p-0.5 hover:opacity-85 transition-opacity"
+                className="flex items-center gap-2 rounded-full p-0.5 hover:opacity-85 transition-opacity shrink-0"
                 title={`Dashboard (${user.name})`}
               >
                 <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 overflow-hidden bg-primary/10 text-primary shrink-0">
@@ -163,7 +163,7 @@ export function PublicHeader() {
                 </span>
               </Link>
 
-              <Button asChild size="sm" variant="outline" className="gap-1.5 text-xs h-9">
+              <Button asChild size="sm" variant="outline" className="gap-1.5 text-xs h-9 shrink-0 whitespace-nowrap">
                 <Link href={getDashboardPath(user.role)}>
                   <LayoutDashboard className="h-3.5 w-3.5" />
                   <span>Dashboard</span>
@@ -171,7 +171,7 @@ export function PublicHeader() {
               </Button>
 
               {/* Prominent Get Appointment Button */}
-              <Button asChild size="sm" className="gap-1.5 text-xs h-9 shadow-xs">
+              <Button asChild size="sm" className="gap-1.5 text-xs h-9 shadow-xs shrink-0 whitespace-nowrap">
                 <Link href="/doctors">
                   <Calendar className="h-3.5 w-3.5" />
                   <span>Get Appointment</span>
@@ -183,21 +183,21 @@ export function PublicHeader() {
                 size="sm"
                 onClick={() => logout()}
                 disabled={isLoggingOut}
-                className="text-xs text-muted-foreground hover:text-destructive h-9 px-2"
+                className="text-xs text-muted-foreground hover:text-destructive h-9 px-2 shrink-0"
                 title="Sign Out"
               >
                 <LogOut className="h-3.5 w-3.5" />
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5">
-              <Button asChild variant="ghost" size="sm" className="text-xs font-semibold h-9">
+            <div className="flex items-center gap-2.5 shrink-0">
+              <Button asChild variant="ghost" size="sm" className="text-xs font-semibold h-9 shrink-0 whitespace-nowrap">
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild variant="outline" size="sm" className="text-xs font-semibold h-9">
+              <Button asChild variant="outline" size="sm" className="text-xs font-semibold h-9 shrink-0 whitespace-nowrap">
                 <Link href="/register">Register</Link>
               </Button>
-              <Button asChild size="sm" className="gap-1.5 text-xs font-bold h-9 shadow-sm">
+              <Button asChild size="sm" className="gap-1.5 text-xs font-bold h-9 shadow-sm shrink-0 whitespace-nowrap">
                 <Link href="/doctors">
                   <Calendar className="h-3.5 w-3.5" />
                   <span>Get Appointment</span>

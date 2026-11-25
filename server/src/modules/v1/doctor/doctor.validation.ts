@@ -61,9 +61,12 @@ const getPublicDoctorsQueryValidationSchema = z.object({
       page: z.coerce.number().int().positive().optional().default(1),
       limit: z.coerce.number().int().positive().max(50).optional().default(12),
       search: z.string().trim().optional(),
+      searchTerm: z.string().trim().optional(),
       specialization: z.string().trim().optional(),
       minExperience: z.coerce.number().int().min(0).optional(),
+      experience: z.coerce.number().int().min(0).optional(),
       maxFee: z.coerce.number().nonnegative().optional(),
+      fee: z.coerce.number().nonnegative().optional(),
     })
     .optional(),
 });

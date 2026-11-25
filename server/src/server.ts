@@ -27,9 +27,13 @@ async function main (){
     await redisClient.connect();
     logger.info("Redis Connected");
 
-    await seedSuperAdmin()
-    await seedTesterAdmin()
-    await seedTesterDoctor()
+    try {
+        await seedSuperAdmin();
+        await seedTesterAdmin();
+        await seedTesterDoctor();
+    } catch (seedError) {
+        logger.error("Database seeding failed; continuing server startup:", seedError);
+    }
     
     server = app.listen(config.port, ()=>{
         logger.info(

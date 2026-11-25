@@ -30,3 +30,20 @@ export interface PublicDoctorsListResponse {
   doctors: PublicDoctorItem[];
   meta: ApiMeta;
 }
+
+export interface DoctorFilterOption<T = number> {
+  label: string;
+  value: T;
+}
+
+export interface DoctorFilterOptionsResponse {
+  specializations: string[];
+  experienceOptions: DoctorFilterOption<number>[];
+  feeOptions: DoctorFilterOption<number>[];
+  bounds?: {
+    minExperience: number;
+    maxExperience: number;
+    minFee: number;
+    maxFee: number;
+  };
+}

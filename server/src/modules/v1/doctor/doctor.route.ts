@@ -119,6 +119,16 @@ router.get(
 );
 
 /**
+ * Retrieve Public Doctor Filter Options
+ * @access Public
+ * @method GET /api/v1/doctors/filter-options
+ */
+router.get(
+  "/filter-options",
+  doctorController.getDoctorFilterOptions,
+);
+
+/**
  * Retrieve Public Doctor Profile
  * @access Public
  * @method GET /api/v1/doctors/:doctorId

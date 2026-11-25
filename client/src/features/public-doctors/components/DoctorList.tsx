@@ -1,14 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
-import { DoctorCard } from "./DoctorCard";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
-import type { PublicDoctorItem } from "../types/doctor.types";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ApiMeta } from "@/types/api";
+import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
+import type { PublicDoctorItem } from "../types/doctor.types";
+import { DoctorCard } from "./DoctorCard";
 
 interface DoctorListProps {
   doctors: PublicDoctorItem[];
@@ -35,7 +34,9 @@ export function DoctorList({
     return (
       <ErrorState
         title="Failed to Load Doctors"
-        message={errorMessage || "Could not retrieve doctor directory from the server."}
+        message={
+          errorMessage || "Could not retrieve doctor directory from the server."
+        }
         onRetry={onRetry}
         className="my-8"
       />
@@ -100,7 +101,8 @@ export function DoctorList({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-border/60">
           <p className="text-xs text-muted-foreground order-2 sm:order-1">
             Page <strong className="text-foreground">{meta.page}</strong> of{" "}
-            <strong className="text-foreground">{meta.totalPage}</strong> (Total {meta.total} doctors)
+            <strong className="text-foreground">{meta.totalPage}</strong> (Total{" "}
+            {meta.total} doctors)
           </p>
 
           <div className="flex items-center gap-2 order-1 sm:order-2">

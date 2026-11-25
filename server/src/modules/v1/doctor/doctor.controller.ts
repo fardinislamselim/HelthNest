@@ -106,6 +106,20 @@ const getAllPublicDoctors = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Retrieve Public Doctor Filter Options Controller
+const getDoctorFilterOptions = catchAsync(
+  async (_req: Request, res: Response) => {
+    const result = await doctorService.getDoctorFilterOptions();
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Doctor filter options retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 // Retrieve Public Doctor Details Controller
 const getPublicDoctorById = catchAsync(async (req: Request, res: Response) => {
   const { doctorId } = req.params;
@@ -125,5 +139,6 @@ export const doctorController = {
   resendDoctorOtp,
   getApplicationStatus,
   getAllPublicDoctors,
+  getDoctorFilterOptions,
   getPublicDoctorById,
 };

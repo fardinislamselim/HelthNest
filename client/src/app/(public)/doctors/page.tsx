@@ -1,6 +1,6 @@
+import { PublicDoctorsView } from "@/features/public-doctors";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { PublicDoctorsView } from "@/features/public-doctors";
 
 export const metadata: Metadata = {
   title: "Find Doctors & Specialists | HealthNest",

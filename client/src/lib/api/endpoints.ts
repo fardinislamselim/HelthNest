@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   // Doctors
   DOCTORS: {
     PUBLIC_LIST: "/doctors",
+    FILTER_OPTIONS: "/doctors/filter-options",
     PUBLIC_BY_ID: (doctorId: string) => `/doctors/${doctorId}`,
     AVAILABLE_TODAY: "/doctors/available-today",
     APPLY: "/doctors/apply",

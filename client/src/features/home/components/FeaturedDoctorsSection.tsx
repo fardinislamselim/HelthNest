@@ -3,6 +3,15 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  SlidersHorizontal,
+  User,
+  Star,
+  Clock,
+  ChevronRight,
+  ArrowRight,
+  ShieldCheck,
+} from "lucide-react";
 import { usePublicDoctors } from "@/features/public-doctors/hooks/usePublicDoctors";
 
 const FALLBACK_PORTRAITS = [
@@ -19,9 +28,9 @@ export function FeaturedDoctorsSection() {
   });
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16" id="specialists-catalog">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 overflow-hidden" id="specialists-catalog">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 w-full">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-primary px-3 py-1 bg-secondary-container rounded-full inline-block mb-2">
             On-Duty Clinicians
@@ -34,12 +43,12 @@ export function FeaturedDoctorsSection() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/doctors"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors whitespace-nowrap"
           >
-            <span className="material-symbols-outlined text-[18px]">tune</span>
+            <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" />
             <span>Filter Specialties</span>
           </Link>
         </div>
@@ -47,14 +56,14 @@ export function FeaturedDoctorsSection() {
 
       {/* Loading Skeleton */}
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {Array.from({ length: 4 }).map((_, idx) => (
             <div
               key={idx}
-              className="bg-surface-container-lowest rounded-2xl p-6 shadow-xs border border-border/50 space-y-4 animate-pulse"
+              className="bg-surface-container-lowest rounded-2xl p-6 shadow-xs border border-border/50 space-y-4 animate-pulse w-full"
             >
               <div className="flex items-start justify-between">
-                <div className="w-20 h-20 rounded-2xl bg-surface-container" />
+                <div className="w-20 h-20 rounded-2xl bg-surface-container shrink-0" />
                 <div className="w-24 h-6 rounded-full bg-surface-container" />
               </div>
               <div className="space-y-2">
@@ -71,7 +80,7 @@ export function FeaturedDoctorsSection() {
 
       {/* Error State */}
       {isError && (
-        <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8 text-center space-y-3">
+        <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8 text-center space-y-3 w-full">
           <p className="text-sm font-semibold text-destructive">
             {error?.message || "Could not retrieve doctor profiles at this time."}
           </p>
@@ -87,9 +96,9 @@ export function FeaturedDoctorsSection() {
 
       {/* Empty State */}
       {!isLoading && !isError && doctors.length === 0 && (
-        <div className="rounded-2xl border border-border/80 bg-surface-container-lowest p-10 text-center space-y-4 max-w-lg mx-auto">
+        <div className="rounded-2xl border border-border/80 bg-surface-container-lowest p-10 text-center space-y-4 max-w-lg mx-auto w-full">
           <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
-            <span className="material-symbols-outlined text-[24px]">person</span>
+            <User className="h-6 w-6" />
           </div>
           <div>
             <h3 className="text-base font-bold text-on-surface">Doctors Joining Shortly</h3>
@@ -108,18 +117,18 @@ export function FeaturedDoctorsSection() {
 
       {/* 4-Column Doctor Grid */}
       {!isLoading && !isError && doctors.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {doctors.map((doctor, idx) => {
             const avatarSrc = doctor.profileImageUrl || FALLBACK_PORTRAITS[idx % FALLBACK_PORTRAITS.length];
             return (
               <div
                 key={doctor.id}
-                className="bg-surface-container-lowest rounded-2xl p-6 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group border border-border/50"
+                className="bg-surface-container-lowest rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group border border-border/50 w-full min-w-0"
               >
                 <div>
-                  {/* Avatar + Status Pill */}
+                  {/* Top Row: Clean Avatar + Status Pill (No overlap on face) */}
                   <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="relative">
+                    <div className="relative shrink-0">
                       <Image
                         src={avatarSrc}
                         alt={`Dr. ${doctor.name}`}
@@ -128,24 +137,24 @@ export function FeaturedDoctorsSection() {
                         className="w-20 h-20 rounded-2xl object-cover shadow-xs group-hover:scale-[1.02] transition-transform"
                         unoptimized
                       />
-                      <span
-                        className="absolute -bottom-1 -right-1 bg-primary text-on-primary w-6 h-6 rounded-full flex items-center justify-center text-[12px] shadow-xs"
-                        title="Board Certified"
-                      >
-                        <span className="material-symbols-outlined text-[14px]">verified</span>
-                      </span>
                     </div>
 
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
                       <span>Available Today</span>
                     </span>
                   </div>
 
-                  {/* Doctor Name & Credentials */}
-                  <h3 className="font-heading text-base font-bold text-on-surface mb-0.5 truncate group-hover:text-primary transition-colors">
-                    Dr. {doctor.name}
-                  </h3>
+                  {/* Doctor Name & Verified Badge placed cleanly side-by-side */}
+                  <div className="flex items-center gap-1.5 min-w-0 mb-0.5">
+                    <h3 className="font-heading text-base font-bold text-on-surface truncate group-hover:text-primary transition-colors">
+                      Dr. {doctor.name}
+                    </h3>
+                    <span title="Board Certified">
+                      <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+                    </span>
+                  </div>
+
                   <p className="text-xs font-semibold text-primary mb-1 truncate">
                     {doctor.specialization}
                   </p>
@@ -165,16 +174,14 @@ export function FeaturedDoctorsSection() {
 
                   {/* Rating */}
                   <div className="flex items-center gap-1.5 text-amber-500 mb-3">
-                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      star
-                    </span>
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-400 shrink-0" />
                     <span className="text-xs font-bold text-on-surface">4.95</span>
                     <span className="text-xs text-on-surface-variant">(120+ reviews)</span>
                   </div>
 
                   {/* Availability Alert */}
                   <div className="p-2 px-3 bg-surface-container-low rounded-lg mb-4 flex items-center gap-1.5 text-on-surface-variant text-xs">
-                    <span className="material-symbols-outlined text-primary text-[18px]">access_time</span>
+                    <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
                     <span className="font-medium text-on-surface truncate">
                       Today: Available{" "}
                       <span className="text-on-surface-variant font-normal">
@@ -184,13 +191,13 @@ export function FeaturedDoctorsSection() {
                   </div>
                 </div>
 
-                {/* Action Button */}
+                {/* Action Button: single clean line with small chevron */}
                 <Link
                   href={`/doctors/${doctor.id}`}
-                  className="w-full py-2.5 px-4 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-1 shadow-xs active:scale-[0.98]"
+                  className="w-full py-2.5 px-3 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap active:scale-[0.98]"
                 >
                   <span>View Today&apos;s Schedule</span>
-                  <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                  <ChevronRight className="h-3.5 w-3.5 shrink-0" />
                 </Link>
               </div>
             );
@@ -205,7 +212,7 @@ export function FeaturedDoctorsSection() {
           className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-container px-6 py-2.5 rounded-xl bg-secondary-container/50 hover:bg-secondary-container transition-all"
         >
           <span>Explore All 140+ Available Clinicians</span>
-          <span className="material-symbols-outlined text-[18px]">east</span>
+          <ArrowRight className="h-4 w-4 shrink-0" />
         </Link>
       </div>
     </section>

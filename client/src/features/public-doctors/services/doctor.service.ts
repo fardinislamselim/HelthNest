@@ -2,6 +2,7 @@ import apiClient from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import type { ApiResponse } from "@/types/api";
 import type {
+  DoctorFilterOptionsResponse,
   PublicDoctorItem,
   PublicDoctorDetails,
   PublicDoctorFilterParams,
@@ -32,6 +33,16 @@ export const publicDoctorService = {
         meta,
       },
     };
+  },
+
+  getFilterOptions: async (): Promise<
+    ApiResponse<DoctorFilterOptionsResponse>
+  > => {
+    const response = await apiClient.get<
+      ApiResponse<DoctorFilterOptionsResponse>
+    >(API_ENDPOINTS.DOCTORS.FILTER_OPTIONS);
+
+    return response.data;
   },
 
   getDoctorById: async (

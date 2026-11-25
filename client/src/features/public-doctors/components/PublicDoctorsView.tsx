@@ -1,21 +1,21 @@
 "use client";
 
-import * as React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowRight,
+  Clock,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+  Video,
+} from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  Stethoscope,
-  ShieldCheck,
-  Video,
-  Clock,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+import * as React from "react";
+import { usePublicDoctors } from "../hooks/usePublicDoctors";
+import type { PublicDoctorFilterParams } from "../types/doctor.types";
 import { DoctorFilters } from "./DoctorFilters";
 import { DoctorList } from "./DoctorList";
-import { usePublicDoctors } from "../hooks/usePublicDoctors";
-import { Button } from "@/components/ui/button";
-import type { PublicDoctorFilterParams } from "../types/doctor.types";
 
 export function PublicDoctorsView() {
   const searchParams = useSearchParams();
@@ -50,9 +50,12 @@ export function PublicDoctorsView() {
     }));
   }
 
-  const { doctors, meta, isLoading, isError, error, refetch } = usePublicDoctors(filters);
+  const { doctors, meta, isLoading, isError, error, refetch } =
+    usePublicDoctors(filters);
 
-  const handleFilterChange = (newFilters: Partial<PublicDoctorFilterParams>) => {
+  const handleFilterChange = (
+    newFilters: Partial<PublicDoctorFilterParams>,
+  ) => {
     setFilters((prev) => ({
       ...prev,
       ...newFilters,
@@ -80,8 +83,8 @@ export function PublicDoctorsView() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 sm:py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-8 max-w-7xl">
+    <div className="min-h-screen w-full overflow-x-hidden bg-background py-8 sm:py-12">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* =========================================================================
             1. HERO / BANNER HEADER
             ========================================================================= */}
@@ -96,7 +99,9 @@ export function PublicDoctorsView() {
           </h1>
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Search board-certified physicians, explore verified clinical credentials, and book discrete 20-minute video consultations on your schedule.
+            Search board-certified physicians, explore verified clinical
+            credentials, and book discrete 20-minute video consultations on your
+            schedule.
           </p>
 
           {/* Trust Highlights */}
@@ -106,8 +111,12 @@ export function PublicDoctorsView() {
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-foreground truncate">100% Verified</p>
-                <p className="text-[11px] text-muted-foreground truncate">Credentials authenticated</p>
+                <p className="text-xs font-semibold text-foreground truncate">
+                  100% Verified
+                </p>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  Credentials authenticated
+                </p>
               </div>
             </div>
 
@@ -116,8 +125,12 @@ export function PublicDoctorsView() {
                 <Clock className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-foreground truncate">20-Min Telehealth</p>
-                <p className="text-[11px] text-muted-foreground truncate">Sequenced consultations</p>
+                <p className="text-xs font-semibold text-foreground truncate">
+                  20-Min Telehealth
+                </p>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  Sequenced consultations
+                </p>
               </div>
             </div>
 
@@ -126,8 +139,12 @@ export function PublicDoctorsView() {
                 <Video className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-foreground truncate">Private Video Room</p>
-                <p className="text-[11px] text-muted-foreground truncate">Secure Google Meet</p>
+                <p className="text-xs font-semibold text-foreground truncate">
+                  Private Video Room
+                </p>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  Secure Google Meet
+                </p>
               </div>
             </div>
           </div>
@@ -164,21 +181,26 @@ export function PublicDoctorsView() {
         {/* =========================================================================
             4. JOIN AS A PRACTITIONER CTA
             ========================================================================= */}
-        <section className="mt-12 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-background to-primary/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
-          <div className="space-y-1.5 text-center sm:text-left">
+        <section className="mt-12 w-full max-w-full overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-background to-primary/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
+          <div className="min-w-0 flex-1 space-y-1.5 text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
-              <Stethoscope className="h-4 w-4" />
+              <Stethoscope className="h-4 w-4 shrink-0" />
               <span>Healthcare Professional Portal</span>
             </div>
             <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
               Are you a licensed doctor or medical specialist?
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
-              Join HealthNest to establish your virtual consultation practice, publish availability slots, and consult with patients nationwide.
+              Join HealthNest to establish your virtual consultation practice,
+              publish availability slots, and consult with patients nationwide.
             </p>
           </div>
 
-          <Button asChild size="default" className="shrink-0 gap-2 font-medium shadow-xs">
+          <Button
+            asChild
+            size="default"
+            className="shrink-0 whitespace-nowrap gap-2 font-medium shadow-xs"
+          >
             <Link href="/doctors/apply">
               <span>Apply as a Practitioner</span>
               <ArrowRight className="h-4 w-4" />

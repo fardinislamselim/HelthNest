@@ -436,9 +436,12 @@ export interface IPublicDoctorQuery {
   page?: number;
   limit?: number;
   search?: string;
+  searchTerm?: string;
   specialization?: string;
   minExperience?: number;
+  experience?: number;
   maxFee?: number;
+  fee?: number;
 }
 
 const getAllPublicDoctors = async (query?: IPublicDoctorQuery) => {
@@ -456,31 +459,38 @@ const getAllPublicDoctors = async (query?: IPublicDoctorQuery) => {
     },
   };
 
-  if (query?.search) {
-    const term = query.search.trim();
+  const searchTerm = (query?.search || query?.searchTerm)?.trim();
+  if (searchTerm) {
     where.OR = [
-      { name: { contains: term, mode: "insensitive" } },
-      { specialization: { contains: term, mode: "insensitive" } },
-      { qualifications: { contains: term, mode: "insensitive" } },
+      { name: { contains: searchTerm, mode: "insensitive" } },
+      { specialization: { contains: searchTerm, mode: "insensitive" } },
+      { qualifications: { contains: searchTerm, mode: "insensitive" } },
     ];
   }
 
-  if (query?.specialization && query.specialization !== "ALL") {
+  const specialization = query?.specialization?.trim();
+  if (
+    specialization &&
+    specialization !== "ALL" &&
+    specialization !== "All Specializations"
+  ) {
     where.specialization = {
-      contains: query.specialization.trim(),
+      contains: specialization,
       mode: "insensitive",
     };
   }
 
-  if (query?.minExperience !== undefined && query.minExperience > 0) {
+  const minExperience = query?.minExperience ?? query?.experience;
+  if (minExperience !== undefined && Number(minExperience) > 0) {
     where.experienceYears = {
-      gte: Number(query.minExperience),
+      gte: Number(minExperience),
     };
   }
 
-  if (query?.maxFee !== undefined && query.maxFee > 0) {
+  const maxFee = query?.maxFee ?? query?.fee;
+  if (maxFee !== undefined && Number(maxFee) > 0) {
     where.consultationFee = {
-      lte: Number(query.maxFee),
+      lte: Number(maxFee),
     };
   }
 
@@ -559,11 +569,92 @@ const getPublicDoctorById = async (doctorId: string) => {
   };
 };
 
+const getDoctorFilterOptions = async () => {
+  const activeApprovedWhere = {
+    isDeleted: false,
+    verificationStatus: DoctorVerificationStatus.APPROVED,
+    user: {
+      status: UserStatus.ACTIVE,
+      isDeleted: false,
+    },
+  };
+
+  const [distinctSpecializations, aggregateBounds] = await Promise.all([
+    prisma.doctor.findMany({
+      where: activeApprovedWhere,
+      select: { specialization: true },
+      distinct: ["specialization"],
+      orderBy: { specialization: "asc" },
+    }),
+    prisma.doctor.aggregate({
+      where: activeApprovedWhere,
+      _min: {
+        experienceYears: true,
+        consultationFee: true,
+      },
+      _max: {
+        experienceYears: true,
+        consultationFee: true,
+      },
+    }),
+  ]);
+
+  const specializations = Array.from(
+    new Set(
+      distinctSpecializations
+        .map((item) => item.specialization?.trim())
+        .filter((spec): spec is string => Boolean(spec)),
+    ),
+  ).sort((a, b) => a.localeCompare(b));
+
+  const maxExperience = aggregateBounds._max.experienceYears ?? 15;
+  const maxFee = aggregateBounds._max.consultationFee
+    ? Number(aggregateBounds._max.consultationFee)
+    : 250;
+
+  const experienceTiers = [3, 5, 10, 15, 20].filter(
+    (years) => years <= Math.max(maxExperience, 15),
+  );
+  const experienceOptions = [
+    { label: "Any Experience", value: 0 },
+    ...experienceTiers.map((years) => ({
+      label: `${years}+ Years`,
+      value: years,
+    })),
+  ];
+
+  const feeTiers = [50, 100, 150, 200, 250, 500].filter(
+    (fee) => fee <= Math.max(maxFee, 250),
+  );
+  const feeOptions = [
+    { label: "Any Fee", value: 0 },
+    ...feeTiers.map((fee) => ({
+      label: `Under $${fee}`,
+      value: fee,
+    })),
+  ];
+
+  return {
+    specializations,
+    experienceOptions,
+    feeOptions,
+    bounds: {
+      minExperience: aggregateBounds._min.experienceYears ?? 0,
+      maxExperience,
+      minFee: aggregateBounds._min.consultationFee
+        ? Number(aggregateBounds._min.consultationFee)
+        : 0,
+      maxFee,
+    },
+  };
+};
+
 export const doctorService = {
   applyAsDoctor,
   verifyDoctorEmail,
   resendDoctorOtp,
   getApplicationStatus,
   getAllPublicDoctors,
+  getDoctorFilterOptions,
   getPublicDoctorById,
 };
