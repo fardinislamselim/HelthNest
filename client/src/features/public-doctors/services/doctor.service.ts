@@ -7,6 +7,7 @@ import type {
   PublicDoctorDetails,
   PublicDoctorFilterParams,
   PublicDoctorsListResponse,
+  PublicDoctorSchedulesResponse,
 } from "../types/doctor.types";
 
 export const publicDoctorService = {
@@ -51,6 +52,19 @@ export const publicDoctorService = {
     const response = await apiClient.get<ApiResponse<PublicDoctorDetails>>(
       API_ENDPOINTS.DOCTORS.PUBLIC_BY_ID(doctorId),
     );
+
+    return response.data;
+  },
+
+  getDoctorSchedules: async (
+    doctorId: string,
+    date?: string,
+  ): Promise<ApiResponse<PublicDoctorSchedulesResponse>> => {
+    const response = await apiClient.get<
+      ApiResponse<PublicDoctorSchedulesResponse>
+    >(API_ENDPOINTS.DOCTORS.PUBLIC_SCHEDULES(doctorId), {
+      params: date ? { date } : undefined,
+    });
 
     return response.data;
   },

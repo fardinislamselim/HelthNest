@@ -39,6 +39,7 @@ export const API_ENDPOINTS = {
     PUBLIC_LIST: "/doctors",
     FILTER_OPTIONS: "/doctors/filter-options",
     PUBLIC_BY_ID: (doctorId: string) => `/doctors/${doctorId}`,
+    PUBLIC_SCHEDULES: (doctorId: string) => `/doctors/${doctorId}/schedules`,
     AVAILABLE_TODAY: "/doctors/available-today",
     APPLY: "/doctors/apply",
     VERIFY_EMAIL: "/doctors/verify-email",

@@ -129,6 +129,17 @@ router.get(
 );
 
 /**
+ * Retrieve Public Doctor Schedules & Slots
+ * @access Public
+ * @method GET /api/v1/doctors/:doctorId/schedules
+ */
+router.get(
+  "/:doctorId/schedules",
+  validateRequest(DoctorValidation.doctorIdParamsValidationSchema),
+  doctorController.getPublicDoctorSchedules,
+);
+
+/**
  * Retrieve Public Doctor Profile
  * @access Public
  * @method GET /api/v1/doctors/:doctorId

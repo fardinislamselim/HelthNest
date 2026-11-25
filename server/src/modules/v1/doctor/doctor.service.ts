@@ -24,8 +24,10 @@ import { jwtUtils } from "@/utils/jwt";
 import {
   Role,
   DoctorVerificationStatus,
+  ScheduleStatus,
   UserStatus,
 } from "../../../../generated/prisma/enums";
+import { getZonedTime, isSlotAvailable } from "@/modules/v1/schedule/schedule.utils";
 import {
   TApplyAsDoctor,
   TVerifyDoctorEmail,
@@ -649,6 +651,94 @@ const getDoctorFilterOptions = async () => {
   };
 };
 
+const getPublicDoctorSchedules = async (doctorId: string, date?: string) => {
+  const { todayDate, currentTime } = getZonedTime(
+    new Date(),
+    config.timezone || "Asia/Dhaka",
+  );
+  const targetDate =
+    date && /^\d{4}-\d{2}-\d{2}$/.test(date.trim()) ? date.trim() : todayDate;
+
+  if (targetDate < todayDate) {
+    return {
+      date: targetDate,
+      schedule: null,
+      slots: [],
+    };
+  }
+
+  const schedule = await prisma.schedule.findFirst({
+    where: {
+      doctorId,
+      date: targetDate,
+      status: ScheduleStatus.PUBLISHED,
+      isDeleted: false,
+      doctor: {
+        isDeleted: false,
+        verificationStatus: DoctorVerificationStatus.APPROVED,
+        user: {
+          status: UserStatus.ACTIVE,
+          isDeleted: false,
+        },
+      },
+    },
+    include: {
+      slots: {
+        orderBy: { serialNumber: "asc" },
+        include: {
+          appointments: {
+            select: { status: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!schedule) {
+    return {
+      date: targetDate,
+      schedule: null,
+      slots: [],
+    };
+  }
+
+  // Booking window closes once schedule startTime is reached on today's date
+  if (targetDate === todayDate && schedule.startTime <= currentTime) {
+    return {
+      date: targetDate,
+      schedule: null,
+      slots: [],
+    };
+  }
+
+  const slots = schedule.slots.map((slot) => {
+    const available = isSlotAvailable(slot);
+    return {
+      id: slot.id,
+      serialNumber: slot.serialNumber,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      isBooked: !available,
+      isAvailable: available,
+    };
+  });
+
+  const availableSlots = slots.filter((s) => s.isAvailable).length;
+
+  return {
+    date: targetDate,
+    schedule: {
+      id: schedule.id,
+      date: schedule.date,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      totalSlots: schedule.totalSlots,
+      availableSlots,
+    },
+    slots,
+  };
+};
+
 export const doctorService = {
   applyAsDoctor,
   verifyDoctorEmail,
@@ -657,4 +747,5 @@ export const doctorService = {
   getAllPublicDoctors,
   getDoctorFilterOptions,
   getPublicDoctorById,
+  getPublicDoctorSchedules,
 };

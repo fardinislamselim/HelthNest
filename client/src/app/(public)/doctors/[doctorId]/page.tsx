@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PublicDoctorProfileView } from "@/features/public-doctors";
 
 interface PublicDoctorProfilePageProps {
@@ -26,5 +27,9 @@ export default async function PublicDoctorProfilePage({
     // Keep raw id
   }
 
-  return <PublicDoctorProfileView doctorId={decodedId} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <PublicDoctorProfileView doctorId={decodedId} />
+    </Suspense>
+  );
 }

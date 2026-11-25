@@ -133,6 +133,25 @@ const getPublicDoctorById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Retrieve Public Doctor Schedules & Slots Controller
+const getPublicDoctorSchedules = catchAsync(
+  async (req: Request, res: Response) => {
+    const { doctorId } = req.params;
+    const date = typeof req.query.date === "string" ? req.query.date : undefined;
+    const result = await doctorService.getPublicDoctorSchedules(
+      String(doctorId),
+      date,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Doctor schedules retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const doctorController = {
   applyAsDoctor,
   verifyDoctorEmail,
@@ -141,4 +160,5 @@ export const doctorController = {
   getAllPublicDoctors,
   getDoctorFilterOptions,
   getPublicDoctorById,
+  getPublicDoctorSchedules,
 };

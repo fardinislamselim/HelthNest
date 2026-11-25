@@ -47,3 +47,27 @@ export interface DoctorFilterOptionsResponse {
     maxFee: number;
   };
 }
+
+export interface PublicDoctorSlotItem {
+  id: string;
+  serialNumber: number;
+  startTime: string;
+  endTime: string;
+  isBooked: boolean;
+  isAvailable: boolean;
+}
+
+export interface PublicDoctorScheduleSummary {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  totalSlots: number;
+  availableSlots: number;
+}
+
+export interface PublicDoctorSchedulesResponse {
+  date: string;
+  schedule: PublicDoctorScheduleSummary | null;
+  slots: PublicDoctorSlotItem[];
+}
