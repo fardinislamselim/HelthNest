@@ -95,7 +95,7 @@ export const createCheckoutSession = async (
           currency: config.payment_currency,
           unit_amount: Math.round(amount * 100),
           product_data: {
-            name: `HelthNest consultation with Dr. ${appointment.doctor.name}`,
+            name: `HealthNest consultation with Dr. ${appointment.doctor.name.replace(/^\s*dr(?:\.\s*|\s+)/i, "").trim()}`,
           },
         },
       },

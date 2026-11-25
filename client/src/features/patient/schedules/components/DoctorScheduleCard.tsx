@@ -32,11 +32,26 @@ const formatScheduleDate = (dateStr?: string) => {
   }
 };
 
+const DOCTOR_TITLE_PREFIX = /^\s*dr(?:\.\s*|\s+)/i;
+
+function formatDoctorName(name?: string | null): string {
+  const raw = (name || "").trim();
+  if (!raw) return "Dr. Practitioner";
+  const withoutTitle = raw.replace(DOCTOR_TITLE_PREFIX, "").trim();
+  return `Dr. ${withoutTitle || raw}`;
+}
+
 export function DoctorScheduleCard({
   schedule,
   onSelectSchedule,
 }: DoctorScheduleCardProps) {
   const doctor = schedule.doctor;
+  const doctorName = formatDoctorName(doctor?.name);
+  const doctorImageSrc =
+    doctor?.profileImage || doctor?.user?.profileImageUrl || null;
+  const [failedImageSrc, setFailedImageSrc] = React.useState<string | null>(null);
+  const showDoctorImage =
+    Boolean(doctorImageSrc) && failedImageSrc !== doctorImageSrc;
 
   return (
     <Card className="flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow border-border/80 min-w-0">
@@ -44,14 +59,15 @@ export function DoctorScheduleCard({
         <div className="flex flex-wrap sm:flex-nowrap items-start justify-between gap-2.5">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-full border border-primary/20 bg-muted/60 flex items-center justify-center">
-              {doctor?.user?.profileImageUrl ? (
+              {showDoctorImage && doctorImageSrc ? (
                 <Image
-                  src={doctor.user.profileImageUrl}
-                  alt={doctor.name || "Doctor"}
+                  src={doctorImageSrc}
+                  alt={doctorName}
                   width={56}
                   height={56}
                   className="h-full w-full object-cover"
                   unoptimized
+                  onError={() => setFailedImageSrc(doctorImageSrc)}
                 />
               ) : (
                 <User className="h-6 w-6 sm:h-7 sm:w-7 text-muted-foreground/60" />
@@ -59,7 +75,7 @@ export function DoctorScheduleCard({
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm sm:text-base font-bold text-foreground truncate">
-                Dr. {doctor?.name || "Practitioner"}
+                {doctorName}
               </h3>
               <p className="text-xs font-semibold text-primary truncate">
                 {doctor?.specialization || "General Medicine"}

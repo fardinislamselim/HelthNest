@@ -57,6 +57,12 @@ export function ScheduleSlotModal({
   if (!open || !schedule) return null;
 
   const doctor = schedule.doctor;
+  const formattedDoctorName = (() => {
+    const raw = (doctor.name || "").trim();
+    if (!raw) return "Doctor";
+    const withoutTitle = raw.replace(/^\s*dr(?:\.\s*|\s+)/i, "").trim();
+    return `Dr. ${withoutTitle || raw}`;
+  })();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
@@ -86,7 +92,7 @@ export function ScheduleSlotModal({
               <span>Choose 20-Min Slot</span>
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-              Select an available time slot with Dr. {doctor.name} ({doctor.specialization})
+              Select an available time slot with {formattedDoctorName} ({doctor.specialization})
             </p>
           </div>
           <button

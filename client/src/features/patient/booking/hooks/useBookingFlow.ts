@@ -34,19 +34,39 @@ export function useBookingFlow() {
         slotId,
       });
 
-      const payload = apptRes.data as
-        | (Partial<AppointmentCreationResult> & Partial<CreateAppointmentResponseData>)
-        | undefined;
-      const appointment = payload?.appointment ?? payload;
+      // Handle both `{ success, data: { appointment, payment } }` and direct `{ appointment, payment }` or flat `{ id, paymentUrl }` shapes
+      const rawBody = apptRes as unknown as Record<string, unknown>;
+      const dataLayer = (
+        rawBody?.data && typeof rawBody.data === "object" ? rawBody.data : rawBody
+      ) as Partial<AppointmentCreationResult> &
+        Partial<CreateAppointmentResponseData> & {
+          appointmentId?: string;
+          paymentUrl?: string;
+          url?: string;
+          payment?: { paymentUrl?: string; url?: string } | null;
+        };
 
-      const appointmentId = appointment?.id;
+      const appointmentObj = (dataLayer?.appointment ?? dataLayer) as
+        | (Partial<CreateAppointmentResponseData> & { appointmentId?: string })
+        | undefined;
+
+      const appointmentId =
+        appointmentObj?.id ||
+        appointmentObj?.appointmentId ||
+        dataLayer?.appointmentId ||
+        dataLayer?.id;
+
       if (!appointmentId) {
         throw new Error("Failed to initialize appointment record");
       }
 
       // 2. Use the checkout session returned with the appointment; only request
       // a new one when the backend did not include it.
-      let paymentUrl = payload?.payment?.paymentUrl;
+      let paymentUrl =
+        dataLayer?.payment?.paymentUrl ||
+        dataLayer?.payment?.url ||
+        dataLayer?.paymentUrl ||
+        dataLayer?.url;
       if (!paymentUrl) {
         const checkoutRes = await patientBookingService.createCheckoutSession(
           appointmentId,
