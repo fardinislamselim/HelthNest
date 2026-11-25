@@ -12,6 +12,7 @@ import config from "@/config";
 import { logger } from "@/lib/winston";
 import { prisma } from "@/lib/prisma";
 import { seedSuperAdmin, seedTesterAdmin, seedTesterDoctor } from "@/utils/seed";
+import { seedDoctorsAndSchedules } from "@/utils/seedDoctorsAndSchedules";
 import { redisClient } from "@/lib/redis";
 
 
@@ -31,6 +32,7 @@ async function main (){
         await seedSuperAdmin();
         await seedTesterAdmin();
         await seedTesterDoctor();
+        await seedDoctorsAndSchedules();
     } catch (seedError) {
         logger.error("Database seeding failed; continuing server startup:", seedError);
     }
